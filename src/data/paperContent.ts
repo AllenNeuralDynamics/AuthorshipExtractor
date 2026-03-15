@@ -150,17 +150,55 @@ export const PAPER_BODY: PaperSection[] = [
     title: 'Discussion',
     level: 1,
     paragraphs: [
-      `The framework presented here addresses a structural problem in scholarly communication: the mismatch between the multi-dimensional reality of scientific contributions and the one-dimensional format traditionally used to communicate them. By providing multiple complementary views into the same contribution data, we enable different stakeholders to extract the information most relevant to their needs without sacrificing the simplicity of a compact author display.`,
+      `The framework presented here addresses a structural problem in scholarly communication that has been recognized for decades. As early as 1997, Rennie, Yank, and Emanuel argued in JAMA that traditional authorship was failing and proposed replacing it with explicit contributorship [1]. Their core insight—that a single byline cannot meaningfully represent the diverse roles within a research team—remains as urgent today as it was then, perhaps more so given the continued growth of team science documented by Wuchty, Jones, and Uzzi [2].`,
 
-      `Several implications deserve emphasis. First, this framework makes visible the contributions of individuals who are systematically under-credited in current systems: data curators, software engineers, visualization designers, research coordinators, and technical specialists. These roles are increasingly essential to modern science but remain largely invisible in traditional author lists. When a reader can sort by "Data Curation" or "Software" and see who led these contributions, the value of this work becomes self-evident.`,
+      `Our framework builds directly on the CRediT (Contributor Roles Taxonomy) standard introduced by Brand et al. in 2015 [3], which defined fourteen structured contributor roles that have since been adopted by over 5,000 journals. The call by Allen et al. in Nature to move "beyond authorship" toward transparent attribution [4] and the cross-publisher consensus statement by McNutt et al. on CRediT adoption [5] established the institutional foundation on which our work rests. Holcombe went further, arguing that CRediT should replace—not merely supplement—traditional authorship entirely [6]. We share this aspiration.`,
 
-      `Second, the framework reduces the stakes of author ordering by making position less consequential. When every contribution is transparently documented and can be viewed from multiple angles, the specific position in the byline matters less. This alone could significantly reduce authorship disputes—which remain among the most common and corrosive sources of friction in collaborative research.`,
+      `The empirical evidence for why such a shift is needed is compelling. Larivière et al. quantified how contributions actually distribute across research teams, revealing patterns far more complex than author position implies [7]. Studies have estimated that over 20% of biomedical publications involve honorary or ghost authorship [8], while Sauermann and Haeussler showed that authorship credit allocation actively shapes—and distorts—collaboration decisions [9]. Birnholtz documented how different disciplines use author ordering as fundamentally different signals, creating systematic misinterpretation across fields [10].`,
 
-      `Third, the machine-readable nature of the contribution data opens new possibilities for research evaluation. Funding agencies, hiring committees, and promotion panels currently rely on crude proxies such as author position and journal prestige. Structured contribution data enables genuinely nuanced evaluation—crediting researchers for their specific role rather than assuming that "first author did most work" or "last author is the PI."`,
+      `On the technical side, efforts by Vasilevsky et al. on the Contributor Role Ontology (CRO) have made CRediT machine-readable and linked to ORCID identifiers [11], and the FORCE11 community has driven broader adoption of structured scholarly metadata [12]. Publishers including PLOS, eLife, and Cell Press have experimented with richer author metadata displays in their article pages.`,
 
-      `Limitations of this framework include the documentation burden on authors, the need for journal and publisher adoption, and the challenge of verifying self-reported contributions. We believe these limitations are addressable: modern submission systems already collect CRediT data, section-level contributions map naturally to the collaborative writing process with tools like Google Docs and Overleaf that track per-author edits, and the transparency of public contribution records itself serves as a check on misrepresentation.`,
+      `What distinguishes the present work from these prior efforts is its focus on the reader-facing display and interaction layer. The existing literature overwhelmingly addresses how to collect structured contribution data; comparatively little work has addressed what the reader actually sees. In nearly all current implementations, CRediT data appears as a static table appended to the end of an article—an afterthought disconnected from the reading experience. The byline at the top remains unchanged: a linear list that implies a ranking. Our framework closes this gap by making contribution data the organizing principle of the authorship display itself—with dynamic re-sorting, inline section-level attribution, and the explicit design choice that no single author ordering is privileged.`,
 
-      `The future of scientific authorship must evolve to match the reality of scientific practice. Team science is here to stay—and growing. The question is whether our attribution systems will continue to compress multi-dimensional contributions into a format designed for solo scholars, or whether we will build tools that celebrate the collaborative nature of discovery and give every contributor the credit they deserve. This demonstration is our contribution to that conversation.`,
+      `Several implications deserve emphasis. First, this framework makes visible the contributions of individuals who are systematically under-credited in current systems: data curators, software engineers, visualization designers, research coordinators, and technical specialists. These roles are increasingly essential to modern science but remain largely invisible in traditional author lists [7]. When a reader can sort by "Data Curation" or "Software" and see who led these contributions, the value of this work becomes self-evident.`,
+
+      `Second, the framework reduces the stakes of author ordering by making position less consequential. When every contribution is transparently documented and can be viewed from multiple angles, the specific position in the byline matters less. This alone could significantly reduce authorship disputes—which remain among the most common and corrosive sources of friction in collaborative research [1, 8].`,
+
+      `Third, the machine-readable nature of the contribution data opens new possibilities for research evaluation [11, 12]. Funding agencies, hiring committees, and promotion panels currently rely on crude proxies such as author position and journal prestige. Structured contribution data enables genuinely nuanced evaluation—crediting researchers for their specific role rather than assuming that "first author did most work" or "last author is the PI."`,
+
+      `Limitations of this framework include the documentation burden on authors, the need for journal and publisher adoption, and the challenge of verifying self-reported contributions. We believe these limitations are addressable: modern submission systems already collect CRediT data [5], section-level contributions map naturally to the collaborative writing process with tools like Google Docs and Overleaf that track per-author edits, and the transparency of public contribution records itself serves as a check on misrepresentation.`,
+
+      `The future of scientific authorship must evolve to match the reality of scientific practice. Team science is here to stay—and growing [2]. The question is whether our attribution systems will continue to compress multi-dimensional contributions into a format designed for solo scholars, or whether we will build tools that celebrate the collaborative nature of discovery and give every contributor the credit they deserve. This demonstration is our contribution to that conversation.`,
+    ],
+  },
+  {
+    id: 'references',
+    title: 'References',
+    level: 1,
+    paragraphs: [
+      `[1] Rennie, D., Yank, V., & Emanuel, L. (1997). When authorship fails: a proposal to make contributors accountable. JAMA, 278(7), 579–585.`,
+
+      `[2] Wuchty, S., Jones, B. F., & Uzzi, B. (2007). The increasing dominance of teams in production of knowledge. Science, 316(5827), 1036–1039.`,
+
+      `[3] Brand, A., Allen, L., Altman, M., Hlava, M., & Scott, J. (2015). Beyond authorship: attribution, contribution, collaboration, and credit. Learned Publishing, 28(2), 151–155.`,
+
+      `[4] Allen, L., Scott, J., Brand, A., Hlava, M., & Altman, M. (2014). Publishing: credit where credit is due. Nature, 508(7496), 312–313.`,
+
+      `[5] McNutt, M. K., Bradford, M., Drazen, J. M., Hanson, B., Howard, B., Jamieson, K. H., ... & Verma, I. M. (2018). Transparency in authors' contributions and responsibilities to promote integrity in scientific publication. Proceedings of the National Academy of Sciences, 115(11), 2557–2560.`,
+
+      `[6] Holcombe, A. O. (2019). Contributorship, not authorship: use CRediT to indicate who did what. Publications, 7(3), 48.`,
+
+      `[7] Larivière, V., Desrochers, N., Macaluso, B., Mongeon, P., Paul-Hus, A., & Sugimoto, C. R. (2016). Contributorship and division of labor in knowledge production. Social Studies of Science, 46(3), 417–435.`,
+
+      `[8] Wren, J. D., Kozak, K. Z., Johnson, K. R., Deakyne, S. J., Schilling, L. M., & Dellavalle, R. P. (2007). The write position: a survey of perceived contributions to papers based on byline position and number of authors. EMBO Reports, 8(11), 988–991.`,
+
+      `[9] Sauermann, H., & Haeussler, C. (2017). Authorship and contribution disclosures. Science Advances, 3(11), e1700404.`,
+
+      `[10] Birnholtz, J. P. (2006). What does it mean to be an author? The intersection of credit, contribution, and collaboration in science. Journal of the American Society for Information Science and Technology, 57(13), 1758–1770.`,
+
+      `[11] Vasilevsky, N. A., Hosseini, M., Teplitzky, S., Ilik, V., Mohammadi, E., Schneider, J., ... & Holmes, K. L. (2021). Is authorship sufficient for today's collaborative research? A call for contributor roles. Accountability in Research, 28(1), 23–43.`,
+
+      `[12] FORCE11 (2016). FORCE11 Scholarly Communication Institute. The FAIR Guiding Principles for scientific data management and stewardship. https://force11.org/`,
     ],
   },
 ];
