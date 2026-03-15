@@ -18,7 +18,7 @@ export const PAPER_BODY: PaperSection[] = [
 
       `This compression of multi-dimensional contributions into a one-dimensional sequence creates well-documented tensions. Early-career researchers depend on first-author publications for career advancement. Principal investigators expect last-author or corresponding-author designations to signal intellectual leadership. Middle authors—often including those who built critical infrastructure, contributed specialized techniques, or performed essential validation—receive minimal credit differentiation regardless of the significance of their contributions.`,
 
-      `The consequences are not merely symbolic. Authorship disputes are among the leading causes of research misconduct complaints. Gift authorship and ghost authorship persist because the byline carries too much weight while communicating too little information. Junior researchers report delaying publications and avoiding collaborations to protect their authorship position. The incentive structures that flow from linear author lists actively hinder the collaborative, interdisciplinary team science that modern challenges demand.`,
+      `The consequences are not merely symbolic. Authorship disputes are among the leading causes of research misconduct complaints [1]. Gift authorship and ghost authorship persist because the byline carries too much weight while communicating too little information [8]. Junior researchers report delaying publications and avoiding collaborations to protect their authorship position [9]. The incentive structures that flow from linear author lists actively hinder the collaborative, interdisciplinary team science that modern challenges demand [2].`,
 
       `We propose a fundamentally different approach. Rather than compressing contributions into a single ordered list, we present a multi-dimensional authorship framework that allows readers, institutions, and metrics systems to explore contributions along multiple axes simultaneously. The framework builds on the CRediT (Contributor Roles Taxonomy) standard while extending it with section-level contributions, project timelines, and rich author profiles. Critically, we reject the premise that any single ordering of authors is definitive—the reader can dynamically re-sort the author list by alphabetical order, career stage, number of CRediT roles, specific role contributions, institutional grouping, or project join date.`,
 
@@ -30,9 +30,9 @@ export const PAPER_BODY: PaperSection[] = [
     title: 'The CRediT Taxonomy',
     level: 2,
     paragraphs: [
-      `The Contributor Roles Taxonomy (CRediT), developed by the Consortia Advancing Standards in Research Administration Information (CASRAI) and first published by Brand et al. (2015), defines fourteen distinct contributor roles: Conceptualization, Methodology, Software, Validation, Formal Analysis, Investigation, Resources, Data Curation, Writing—Original Draft, Writing—Review & Editing, Visualization, Supervision, Project Administration, and Funding Acquisition. Each contributor can be assigned a degree of contribution—lead, equal, or supporting—for each applicable role.`,
+      `The Contributor Roles Taxonomy (CRediT), developed by the Consortia Advancing Standards in Research Administration Information (CASRAI) and first published in 2015 [3], defines fourteen distinct contributor roles: Conceptualization, Methodology, Software, Validation, Formal Analysis, Investigation, Resources, Data Curation, Writing—Original Draft, Writing—Review & Editing, Visualization, Supervision, Project Administration, and Funding Acquisition. Each contributor can be assigned a degree of contribution—lead, equal, or supporting—for each applicable role.`,
 
-      `CRediT has gained remarkable adoption. Over 5,000 journals now require or encourage CRediT disclosure, and major publishers including Elsevier, Springer Nature, and Cell Press have integrated CRediT into their submission workflows. The taxonomy has been particularly valuable for making visible the contributions of individuals whose work falls outside traditional "author" roles—data curators, software engineers, lab managers, and research administrators.`,
+      `CRediT has gained remarkable adoption. Over 5,000 journals now require or encourage CRediT disclosure [5], and major publishers including Elsevier, Springer Nature, and Cell Press have integrated CRediT into their submission workflows. The taxonomy has been particularly valuable for making visible the contributions of individuals whose work falls outside traditional "author" roles—data curators, software engineers, lab managers, and research administrators [4].`,
 
       `However, CRediT adoption has not fundamentally changed how authorship is displayed. In most implementations, CRediT information appears as a static table at the end of the paper—an afterthought rather than a central organizing principle. The byline at the top remains unchanged: a linear list that implies a ranking. The rich contribution metadata exists but is structurally disconnected from the reading experience.`,
     ],
@@ -44,7 +44,7 @@ export const PAPER_BODY: PaperSection[] = [
     paragraphs: [
       `Current authorship display suffers from several interconnected limitations. First, the linear ordering implies a ranking that may not exist. In team science, contributions are often orthogonal: the person who built the data infrastructure, the person who designed the visualization, the person who wrote the theoretical framework, and the person who led the implementation each contribute indispensably but along entirely different dimensions. Compressing these into positions 1 through N forces a false hierarchy.`,
 
-      `Second, the convention of "first author did most work" and "last author is the PI" is not universal. In mathematics, authors are traditionally listed alphabetically. In economics, ordering conventions vary by subfield. In high-energy physics, collaborations list hundreds of authors alphabetically. Readers from different disciplines routinely misinterpret authorship signals from other fields.`,
+      `Second, the convention of "first author did most work" and "last author is the PI" is not universal. In mathematics, authors are traditionally listed alphabetically. In economics, ordering conventions vary by subfield. In high-energy physics, collaborations list hundreds of authors alphabetically. Readers from different disciplines routinely misinterpret authorship signals from other fields [10].`,
 
       `Third, the static nature of the author list conceals the temporal dynamics of contributions. Projects increasingly involve contributors who participate intensely during one phase but not others—a designer who creates the visual system, an engineer who builds critical components, a policy expert who provides essential guidance. These bounded but essential contributions are invisible in the byline.`,
     ],
@@ -54,11 +54,11 @@ export const PAPER_BODY: PaperSection[] = [
     title: 'Team Science and Rising Author Lists',
     level: 2,
     paragraphs: [
-      `The average number of authors per paper has grown steadily across virtually all scientific fields. In biomedicine, papers with more than fifty authors are no longer unusual, and in fields like particle physics and climate science, author lists routinely exceed one thousand names. Even in traditionally small-team fields like psychology and economics, the median author count has roughly doubled in the past two decades.`,
+      `The average number of authors per paper has grown steadily across virtually all scientific fields [2]. In biomedicine, papers with more than fifty authors are no longer unusual, and in fields like particle physics and climate science, author lists routinely exceed one thousand names. Even in traditionally small-team fields like psychology and economics, the median author count has roughly doubled in the past two decades.`,
 
       `This growth reflects a genuine change in how research happens. Modern scientific problems—from understanding complex systems to building research infrastructure—require deep specialization in design, analysis, engineering, data management, and domain knowledge that no individual or small group possesses. The question is not whether to do team science but how to credit it fairly.`,
 
-      `Current systems fail team science in specific, quantifiable ways: infrastructure contributors (software engineers, data curators, designers) are often listed in the "author positions of least credit." Trainees who make crucial but bounded contributions face pressure to negotiate for first-author status. Senior collaborators who provide essential theoretical guidance cannot be differentiated from those added through gift authorship. A richer attribution framework would reduce these tensions by making the nature and extent of each contribution transparent.`,
+      `Current systems fail team science in specific, quantifiable ways: infrastructure contributors (software engineers, data curators, designers) are often listed in the "author positions of least credit" [7]. Trainees who make crucial but bounded contributions face pressure to negotiate for first-author status [9]. Senior collaborators who provide essential theoretical guidance cannot be differentiated from those added through gift authorship [8]. A richer attribution framework would reduce these tensions by making the nature and extent of each contribution transparent [1, 6].`,
     ],
   },
   {
@@ -66,13 +66,13 @@ export const PAPER_BODY: PaperSection[] = [
     title: 'Data Model',
     level: 2,
     paragraphs: [
-      `Our framework extends the CRediT vocabulary with three additional layers of contribution information. The first layer is section-level contributions: for each section of the manuscript, we record which authors contributed and in what capacity. This mapping reflects the reality of collaborative writing—different authors draft different sections, contribute domain-specific methodology, or provide revisions to particular portions of the text.`,
+      `Our framework extends the CRediT vocabulary [3] with three additional layers of contribution information. The first layer is section-level contributions: for each section of the manuscript, we record which authors contributed and in what capacity. This mapping reflects the reality of collaborative writing—different authors draft different sections, contribute domain-specific methodology, or provide revisions to particular portions of the text.`,
 
       `The second layer is figure-level contributions, documenting who generated data, created visualizations, or designed the presentation for each figure and table. Given that figures often represent the most labor-intensive elements of a paper—and the elements most often reused and cited—attributing them individually adds significant granularity to the contribution record.`,
 
       `The third layer is a project timeline: when each contributor joined the project, key milestones in their participation, and optionally when their active contribution ended. This temporal dimension makes visible the trajectory of a project and the different phases of contribution that characterize modern collaborative research.`,
 
-      `Each author profile includes structured metadata aligned with ORCID standards: institutional affiliations (linked to ROR IDs where available), career stage, technical competencies, and persistent identifiers. Critically, authors control the visibility of their own profile elements—from pronouns and career stage to funding sources and publication metrics—respecting individual privacy preferences while enabling rich displays for those who opt in.`,
+      `Each author profile includes structured metadata aligned with ORCID standards [11]: institutional affiliations (linked to ROR IDs where available), career stage, technical competencies, and persistent identifiers. Critically, authors control the visibility of their own profile elements—from pronouns and career stage to funding sources and publication metrics—respecting individual privacy preferences while enabling rich displays for those who opt in.`,
     ],
   },
   {
@@ -108,7 +108,7 @@ export const PAPER_BODY: PaperSection[] = [
     title: 'Machine-Readable API',
     level: 2,
     paragraphs: [
-      `All contribution metadata is available through a structured API returning JSON-LD compatible responses. This enables integration with institutional repositories, bibliometric systems, research information management platforms, and digital CV tools. Funding agencies can automatically extract contribution data for grant reporting. Research evaluation systems can disaggregate contributions rather than treating all co-authored papers identically.`,
+      `All contribution metadata is available through a structured API returning JSON-LD compatible responses [12]. This enables integration with institutional repositories, bibliometric systems, research information management platforms, and digital CV tools. Funding agencies can automatically extract contribution data for grant reporting. Research evaluation systems can disaggregate contributions rather than treating all co-authored papers identically.`,
 
       `The API exposes endpoints for retrieving complete paper metadata with contributions, individual author profiles, specific contribution records, and aggregate statistics. Each endpoint supports content negotiation, returning JSON for programmatic access and rendered HTML for human consumption. The schema is designed for extension—new contribution dimensions can be added without breaking existing integrations.`,
     ],
