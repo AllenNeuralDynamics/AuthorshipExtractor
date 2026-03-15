@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { Paper } from '../types';
 import { PAPER_BODY } from '../data/paperContent';
 import { avatarColor, initials } from '../utils';
@@ -73,6 +73,40 @@ function AuthorDot({
   );
 }
 
+/** Turn URLs in text into clickable links */
+function linkify(text: string): ReactNode[] {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = urlRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const url = match[1];
+    const isDoi = url.startsWith('https://doi.org/');
+    parts.push(
+      <a
+        key={match.index}
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-journal-600 hover:text-journal-800 underline underline-offset-2 break-all"
+      >
+        {isDoi ? url.replace('https://doi.org/', 'doi:') : url}
+      </a>
+    );
+    lastIndex = match.index + url.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : [text];
+}
+
 export default function PaperBody({ paper, onAuthorSelect }: Props) {
   return (
     <article className="max-w-5xl mx-auto px-6 pb-16">
@@ -122,7 +156,7 @@ export default function PaperBody({ paper, onAuthorSelect }: Props) {
                     key={i}
                     className="text-gray-700 leading-relaxed text-[15px] mb-4 last:mb-0"
                   >
-                    {text}
+                    {linkify(text)}
                   </p>
                 ))}
               </div>

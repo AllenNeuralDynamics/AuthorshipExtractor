@@ -176,29 +176,29 @@ export const PAPER_BODY: PaperSection[] = [
     title: 'References',
     level: 1,
     paragraphs: [
-      `[1] Rennie, D., Yank, V., & Emanuel, L. (1997). When authorship fails: a proposal to make contributors accountable. JAMA, 278(7), 579–585.`,
+      `[1] Rennie, D., Yank, V., & Emanuel, L. (1997). When authorship fails: a proposal to make contributors accountable. JAMA, 278(7), 579–585. https://doi.org/10.1001/jama.1997.03550070071041`,
 
-      `[2] Wuchty, S., Jones, B. F., & Uzzi, B. (2007). The increasing dominance of teams in production of knowledge. Science, 316(5827), 1036–1039.`,
+      `[2] Wuchty, S., Jones, B. F., & Uzzi, B. (2007). The increasing dominance of teams in production of knowledge. Science, 316(5827), 1036–1039. https://doi.org/10.1126/science.1136099`,
 
-      `[3] Brand, A., Allen, L., Altman, M., Hlava, M., & Scott, J. (2015). Beyond authorship: attribution, contribution, collaboration, and credit. Learned Publishing, 28(2), 151–155.`,
+      `[3] Brand, A., Allen, L., Altman, M., Hlava, M., & Scott, J. (2015). Beyond authorship: attribution, contribution, collaboration, and credit. Learned Publishing, 28(2), 151–155. https://doi.org/10.1087/20150211`,
 
-      `[4] Allen, L., Scott, J., Brand, A., Hlava, M., & Altman, M. (2014). Publishing: credit where credit is due. Nature, 508(7496), 312–313.`,
+      `[4] Allen, L., Scott, J., Brand, A., Hlava, M., & Altman, M. (2014). Publishing: credit where credit is due. Nature, 508(7496), 312–313. https://doi.org/10.1038/508312a`,
 
-      `[5] McNutt, M. K., Bradford, M., Drazen, J. M., Hanson, B., Howard, B., Jamieson, K. H., ... & Verma, I. M. (2018). Transparency in authors' contributions and responsibilities to promote integrity in scientific publication. Proceedings of the National Academy of Sciences, 115(11), 2557–2560.`,
+      `[5] McNutt, M. K., Bradford, M., Drazen, J. M., Hanson, B., Howard, B., Jamieson, K. H., ... & Verma, I. M. (2018). Transparency in authors' contributions and responsibilities to promote integrity in scientific publication. Proceedings of the National Academy of Sciences, 115(11), 2557–2560. https://doi.org/10.1073/pnas.1715374115`,
 
-      `[6] Holcombe, A. O. (2019). Contributorship, not authorship: use CRediT to indicate who did what. Publications, 7(3), 48.`,
+      `[6] Holcombe, A. O. (2019). Contributorship, not authorship: use CRediT to indicate who did what. Publications, 7(3), 48. https://doi.org/10.3390/publications7030048`,
 
-      `[7] Larivière, V., Desrochers, N., Macaluso, B., Mongeon, P., Paul-Hus, A., & Sugimoto, C. R. (2016). Contributorship and division of labor in knowledge production. Social Studies of Science, 46(3), 417–435.`,
+      `[7] Larivière, V., Desrochers, N., Macaluso, B., Mongeon, P., Paul-Hus, A., & Sugimoto, C. R. (2016). Contributorship and division of labor in knowledge production. Social Studies of Science, 46(3), 417–435. https://doi.org/10.1177/0306312716650046`,
 
-      `[8] Wren, J. D., Kozak, K. Z., Johnson, K. R., Deakyne, S. J., Schilling, L. M., & Dellavalle, R. P. (2007). The write position: a survey of perceived contributions to papers based on byline position and number of authors. EMBO Reports, 8(11), 988–991.`,
+      `[8] Wren, J. D., Kozak, K. Z., Johnson, K. R., Deakyne, S. J., Schilling, L. M., & Dellavalle, R. P. (2007). The write position: a survey of perceived contributions to papers based on byline position and number of authors. EMBO Reports, 8(11), 988–991. https://doi.org/10.1038/sj.embor.7401095`,
 
-      `[9] Sauermann, H., & Haeussler, C. (2017). Authorship and contribution disclosures. Science Advances, 3(11), e1700404.`,
+      `[9] Sauermann, H., & Haeussler, C. (2017). Authorship and contribution disclosures. Science Advances, 3(11), e1700404. https://doi.org/10.1126/sciadv.1700404`,
 
-      `[10] Birnholtz, J. P. (2006). What does it mean to be an author? The intersection of credit, contribution, and collaboration in science. Journal of the American Society for Information Science and Technology, 57(13), 1758–1770.`,
+      `[10] Birnholtz, J. P. (2006). What does it mean to be an author? The intersection of credit, contribution, and collaboration in science. Journal of the American Society for Information Science and Technology, 57(13), 1758–1770. https://doi.org/10.1002/asi.20380`,
 
-      `[11] Vasilevsky, N. A., Hosseini, M., Teplitzky, S., Ilik, V., Mohammadi, E., Schneider, J., ... & Holmes, K. L. (2021). Is authorship sufficient for today's collaborative research? A call for contributor roles. Accountability in Research, 28(1), 23–43.`,
+      `[11] Vasilevsky, N. A., Hosseini, M., Teplitzky, S., Ilik, V., Mohammadi, E., Schneider, J., ... & Holmes, K. L. (2021). Is authorship sufficient for today's collaborative research? A call for contributor roles. Accountability in Research, 28(1), 23–43. https://doi.org/10.1080/08989621.2020.1779591`,
 
-      `[12] FORCE11 (2016). FORCE11 Scholarly Communication Institute. The FAIR Guiding Principles for scientific data management and stewardship. https://force11.org/`,
+      `[12] FORCE11 (2016). The FAIR Guiding Principles for scientific data management and stewardship. https://doi.org/10.1038/sdata.2016.18`,
     ],
   },
 ];
