@@ -4,7 +4,7 @@ export const mockPaper: Paper = {
   id: 'nj-2026-0142',
   doi: '10.1234/neurojournal.2026.0142',
   title: 'Beyond the Byline: A Multi-Dimensional Framework for Scientific Authorship Attribution in the Era of Team Science',
-  journal: 'NeuroJournal',
+  journal: 'OpenAccess',
   volume: '15',
   issue: '3',
   pages: '412-438',
