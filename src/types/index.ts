@@ -157,7 +157,7 @@ export interface AuthorContribution {
 
 export interface Paper {
   id: string;
-  doi: string;
+  doi?: string;
   title: string;
   journal: string;
   volume?: string;

@@ -5,7 +5,6 @@
 # Author data is stored separately in contributors/ YAML files.
 
 id: authorship-viewer-2026
-doi: "10.1234/authorship-viewer.2026.001"
 title: >
   Making contributions visible: An interactive authorship viewer
   for team science
