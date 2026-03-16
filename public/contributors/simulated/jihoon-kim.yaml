@@ -47,21 +47,18 @@ contribution:
     - role: Validation
       level: supporting
   sectionContributions:
-    - sectionId: fw-api
-      description: Built the API infrastructure, data pipelines, and JSON-LD serialization described in the Machine-Readable API section
-      effortLevel: minor
     - sectionId: fw-model
       description: Implemented the YAML-based contributor data system and validation layer for the data model
       effortLevel: minor
   figureContributions: []
   contributionStatement: >
     Built the data infrastructure, YAML-based contributor pipeline,
-    and deployment system. Implemented data validation and JSON-LD integration.
+    and deployment system. Implemented data validation.
   timeline:
     joinedDate: "2024-06"
     milestones:
       - date: "2024-06"
         event: Joined to build data infrastructure
       - date: "2025-01"
-        event: API infrastructure fully deployed
+        event: Data infrastructure fully deployed
   isCorresponding: false

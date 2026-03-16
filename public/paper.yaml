@@ -106,9 +106,6 @@ sections:
       - id: fw-viz
         title: Visualization Architecture
         type: methods
-      - id: fw-api
-        title: Machine-Readable API
-        type: methods
 
   - id: implementation
     title: "Implementation & Demonstration"
@@ -154,6 +151,3 @@ sections:
       - id: sfig2
         label: Supp. Figure 2
         title: User interface design iterations
-      - id: sfig3
-        label: Supp. Figure 3
-        title: API schema specification

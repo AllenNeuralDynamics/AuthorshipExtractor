@@ -87,7 +87,7 @@ contribution:
   # Which sections of the paper did you contribute to?
   # Available section IDs:
   #   intro, bg-credit, bg-limits, bg-team,
-  #   fw-model, fw-sort, fw-viz, fw-api,
+  #   fw-model, fw-sort, fw-viz,
   #   impl-inline, impl-matrix, impl-timeline,
   #   discussion, references
   sectionContributions:
@@ -111,9 +111,6 @@ contribution:
       effortLevel: lead
     - sectionId: fw-viz
       description: Designed and documented the visualization architecture
-      effortLevel: lead
-    - sectionId: fw-api
-      description: Designed and documented the machine-readable API
       effortLevel: lead
     - sectionId: impl-inline
       description: Built and documented inline contribution highlighting

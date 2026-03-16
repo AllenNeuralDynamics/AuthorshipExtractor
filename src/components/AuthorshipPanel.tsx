@@ -5,7 +5,6 @@ import ContributionMatrix from './ContributionMatrix';
 import SectionContributions from './SectionContributions';
 import ProjectTimeline from './ProjectTimeline';
 import CollaborationGraph from './CollaborationGraph';
-import ApiPanel from './ApiPanel';
 
 // ─── Sort Dimensions ───────────────────────────────────────────
 // Authorship is NOT a 1D vector. We expose many lenses.
@@ -83,7 +82,7 @@ function sortContributions(
 }
 
 // ─── Tab types ─────────────────────────────────────────────────
-type TabId = 'profiles' | 'matrix' | 'graph' | 'sections' | 'timeline' | 'api';
+type TabId = 'profiles' | 'matrix' | 'graph' | 'sections' | 'timeline';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'profiles', label: 'Profiles', icon: '👤' },
@@ -91,7 +90,6 @@ const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'graph', label: 'Collaboration', icon: '🕸️' },
   { id: 'sections', label: 'Section Map', icon: '📑' },
   { id: 'timeline', label: 'Timeline', icon: '📅' },
-  { id: 'api', label: 'API', icon: '⚡' },
 ];
 
 // ─── Main Component ────────────────────────────────────────────
@@ -388,10 +386,6 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
 
             {activeTab === 'timeline' && (
               <ProjectTimeline paper={paper} onAuthorSelect={onAuthorSelect} />
-            )}
-
-            {activeTab === 'api' && (
-              <ApiPanel />
             )}
           </div>
         </div>

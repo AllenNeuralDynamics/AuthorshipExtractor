@@ -8,7 +8,7 @@ profile:
   bio: >
     Computational researcher developing data models and type systems
     for structured scholarly metadata. Designed the contribution data
-    architecture and machine-readable API for this framework.
+    architecture and machine-readable metadata for this framework.
   affiliations:
     - institution: Stanford University
       department: Department of Computer Science
@@ -65,9 +65,6 @@ contribution:
     - sectionId: fw-model
       description: Designed the three-layer contribution data model (section-level, figure-level, and timeline) extending CRediT with ORCID-aligned author profiles
       effortLevel: lead
-    - sectionId: fw-api
-      description: Designed the JSON-LD compatible API with endpoints for papers, authors, contributions, and content-negotiated responses
-      effortLevel: lead
     - sectionId: fw-sort
       description: Developed the mathematical framework for multi-dimensional ordering across 10+ sort dimensions
       effortLevel: major
@@ -82,12 +79,10 @@ contribution:
       description: Designed the CRediT matrix visualization encoding (color intensity mapping for lead/equal/supporting)
     - figureId: fig6
       description: Generated the sort dimension comparison analysis showing how different orderings reveal different facets
-    - figureId: sfig3
-      description: Created the complete API schema specification with JSON-LD examples
   contributionStatement: >
-    Designed the data model and API architecture, implemented the type system
+    Designed the data model, implemented the type system
     and sort algorithms, and co-wrote the manuscript focusing on framework
-    and API sections.
+    sections.
   timeline:
     joinedDate: "2023-06"
     milestones:

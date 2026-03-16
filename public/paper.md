@@ -73,13 +73,6 @@ The **Section Map** shows which authors contributed to which manuscript sections
 
 The **Timeline** view displays each author's engagement with the project over time, including milestones, making visible the temporal structure that the linear byline completely hides. A reader can see at a glance who was involved from the beginning, who joined for a specific phase, and how the team evolved over the project's lifetime.
 
-<!-- section: fw-api -->
-## Machine-Readable API
-
-All contribution metadata is available through a structured API returning JSON-LD compatible responses [12]. This enables integration with institutional repositories, bibliometric systems, research information management platforms, and digital CV tools. Funding agencies can automatically extract contribution data for grant reporting. Research evaluation systems can disaggregate contributions rather than treating all co-authored papers identically.
-
-The API exposes endpoints for retrieving complete paper metadata with contributions, individual author profiles, specific contribution records, and aggregate statistics. Each endpoint supports content negotiation, returning JSON for programmatic access and rendered HTML for human consumption. The schema is designed for extension—new contribution dimensions can be added without breaking existing integrations.
-
 <!-- section: impl-inline -->
 ## Inline Contribution Highlighting
 
