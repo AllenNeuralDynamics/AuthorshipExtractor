@@ -54,9 +54,9 @@ Each author profile includes structured metadata aligned with ORCID standards [1
 <!-- section: fw-sort -->
 ## Multi-Dimensional Ordering
 
-The central design principle of our framework is that there is no single correct author ordering. Instead, the system supports dynamic re-sorting along multiple dimensions: alphabetical (forward and reverse), career seniority (both directions), number of CRediT roles, number of section contributions, number of figure contributions, project join date (both directions), institutional grouping, and—critically—by any specific CRediT role.
+The central design principle of our framework is that there is no single correct author ordering. Instead, the system supports dynamic re-sorting along multiple dimensions: alphabetical, number of CRediT roles, project join date, and—critically—by any specific CRediT role.
 
-This last capability is particularly powerful. A reader interested in who led the conceptualization can sort by that role and immediately see the relevant contributors ranked by lead, equal, and supporting levels. A hiring committee evaluating a candidate's software contributions can sort by the Software role. A student looking for methodological expertise can sort by Methodology. Each sort dimension reveals a different facet of the contribution landscape.
+This last capability is particularly powerful. A reader interested in who led the conceptualization can sort by that role and immediately see the relevant contributors ranked by lead, equal, and supporting contribution levels. A hiring committee evaluating a candidate's software contributions can sort by the Software role. A student looking for methodological expertise can sort by Methodology. Each sort dimension reveals a different facet of the contribution landscape.
 
 By making re-sorting immediate and effortless, we shift the implicit message from "these authors are ranked" to "these authors contributed along multiple dimensions that you can explore." The default alphabetical ordering reinforces this philosophy: when no ordering is privileged, readers naturally engage with the sort controls to explore the multi-dimensional contribution space.
 
