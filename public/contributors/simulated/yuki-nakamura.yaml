@@ -74,11 +74,7 @@ contribution:
     - sectionId: discussion
       description: Wrote about structured contribution data enabling nuanced research evaluation by funding agencies and hiring committees
       effortLevel: minor
-  figureContributions:
-    - figureId: fig3
-      description: Designed the CRediT matrix visualization encoding (color intensity mapping for lead/equal/supporting)
-    - figureId: fig6
-      description: Generated the sort dimension comparison analysis showing how different orderings reveal different facets
+  figureContributions: []
   contributionStatement: >
     Designed the data model, implemented the type system
     and sort algorithms, and co-wrote the manuscript focusing on framework

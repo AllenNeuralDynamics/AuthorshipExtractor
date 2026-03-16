@@ -120,34 +120,7 @@ sections:
       - id: impl-timeline
         title: Project Timeline
         type: results
-    figures:
-      - id: fig2
-        label: Figure 2
-        title: Multi-dimensional authorship display architecture
-      - id: fig3
-        label: Figure 3
-        title: CRediT contribution matrix visualization
-      - id: fig4
-        label: Figure 4
-        title: Inline section-level contribution highlighting
-      - id: fig5
-        label: Figure 5
-        title: Project timeline with author participation windows
-      - id: fig6
-        label: Figure 6
-        title: Comparison of sort dimensions revealing different contribution patterns
 
   - id: discussion
     title: Discussion
     type: discussion
-
-  - id: supplementary
-    title: Supplementary Materials
-    type: supplementary
-    figures:
-      - id: sfig1
-        label: Supp. Figure 1
-        title: Extended CRediT role definitions and examples
-      - id: sfig2
-        label: Supp. Figure 2
-        title: User interface design iterations

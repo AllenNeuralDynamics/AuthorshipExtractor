@@ -70,9 +70,7 @@ contribution:
     - sectionId: discussion
       description: Contributed theoretical context on research evaluation reform, the documentation burden, and implications for funding agencies and hiring committees
       effortLevel: minor
-  figureContributions:
-    - figureId: fig6
-      description: Advised on sort dimension comparison methodology and its implications for research evaluation
+  figureContributions: []
   contributionStatement: >
     Contributed the theoretical framework for multi-dimensional attribution,
     provided expertise on research evaluation policy, and gave critical

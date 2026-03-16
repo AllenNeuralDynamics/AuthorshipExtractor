@@ -85,11 +85,7 @@ contribution:
     - sectionId: discussion
       description: Wrote the discussion synthesizing implications for research evaluation, authorship disputes, and infrastructure contributors
       effortLevel: lead
-  figureContributions:
-    - figureId: fig2
-      description: Designed the overall multi-dimensional authorship display architecture
-    - figureId: fig6
-      description: Guided the design of the sort dimension comparison showing how different orderings reveal different contribution facets
+  figureContributions: []
   contributionStatement: >
     Conceived the project, secured funding, designed the multi-dimensional
     data model, supervised all work, and wrote the introduction and discussion.

@@ -86,19 +86,7 @@ contribution:
     - sectionId: discussion
       description: Wrote about user experience implications and the documentation burden on authors
       effortLevel: minor
-  figureContributions:
-    - figureId: fig2
-      description: Created architecture diagram and component hierarchy panels
-    - figureId: fig3
-      description: Built the interactive CRediT matrix visualization
-    - figureId: fig4
-      description: Implemented inline highlighting demo panels
-    - figureId: fig5
-      description: Generated timeline visualization with author participation windows
-    - figureId: sfig1
-      description: Created extended CRediT role reference figure
-    - figureId: sfig2
-      description: Documented UI design iterations
+  figureContributions: []
   contributionStatement: >
     Led the full-stack implementation of the interactive authorship display,
     built all visualization components, and wrote the first draft of the manuscript.

@@ -52,9 +52,7 @@ contribution:
     - sectionId: impl-timeline
       description: Built the interactive timeline visualization showing author participation windows and milestones
       effortLevel: minor
-  figureContributions:
-    - figureId: sfig2
-      description: Created UI iteration screenshots documenting the design evolution
+  figureContributions: []
   contributionStatement: >
     Built interactive UI components for the inline annotation system
     and timeline visualization, with a focus on accessibility features.

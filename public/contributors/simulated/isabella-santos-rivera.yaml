@@ -58,11 +58,7 @@ contribution:
     - sectionId: impl-inline
       description: Designed the inline contribution highlighting visual treatment — colored margin dots, hover tooltips, and layered information architecture
       effortLevel: major
-  figureContributions:
-    - figureId: fig2
-      description: Created the visual design system and multi-dimensional authorship display layout
-    - figureId: fig4
-      description: Designed the inline highlighting color scheme, annotation style, and author-specific palette
+  figureContributions: []
   contributionStatement: >
     Led the visual design of all authorship display components, created the
     design system and interaction patterns, and designed the inline
