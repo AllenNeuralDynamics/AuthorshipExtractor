@@ -1,0 +1,11 @@
+# Simulated contributor manifest — fictional 7-author team for demonstration.
+# These files mirror the exact same YAML format used by real contributors.
+
+contributors:
+  - chukwuemeka-okafor.yaml
+  - yuki-nakamura.yaml
+  - isabella-santos-rivera.yaml
+  - jihoon-kim.yaml
+  - alexei-petrov.yaml
+  - diane-williams.yaml
+  - mei-lin-chen.yaml

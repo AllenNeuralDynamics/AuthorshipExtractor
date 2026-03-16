@@ -81,6 +81,7 @@ export function platformIcon(platform: string): string {
     case 'mastodon': return '🦣';
     case 'researchgate': return '🔬';
     case 'linkedin': return '💼';
+    case 'email': return '✉️';
     default: return '🔗';
   }
 }
@@ -96,6 +97,7 @@ export function platformLabel(platform: string): string {
     case 'mastodon': return 'Mastodon';
     case 'researchgate': return 'ResearchGate';
     case 'linkedin': return 'LinkedIn';
+    case 'email': return 'Email';
     default: return platform;
   }
 }

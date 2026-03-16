@@ -1,0 +1,6 @@
+# Contributor manifest — lists all contributor YAML files.
+# When you add yourself, append your filename to this list.
+# The app reads this file to discover all contributors.
+
+contributors:
+  - jerome-lecoq.yaml

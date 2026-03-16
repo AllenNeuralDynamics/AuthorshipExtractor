@@ -1,0 +1,71 @@
+profile:
+  id: author-petrov
+  firstName: Alexei
+  lastName: Petrov
+  orcid: "0000-0001-6789-0123"
+  careerStage: Graduate Student
+  bio: >
+    Third-year graduate student in human-computer interaction. Built
+    interactive UI components for the inline annotation system and
+    project timeline, with a focus on accessibility.
+  affiliations:
+    - institution: Stanford University
+      department: Human-Computer Interaction Group
+      role: Graduate Student
+      country: USA
+      isCurrent: true
+  socialLinks:
+    - platform: orcid
+      url: https://orcid.org/0000-0001-6789-0123
+    - platform: github
+      url: https://github.com/apetrov-hw
+      username: apetrov-hw
+  techniques: []
+  fundingSources:
+    - funder: Stanford Bio-X
+      grantId: BX-2025-grad
+      grantTitle: Bio-X Graduate Fellowship
+      role: Trainee
+  publicationCount: 3
+  hIndex: 2
+  visibility:
+    showPronouns: false
+    showBio: true
+    showFunding: true
+    showMetrics: false
+    showSocialLinks: true
+    showTechniques: false
+    showCareerStage: true
+
+contribution:
+  creditRoles:
+    - role: Resources
+      level: lead
+    - role: Methodology
+      level: supporting
+    - role: Software
+      level: supporting
+  sectionContributions:
+    - sectionId: impl-inline
+      description: Built the interactive inline annotation components — hover tooltips, click navigation, and the layered information architecture described in this section
+      effortLevel: major
+    - sectionId: impl-timeline
+      description: Built the interactive timeline visualization with drag and zoom showing author participation windows
+      effortLevel: minor
+  figureContributions:
+    - figureId: sfig2
+      description: Created UI iteration screenshots documenting the design evolution
+  contributionStatement: >
+    Built interactive UI components for the inline annotation system
+    and timeline visualization, with a focus on accessibility features.
+  timeline:
+    joinedDate: "2023-05"
+    leftDate: "2024-04"
+    milestones:
+      - date: "2023-05"
+        event: Began interactive component development
+      - date: "2023-11"
+        event: Interactive components validated and integrated
+  isCorresponding: false
+  equalContribution: false
+  authorOrder: 5

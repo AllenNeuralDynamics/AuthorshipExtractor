@@ -131,13 +131,14 @@ export default function SectionContributions({ paper, onAuthorSelect }: Props) {
                         <span className="text-xs text-gray-500">{author.firstName} {author.lastName}:</span>
                         <span className="text-xs text-gray-700 ml-1">{sc.description}</span>
                       </div>
-                      {sc.effortPercent !== undefined && (
-                        <div className="flex-shrink-0 flex items-center gap-1">
-                          <div className="w-16 h-1 bg-gray-200 rounded-full overflow-hidden">
-                            <div className="h-full bg-journal-400 rounded-full" style={{ width: `${sc.effortPercent}%` }} />
-                          </div>
-                          <span className="text-[9px] text-gray-400 w-7 text-right">{sc.effortPercent}%</span>
-                        </div>
+                      {sc.effortLevel && (
+                        <span className={`flex-shrink-0 px-1.5 py-0.5 text-[9px] font-semibold rounded-full ${
+                          sc.effortLevel === 'lead' ? 'bg-journal-100 text-journal-700' :
+                          sc.effortLevel === 'major' ? 'bg-journal-50 text-journal-600' :
+                          'bg-gray-100 text-gray-500'
+                        }`}>
+                          {sc.effortLevel}
+                        </span>
                       )}
                     </div>
                   );

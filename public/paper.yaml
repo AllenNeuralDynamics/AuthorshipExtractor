@@ -1,0 +1,159 @@
+# ============================================================
+# Paper metadata — loaded at runtime by the viewer
+# ============================================================
+# This file contains all manuscript-level metadata.
+# Author data is stored separately in contributors/ YAML files.
+
+id: nj-2026-0142
+doi: "10.1234/neurojournal.2026.0142"
+title: >
+  Beyond the byline: A multi-dimensional framework for scientific
+  authorship attribution in the era of team science
+journal: OpenAccess
+volume: "15"
+issue: "3"
+pages: 412-438
+publishedDate: "2026-02-20"
+receivedDate: "2025-08-14"
+acceptedDate: "2026-01-05"
+
+abstract: >
+  The scientific author list has remained a linear, ordered sequence of names
+  for over three centuries—despite radical changes in how research is conducted.
+  This compression of multi-dimensional contributions into a one-dimensional
+  ranking creates well-documented tensions: authorship disputes, gift
+  authorship, invisibility of infrastructure contributors, and incentive
+  structures that actively hinder collaborative team science. We present a
+  multi-dimensional authorship framework that allows readers, institutions,
+  and metrics systems to explore contributions along multiple axes
+  simultaneously. Building on the CRediT (Contributor Roles Taxonomy)
+  standard, our framework extends attribution with section-level
+  contributions, project timelines, and rich author profiles. Critically,
+  we reject the premise that any single author ordering is definitive—instead,
+  the reader can dynamically re-sort by alphabetical order, career stage,
+  CRediT roles, institutional grouping, or project join date. This paper
+  simultaneously describes the framework and serves as a live demonstration:
+  the interactive authorship display above and the contribution highlights
+  embedded throughout this text illustrate how rethinking author display can
+  bring transparency, reduce conflict, and properly credit the diverse
+  contributions that make modern science possible.
+
+keywords:
+  - authorship
+  - CRediT taxonomy
+  - team science
+  - contributor roles
+  - scholarly communication
+  - open science
+  - research attribution
+  - multi-dimensional authorship
+  - academic credit
+  - collaboration
+
+openAccess: true
+license: CC BY 4.0
+
+dataAvailability: >
+  All raw electrophysiology and imaging data are deposited on DANDI
+  (accession: 000847). Processed data and analysis notebooks are available at
+  https://github.com/chen-lab/pfc-hpc-layers.
+
+codeAvailability: >
+  Custom Python analysis pipeline and computational models are available at
+  https://github.com/chen-lab/pfc-hpc-layers under MIT license.
+
+# ============================================================
+# Manuscript sections
+# ============================================================
+sections:
+  - id: abstract
+    title: Abstract
+    type: abstract
+
+  - id: intro
+    title: Introduction
+    type: introduction
+
+  - id: background
+    title: Background
+    type: introduction
+    subsections:
+      - id: bg-credit
+        title: The CRediT Taxonomy
+        type: introduction
+      - id: bg-limits
+        title: Limitations of Current Approaches
+        type: introduction
+      - id: bg-team
+        title: Team Science and Rising Author Lists
+        type: introduction
+    figures:
+      - id: fig-author-growth
+        label: Figure 1
+        title: Mean number of authors per paper in biomedical sciences (2003–2025)
+        component: AuthorCountGrowth
+
+  - id: framework
+    title: A Multi-Dimensional Framework
+    type: methods
+    subsections:
+      - id: fw-model
+        title: Data Model
+        type: methods
+      - id: fw-sort
+        title: Multi-Dimensional Ordering
+        type: methods
+      - id: fw-viz
+        title: Visualization Architecture
+        type: methods
+      - id: fw-api
+        title: Machine-Readable API
+        type: methods
+
+  - id: implementation
+    title: "Implementation & Demonstration"
+    type: results
+    subsections:
+      - id: impl-inline
+        title: Inline Contribution Highlighting
+        type: results
+      - id: impl-matrix
+        title: Contribution Matrix
+        type: results
+      - id: impl-timeline
+        title: Project Timeline
+        type: results
+    figures:
+      - id: fig2
+        label: Figure 2
+        title: Multi-dimensional authorship display architecture
+      - id: fig3
+        label: Figure 3
+        title: CRediT contribution matrix visualization
+      - id: fig4
+        label: Figure 4
+        title: Inline section-level contribution highlighting
+      - id: fig5
+        label: Figure 5
+        title: Project timeline with author participation windows
+      - id: fig6
+        label: Figure 6
+        title: Comparison of sort dimensions revealing different contribution patterns
+
+  - id: discussion
+    title: Discussion
+    type: discussion
+
+  - id: supplementary
+    title: Supplementary Materials
+    type: supplementary
+    figures:
+      - id: sfig1
+        label: Supp. Figure 1
+        title: Extended CRediT role definitions and examples
+      - id: sfig2
+        label: Supp. Figure 2
+        title: User interface design iterations
+      - id: sfig3
+        label: Supp. Figure 3
+        title: API schema specification

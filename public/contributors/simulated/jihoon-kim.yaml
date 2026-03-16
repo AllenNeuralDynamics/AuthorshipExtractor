@@ -1,0 +1,69 @@
+profile:
+  id: author-kim
+  firstName: Jihoon
+  lastName: Kim
+  pronouns: he/him
+  orcid: "0000-0003-5678-9012"
+  careerStage: Research Engineer
+  bio: >
+    Research software engineer specializing in web infrastructure and
+    data pipelines. Built the deployment infrastructure, YAML-based
+    contributor system, and JSON-LD integration for the framework.
+  affiliations:
+    - institution: Stanford University
+      department: Stanford Libraries / Research Data Services
+      role: Research Software Engineer
+      country: USA
+      isCurrent: true
+  socialLinks:
+    - platform: github
+      url: https://github.com/jihoonkim-eng
+      username: jihoonkim-eng
+    - platform: orcid
+      url: https://orcid.org/0000-0003-5678-9012
+    - platform: website
+      url: https://jihoonkim.dev
+  techniques: []
+  fundingSources: []
+  publicationCount: 12
+  hIndex: 8
+  visibility:
+    showPronouns: true
+    showBio: true
+    showFunding: false
+    showMetrics: true
+    showSocialLinks: true
+    showTechniques: false
+    showCareerStage: true
+
+contribution:
+  creditRoles:
+    - role: Software
+      level: equal
+    - role: Data Curation
+      level: lead
+    - role: Resources
+      level: equal
+    - role: Validation
+      level: supporting
+  sectionContributions:
+    - sectionId: fw-api
+      description: Built the API infrastructure, data pipelines, and JSON-LD serialization described in the Machine-Readable API section
+      effortLevel: minor
+    - sectionId: fw-model
+      description: Implemented the YAML-based contributor data system and validation layer for the data model
+      effortLevel: minor
+  figureContributions: []
+  contributionStatement: >
+    Built the data infrastructure, YAML-based contributor pipeline,
+    and deployment system. Implemented data validation and JSON-LD integration.
+  timeline:
+    joinedDate: "2024-06"
+    milestones:
+      - date: "2024-06"
+        event: Joined to build data infrastructure
+      - date: "2025-01"
+        event: API infrastructure fully deployed
+  isCorresponding: false
+  equalContribution: false
+  authorOrder: 4

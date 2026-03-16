@@ -1,63 +1,11 @@
 /**
- * Mock API layer – simulates a REST API for the journal
- * In a real system, these would be actual fetch calls
- */
-import { mockPaper } from '../data/mockPaper';
-import type { Paper, AuthorProfile, AuthorContribution } from '../types';
-
-// Simulated network delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
-export const api = {
-  /** GET /api/papers/:id */
-  async getPaper(id: string): Promise<Paper> {
-    await delay(300);
-    if (id !== mockPaper.id) throw new Error('Paper not found');
-    return mockPaper;
-  },
-
-  /** GET /api/papers/:id/authors */
-  async getPaperAuthors(paperId: string): Promise<AuthorProfile[]> {
-    await delay(200);
-    if (paperId !== mockPaper.id) throw new Error('Paper not found');
-    return mockPaper.authors;
-  },
-
-  /** GET /api/papers/:id/contributions */
-  async getPaperContributions(paperId: string): Promise<AuthorContribution[]> {
-    await delay(200);
-    if (paperId !== mockPaper.id) throw new Error('Paper not found');
-    return mockPaper.contributions;
-  },
-
-  /** GET /api/authors/:id */
-  async getAuthor(authorId: string): Promise<AuthorProfile | undefined> {
-    await delay(150);
-    return mockPaper.authors.find(a => a.id === authorId);
-  },
-
-  /** GET /api/papers/:id/contributions/:authorId */
-  async getAuthorContribution(paperId: string, authorId: string): Promise<AuthorContribution | undefined> {
-    await delay(150);
-    if (paperId !== mockPaper.id) throw new Error('Paper not found');
-    return mockPaper.contributions.find(c => c.authorId === authorId);
-  },
-
-  /** PATCH /api/authors/:id/visibility — author controls their own visibility */
-  async updateAuthorVisibility(
-    authorId: string,
-    visibility: Partial<AuthorProfile['visibility']>
-  ): Promise<AuthorProfile['visibility']> {
-    await delay(200);
-    const author = mockPaper.authors.find(a => a.id === authorId);
-    if (!author) throw new Error('Author not found');
-    Object.assign(author.visibility, visibility);
-    return author.visibility;
-  },
-};
-
-/**
- * API endpoint documentation (for display purposes in the UI)
+ * API endpoint documentation (for display purposes in the UI).
+ * Describes the REST API a real journal platform would expose.
+ *
+ * NOTE: This file is documentation only — it is not imported by the
+ * application data pipeline. All data loading happens via YAML files
+ * in loadContributors.ts. This module is used solely by ApiPanel.tsx
+ * to render the "API" tab.
  */
 export const apiEndpoints = [
   {

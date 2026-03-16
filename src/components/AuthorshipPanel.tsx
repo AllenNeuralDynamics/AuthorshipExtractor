@@ -4,6 +4,7 @@ import { avatarColor, initials, contributionColor, ALL_CREDIT_ROLES, CREDIT_ROLE
 import ContributionMatrix from './ContributionMatrix';
 import SectionContributions from './SectionContributions';
 import ProjectTimeline from './ProjectTimeline';
+import CollaborationGraph from './CollaborationGraph';
 import ApiPanel from './ApiPanel';
 
 // ─── Sort Dimensions ───────────────────────────────────────────
@@ -54,6 +55,10 @@ const CREDIT_SORT_OPTIONS: SortOption[] = ALL_CREDIT_ROLES.map(role => ({
 
 const ALL_SORT_OPTIONS = [...MAIN_SORT_OPTIONS, ...CREDIT_SORT_OPTIONS];
 
+/**
+ * Career stage seniority ranking — higher number = more senior.
+ * Used for "Senior first" / "Junior first" sort dimensions.
+ */
 const CAREER_RANK: Record<string, number> = {
   'Undergraduate': 0, 'Graduate Student': 1, 'PhD Candidate': 2,
   'Postdoctoral Researcher': 3, 'Research Engineer': 4, 'Lab Manager': 5,
@@ -61,8 +66,14 @@ const CAREER_RANK: Record<string, number> = {
   'Full Professor': 9, 'Industry Researcher': 10, 'Emeritus': 11,
 };
 
+/** CRediT contribution level ranking — used for per-role sorting. */
 const LEVEL_RANK: Record<string, number> = { lead: 3, equal: 2, supporting: 1 };
 
+/**
+ * Sort author contributions by the given sort key.
+ * For CRediT role sorts ("credit:RoleName"), ranks by lead > equal > supporting.
+ * Falls back to alphabetical for ties.
+ */
 function sortContributions(
   contributions: AuthorContribution[],
   authors: Paper['authors'],
@@ -115,11 +126,12 @@ function sortContributions(
 }
 
 // ─── Tab types ─────────────────────────────────────────────────
-type TabId = 'profiles' | 'matrix' | 'sections' | 'timeline' | 'api';
+type TabId = 'profiles' | 'matrix' | 'graph' | 'sections' | 'timeline' | 'api';
 
 const TABS: { id: TabId; label: string; icon: string }[] = [
   { id: 'profiles', label: 'Profiles', icon: '👤' },
   { id: 'matrix', label: 'CRediT Matrix', icon: '🔵' },
+  { id: 'graph', label: 'Collaboration', icon: '🕸️' },
   { id: 'sections', label: 'Section Map', icon: '📑' },
   { id: 'timeline', label: 'Timeline', icon: '📅' },
   { id: 'api', label: 'API', icon: '⚡' },
@@ -289,9 +301,13 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
           </div>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-journal-600 hover:text-journal-800 hover:bg-journal-50 rounded-lg transition-colors"
+            className={`flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-full transition-all duration-200 shadow-sm ${
+              expanded
+                ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-journal-600 text-white hover:bg-journal-700 hover:shadow-md animate-[pulse_3s_ease-in-out_2]'
+            }`}
           >
-            {expanded ? 'Collapse' : 'Explore contributions'}
+            {expanded ? 'Collapse' : '✦ Explore contributions'}
             <span className={`transition-transform duration-200 ${expanded ? 'rotate-180' : ''}`}>▾</span>
           </button>
         </div>
@@ -394,6 +410,10 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
 
             {activeTab === 'matrix' && (
               <ContributionMatrix paper={paper} onAuthorSelect={onAuthorSelect} />
+            )}
+
+            {activeTab === 'graph' && (
+              <CollaborationGraph paper={paper} onAuthorSelect={onAuthorSelect} />
             )}
 
             {activeTab === 'sections' && (

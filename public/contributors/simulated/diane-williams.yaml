@@ -1,0 +1,89 @@
+profile:
+  id: author-williams
+  firstName: Diane
+  lastName: Williams
+  pronouns: she/her
+  orcid: "0000-0002-7890-1234"
+  careerStage: Full Professor
+  bio: >
+    Research evaluation scholar and scientometrician. Studies how
+    attribution systems influence collaboration decisions and career
+    outcomes. Provided theoretical expertise on CRediT taxonomy policy
+    and research evaluation reform.
+  affiliations:
+    - institution: Columbia University
+      department: Department of Information Science
+      role: Professor
+      country: USA
+      isCurrent: true
+    - institution: Research on Research Institute
+      role: External Collaborator
+      country: USA
+      isCurrent: true
+  socialLinks:
+    - platform: orcid
+      url: https://orcid.org/0000-0002-7890-1234
+    - platform: google-scholar
+      url: https://scholar.google.com/citations?user=example7
+    - platform: website
+      url: https://williamslab.columbia.edu
+  techniques: []
+  fundingSources:
+    - funder: NSF
+      grantId: SES-2025-001
+      grantTitle: Measuring and rewarding diverse contributions in team science
+      role: PI
+    - funder: Sloan Foundation
+      grantId: G-2023-456
+      grantTitle: Rethinking scholarly credit in team science
+      role: Co-PI
+  publicationCount: 124
+  hIndex: 56
+  visibility:
+    showPronouns: true
+    showBio: true
+    showFunding: true
+    showMetrics: true
+    showSocialLinks: true
+    showTechniques: false
+    showCareerStage: true
+
+contribution:
+  creditRoles:
+    - role: Conceptualization
+      level: supporting
+    - role: Methodology
+      level: supporting
+    - role: "Writing – Review & Editing"
+      level: equal
+    - role: Supervision
+      level: supporting
+    - role: Funding Acquisition
+      level: supporting
+  sectionContributions:
+    - sectionId: bg-credit
+      description: Provided expertise on CRediT taxonomy history — its adoption by 5,000+ journals and integration into publisher workflows
+      effortLevel: minor
+    - sectionId: bg-team
+      description: Contributed analysis of team science growth trends and the citation evidence from Wuchty, Jones & Uzzi
+      effortLevel: minor
+    - sectionId: discussion
+      description: Contributed theoretical context on research evaluation reform, the documentation burden, and implications for funding agencies and hiring committees
+      effortLevel: minor
+  figureContributions:
+    - figureId: fig6
+      description: Advised on sort dimension comparison methodology and its implications for research evaluation
+  contributionStatement: >
+    Contributed the theoretical framework for multi-dimensional attribution,
+    provided expertise on research evaluation policy, and gave critical
+    feedback on the manuscript.
+  timeline:
+    joinedDate: "2024-01"
+    milestones:
+      - date: "2024-01"
+        event: Joined as research evaluation policy advisor
+      - date: "2025-08"
+        event: Final manuscript review
+  isCorresponding: false
+  equalContribution: false
+  authorOrder: 6

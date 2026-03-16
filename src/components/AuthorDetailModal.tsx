@@ -172,16 +172,14 @@ export default function AuthorDetailModal({ author, contribution, paper, onClose
                         </p>
                         <p className="text-sm text-gray-700 mt-0.5">{sc.description}</p>
                       </div>
-                      {sc.effortPercent !== undefined && (
-                        <div className="flex-shrink-0 text-right">
-                          <div className="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                            <div
-                              className="h-full bg-journal-500 rounded-full"
-                              style={{ width: `${sc.effortPercent}%` }}
-                            />
-                          </div>
-                          <p className="text-[10px] text-gray-400 mt-0.5">{sc.effortPercent}%</p>
-                        </div>
+                      {sc.effortLevel && (
+                        <span className={`flex-shrink-0 px-2 py-0.5 text-[10px] font-semibold rounded-full ${
+                          sc.effortLevel === 'lead' ? 'bg-journal-100 text-journal-700' :
+                          sc.effortLevel === 'major' ? 'bg-journal-50 text-journal-600' :
+                          'bg-gray-100 text-gray-500'
+                        }`}>
+                          {sc.effortLevel}
+                        </span>
                       )}
                     </div>
                   ))}
@@ -216,33 +214,6 @@ export default function AuthorDetailModal({ author, contribution, paper, onClose
                       <p className="text-sm text-gray-700">{ms.event}</p>
                     </div>
                   ))}
-                </div>
-              </div>
-            )}
-
-            {/* Techniques */}
-            {author.visibility.showTechniques && author.techniques.length > 0 && (
-              <div>
-                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Techniques & Skills</h3>
-                <div className="flex flex-wrap gap-2">
-                  {author.techniques.map((tech) => {
-                    const catColors: Record<string, string> = {
-                      experimental: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-                      computational: 'bg-violet-50 text-violet-700 border-violet-200',
-                      analytical: 'bg-amber-50 text-amber-700 border-amber-200',
-                      clinical: 'bg-rose-50 text-rose-700 border-rose-200',
-                      imaging: 'bg-sky-50 text-sky-700 border-sky-200',
-                    };
-                    return (
-                      <span
-                        key={tech.name}
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg border ${catColors[tech.category] || 'bg-gray-50 text-gray-700 border-gray-200'}`}
-                      >
-                        {tech.name}
-                        {tech.proficiency === 'expert' && <span className="text-[9px]">★</span>}
-                      </span>
-                    );
-                  })}
                 </div>
               </div>
             )}

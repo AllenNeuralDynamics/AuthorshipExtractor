@@ -53,7 +53,7 @@ export interface FundingSource {
 }
 
 export interface SocialLink {
-  platform: 'orcid' | 'google-scholar' | 'twitter' | 'github' | 'website' | 'bluesky' | 'mastodon' | 'researchgate' | 'linkedin';
+  platform: 'orcid' | 'google-scholar' | 'twitter' | 'github' | 'website' | 'bluesky' | 'mastodon' | 'researchgate' | 'linkedin' | 'email';
   url: string;
   username?: string;
 }
@@ -76,7 +76,6 @@ export interface AuthorProfile {
   affiliations: Affiliation[];
   socialLinks: SocialLink[];
   techniques: Technique[];
-  researchInterests: string[];
   fundingSources: FundingSource[];
   publicationCount?: number;
   hIndex?: number;
@@ -110,6 +109,8 @@ export interface FigureReference {
   label: string; // e.g. "Figure 3"
   title: string;
   thumbnailUrl?: string;
+  /** Name of the React component to render this figure inline (if interactive). */
+  component?: string;
 }
 
 // ============================================================
@@ -121,10 +122,12 @@ export interface CreditContribution {
   level: ContributionLevel;
 }
 
+export type EffortLevel = 'lead' | 'major' | 'minor';
+
 export interface SectionContribution {
   sectionId: string;
   description: string;
-  effortPercent?: number; // 0-100, optional self-reported effort
+  effortLevel?: EffortLevel;
 }
 
 export interface FigureContribution {

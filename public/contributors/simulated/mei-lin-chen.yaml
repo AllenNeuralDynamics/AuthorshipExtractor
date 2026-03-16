@@ -1,0 +1,108 @@
+profile:
+  id: author-chen
+  firstName: Mei-Lin
+  lastName: Chen
+  pronouns: she/her
+  orcid: "0000-0002-1234-5678"
+  careerStage: Associate Professor
+  bio: >
+    Scholarly communication researcher studying how attribution systems
+    shape collaboration incentives. Led the design of this multi-dimensional
+    authorship framework and secured funding for its development.
+  affiliations:
+    - institution: Stanford University
+      department: Department of Communication
+      role: Associate Professor
+      country: USA
+      isCurrent: true
+    - institution: Center for Open Science
+      role: Affiliated Researcher
+      country: USA
+      isCurrent: true
+  socialLinks:
+    - platform: orcid
+      url: https://orcid.org/0000-0002-1234-5678
+    - platform: google-scholar
+      url: https://scholar.google.com/citations?user=example1
+    - platform: twitter
+      url: https://twitter.com/meilinchen_meta
+      username: "@meilinchen_meta"
+    - platform: github
+      url: https://github.com/chen-lab
+      username: chen-lab
+    - platform: website
+      url: https://chenlab.stanford.edu
+  techniques: []
+  fundingSources:
+    - funder: NSF
+      grantId: SES-2024-1234
+      grantTitle: Multi-dimensional frameworks for research attribution
+      role: PI
+    - funder: Sloan Foundation
+      grantId: G-2023-456
+      grantTitle: Rethinking scholarly credit in team science
+      role: PI
+  publicationCount: 87
+  hIndex: 42
+  visibility:
+    showPronouns: true
+    showBio: true
+    showFunding: true
+    showMetrics: true
+    showSocialLinks: true
+    showTechniques: false
+    showCareerStage: true
+
+contribution:
+  creditRoles:
+    - role: Conceptualization
+      level: lead
+    - role: Supervision
+      level: lead
+    - role: Funding Acquisition
+      level: lead
+    - role: Project Administration
+      level: lead
+    - role: "Writing – Review & Editing"
+      level: lead
+    - role: Methodology
+      level: equal
+    - role: "Writing – Original Draft"
+      level: supporting
+  sectionContributions:
+    - sectionId: intro
+      description: Framed the authorship crisis argument and wrote the initial introduction
+      effortLevel: lead
+    - sectionId: bg-credit
+      description: Provided historical context on CRediT adoption and its limitations
+      effortLevel: minor
+    - sectionId: fw-model
+      description: Designed the core multi-dimensional data model extending CRediT with section-level, figure-level, and timeline layers
+      effortLevel: major
+    - sectionId: fw-sort
+      description: Defined the principle that no single author ordering is definitive
+      effortLevel: minor
+    - sectionId: discussion
+      description: Wrote the discussion synthesizing implications for research evaluation, authorship disputes, and infrastructure contributors
+      effortLevel: lead
+  figureContributions:
+    - figureId: fig2
+      description: Designed the overall multi-dimensional authorship display architecture
+    - figureId: fig6
+      description: Guided the design of the sort dimension comparison showing how different orderings reveal different contribution facets
+  contributionStatement: >
+    Conceived the project, secured funding, designed the multi-dimensional
+    data model, supervised all work, and wrote the introduction and discussion.
+  timeline:
+    joinedDate: "2023-01"
+    milestones:
+      - date: "2023-01"
+        event: Conceived project and assembled team
+      - date: "2024-06"
+        event: Finalized the multi-dimensional framework design
+      - date: "2025-12"
+        event: Finalized manuscript
+  isCorresponding: true
+  equalContribution: false
+  authorOrder: 0
+  authorOrder: 7
