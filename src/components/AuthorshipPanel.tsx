@@ -35,12 +35,11 @@ const CREDIT_SORT_OPTIONS: SortOption[] = ALL_CREDIT_ROLES.map(role => ({
 
 const MAIN_SORT_OPTIONS: SortOption[] = [
   { key: 'alpha', label: 'A → Z', description: 'Alphabetical by last name', icon: '🔤', group: 'general' },
-  ...CREDIT_SORT_OPTIONS,
   { key: 'most-roles', label: 'Most roles', description: 'By number of CRediT roles', icon: '🏷️', group: 'activity' },
   { key: 'joined-first', label: 'Joined first', description: 'By project join date (earliest first)', icon: '⏳', group: 'timeline' },
 ];
 
-const ALL_SORT_OPTIONS = MAIN_SORT_OPTIONS;
+const ALL_SORT_OPTIONS = [...MAIN_SORT_OPTIONS, ...CREDIT_SORT_OPTIONS];
 
 /** CRediT contribution level ranking — used for per-role sorting. */
 const LEVEL_RANK: Record<string, number> = { lead: 3, equal: 2, supporting: 1 };
@@ -131,22 +130,19 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
 
         {/* Sort chips — immediately visible and interactive */}
         <div className="flex items-center gap-1.5 flex-wrap">
-          {MAIN_SORT_OPTIONS.map(opt => (
-            <button
-              key={opt.key}
-              onClick={() => setSortKey(opt.key)}
-              className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all ${
-                sortKey === opt.key
-                  ? 'bg-journal-600 text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-journal-300 hover:text-journal-700'
-              }`}
-            >
-              <span className="mr-1">{opt.icon}</span>
-              {opt.label}
-            </button>
-          ))}
+          {/* A → Z */}
+          <button
+            onClick={() => setSortKey('alpha')}
+            className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all ${
+              sortKey === 'alpha'
+                ? 'bg-journal-600 text-white shadow-sm'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-journal-300 hover:text-journal-700'
+            }`}
+          >
+            <span className="mr-1">🔤</span>A → Z
+          </button>
 
-          {/* CRediT Role dropdown trigger */}
+          {/* CRediT Role dropdown */}
           <div className="relative">
             <button
               onClick={() => setShowCreditMenu(!showCreditMenu)}
@@ -190,6 +186,30 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
               </>
             )}
           </div>
+
+          {/* Most roles */}
+          <button
+            onClick={() => setSortKey('most-roles')}
+            className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all ${
+              sortKey === 'most-roles'
+                ? 'bg-journal-600 text-white shadow-sm'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-journal-300 hover:text-journal-700'
+            }`}
+          >
+            <span className="mr-1">🏷️</span>Most roles
+          </button>
+
+          {/* Joined first */}
+          <button
+            onClick={() => setSortKey('joined-first')}
+            className={`px-2.5 py-1.5 text-[11px] font-medium rounded-lg transition-all ${
+              sortKey === 'joined-first'
+                ? 'bg-journal-600 text-white shadow-sm'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-journal-300 hover:text-journal-700'
+            }`}
+          >
+            <span className="mr-1">⏳</span>Joined first
+          </button>
         </div>
 
         {/* Active sort description */}
