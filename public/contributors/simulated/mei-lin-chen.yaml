@@ -104,5 +104,4 @@ contribution:
         event: Finalized manuscript
   isCorresponding: true
   equalContribution: false
-  authorOrder: 0
   authorOrder: 7
