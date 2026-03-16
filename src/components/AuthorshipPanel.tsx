@@ -12,15 +12,8 @@ import ApiPanel from './ApiPanel';
 
 type SortKey =
   | 'alpha'
-  | 'reverse-alpha'
-  | 'career-senior'
-  | 'career-junior'
   | 'most-roles'
-  | 'most-sections'
-  | 'most-figures'
   | 'joined-first'
-  | 'joined-last'
-  | 'institution'
   | `credit:${string}`;
 
 interface SortOption {
@@ -31,19 +24,6 @@ interface SortOption {
   group: 'general' | 'activity' | 'timeline' | 'credit';
 }
 
-const MAIN_SORT_OPTIONS: SortOption[] = [
-  { key: 'alpha', label: 'A → Z', description: 'Alphabetical by last name', icon: '🔤', group: 'general' },
-  { key: 'reverse-alpha', label: 'Z → A', description: 'Reverse alphabetical', icon: '🔠', group: 'general' },
-  { key: 'career-senior', label: 'Senior first', description: 'By career seniority (senior → junior)', icon: '🎓', group: 'general' },
-  { key: 'career-junior', label: 'Junior first', description: 'By career seniority (junior → senior)', icon: '🌱', group: 'general' },
-  { key: 'most-roles', label: 'Most roles', description: 'By number of CRediT roles', icon: '🏷️', group: 'activity' },
-  { key: 'most-sections', label: 'Most sections', description: 'By number of sections contributed to', icon: '📑', group: 'activity' },
-  { key: 'most-figures', label: 'Most figures', description: 'By number of figures contributed to', icon: '📊', group: 'activity' },
-  { key: 'joined-first', label: 'Joined first', description: 'By project join date (earliest first)', icon: '⏳', group: 'timeline' },
-  { key: 'joined-last', label: 'Joined last', description: 'By project join date (latest first)', icon: '🆕', group: 'timeline' },
-  { key: 'institution', label: 'By institution', description: 'Grouped by primary institution', icon: '🏛️', group: 'general' },
-];
-
 // Build CRediT role sort options dynamically
 const CREDIT_SORT_OPTIONS: SortOption[] = ALL_CREDIT_ROLES.map(role => ({
   key: `credit:${role}` as SortKey,
@@ -53,18 +33,14 @@ const CREDIT_SORT_OPTIONS: SortOption[] = ALL_CREDIT_ROLES.map(role => ({
   group: 'credit' as const,
 }));
 
-const ALL_SORT_OPTIONS = [...MAIN_SORT_OPTIONS, ...CREDIT_SORT_OPTIONS];
+const MAIN_SORT_OPTIONS: SortOption[] = [
+  { key: 'alpha', label: 'A → Z', description: 'Alphabetical by last name', icon: '🔤', group: 'general' },
+  ...CREDIT_SORT_OPTIONS,
+  { key: 'most-roles', label: 'Most roles', description: 'By number of CRediT roles', icon: '🏷️', group: 'activity' },
+  { key: 'joined-first', label: 'Joined first', description: 'By project join date (earliest first)', icon: '⏳', group: 'timeline' },
+];
 
-/**
- * Career stage seniority ranking — higher number = more senior.
- * Used for "Senior first" / "Junior first" sort dimensions.
- */
-const CAREER_RANK: Record<string, number> = {
-  'Undergraduate': 0, 'Graduate Student': 1, 'PhD Candidate': 2,
-  'Postdoctoral Researcher': 3, 'Research Engineer': 4, 'Lab Manager': 5,
-  'Research Scientist': 6, 'Assistant Professor': 7, 'Associate Professor': 8,
-  'Full Professor': 9, 'Industry Researcher': 10, 'Emeritus': 11,
-};
+const ALL_SORT_OPTIONS = MAIN_SORT_OPTIONS;
 
 /** CRediT contribution level ranking — used for per-role sorting. */
 const LEVEL_RANK: Record<string, number> = { lead: 3, equal: 2, supporting: 1 };
@@ -98,28 +74,10 @@ function sortContributions(
   switch (sortKey) {
     case 'alpha':
       return sorted.sort((a, b) => getAuthor(a).lastName.localeCompare(getAuthor(b).lastName));
-    case 'reverse-alpha':
-      return sorted.sort((a, b) => getAuthor(b).lastName.localeCompare(getAuthor(a).lastName));
-    case 'career-senior':
-      return sorted.sort((a, b) => (CAREER_RANK[getAuthor(b).careerStage] ?? 0) - (CAREER_RANK[getAuthor(a).careerStage] ?? 0));
-    case 'career-junior':
-      return sorted.sort((a, b) => (CAREER_RANK[getAuthor(a).careerStage] ?? 0) - (CAREER_RANK[getAuthor(b).careerStage] ?? 0));
     case 'most-roles':
       return sorted.sort((a, b) => b.creditRoles.length - a.creditRoles.length);
-    case 'most-sections':
-      return sorted.sort((a, b) => b.sectionContributions.length - a.sectionContributions.length);
-    case 'most-figures':
-      return sorted.sort((a, b) => b.figureContributions.length - a.figureContributions.length);
     case 'joined-first':
       return sorted.sort((a, b) => (a.timeline?.joinedDate ?? '9999').localeCompare(b.timeline?.joinedDate ?? '9999'));
-    case 'joined-last':
-      return sorted.sort((a, b) => (b.timeline?.joinedDate ?? '0000').localeCompare(a.timeline?.joinedDate ?? '0000'));
-    case 'institution':
-      return sorted.sort((a, b) => {
-        const aInst = getAuthor(a).affiliations.find(af => af.isCurrent)?.institution ?? '';
-        const bInst = getAuthor(b).affiliations.find(af => af.isCurrent)?.institution ?? '';
-        return aInst.localeCompare(bInst) || getAuthor(a).lastName.localeCompare(getAuthor(b).lastName);
-      });
     default:
       return sorted;
   }
