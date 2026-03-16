@@ -75,7 +75,7 @@ contribution:
       description: Designed the four-view visualization architecture (Profiles, CRediT Matrix, Section Map, Timeline)
       effortLevel: lead
     - sectionId: fw-sort
-      description: Implemented the multi-dimensional sort algorithms (alphabetical, career stage, CRediT role, join date, institution)
+      description: Implemented the multi-dimensional sort system (alphabetical, CRediT role, join date)
       effortLevel: major
     - sectionId: bg-limits
       description: Surveyed existing authorship display limitations across journal platforms

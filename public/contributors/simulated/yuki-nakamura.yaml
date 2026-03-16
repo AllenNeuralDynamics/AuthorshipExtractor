@@ -66,13 +66,13 @@ contribution:
       description: Designed the three-layer contribution data model (section-level, figure-level, and timeline) extending CRediT with ORCID-aligned author profiles
       effortLevel: lead
     - sectionId: fw-sort
-      description: Developed the mathematical framework for multi-dimensional ordering across 10+ sort dimensions
+      description: Developed the multi-dimensional ordering framework supporting dynamic re-sorting by multiple axes
       effortLevel: major
     - sectionId: impl-matrix
-      description: Built the matrix computation engine mapping 14 CRediT roles to color-coded contribution levels
+      description: Built the CRediT contribution matrix visualization with color-coded lead/equal/supporting levels
       effortLevel: major
     - sectionId: discussion
-      description: Wrote about machine-readable contribution data enabling nuanced research evaluation by funding agencies and hiring committees
+      description: Wrote about structured contribution data enabling nuanced research evaluation by funding agencies and hiring committees
       effortLevel: minor
   figureContributions:
     - figureId: fig3

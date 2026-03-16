@@ -50,7 +50,7 @@ contribution:
       description: Built the interactive inline annotation components — hover tooltips, click navigation, and the layered information architecture described in this section
       effortLevel: major
     - sectionId: impl-timeline
-      description: Built the interactive timeline visualization with drag and zoom showing author participation windows
+      description: Built the interactive timeline visualization showing author participation windows and milestones
       effortLevel: minor
   figureContributions:
     - figureId: sfig2
