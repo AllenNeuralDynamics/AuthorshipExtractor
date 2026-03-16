@@ -4,12 +4,12 @@
 # This file contains all manuscript-level metadata.
 # Author data is stored separately in contributors/ YAML files.
 
-id: nj-2026-0142
-doi: "10.1234/neurojournal.2026.0142"
+id: authorship-viewer-2026
+doi: "10.1234/authorship-viewer.2026.001"
 title: >
   Making contributions visible: An interactive authorship viewer
   for team science
-journal: OpenAccess
+journal: Preprint
 volume: "15"
 issue: "3"
 pages: 412-438

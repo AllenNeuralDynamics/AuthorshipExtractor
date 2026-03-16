@@ -65,7 +65,7 @@ export default function App() {
           ) : (
             <>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-lg animate-pulse" style={{ background: 'var(--color-journal-gradient)' }}>
-                N
+                ✦
               </div>
               <p className="text-sm text-gray-400">Loading paper...</p>
             </>
@@ -144,7 +144,7 @@ export default function App() {
               Want to contribute? Add yourself via a
               {' '}
               <a
-                href="https://github.com/jeromelecoq/AuthorshipExtractor/blob/main/CONTRIBUTING.md"
+                href="https://github.com/AllenNeuralDynamics/AuthorshipExtractor/blob/main/CONTRIBUTING.md"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-journal-600 hover:text-journal-800 underline"
