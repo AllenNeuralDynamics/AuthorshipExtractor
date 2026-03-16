@@ -91,14 +91,14 @@ async function loadContributorsFrom(dir: string, paperId: string): Promise<Paper
       sectionContributions: raw.contribution.sectionContributions ?? [],
       creditRoles: raw.contribution.creditRoles ?? [],
       isCorresponding: raw.contribution.isCorresponding ?? false,
-      equalContribution: raw.contribution.equalContribution ?? false,
-      authorOrder: raw.contribution.authorOrder ?? 0,
     });
   }
 
-  // Sort by authorOrder
-  contributions.sort((a, b) => a.authorOrder - b.authorOrder);
-  const orderMap = new Map(contributions.map((c) => [c.authorId, c.authorOrder]));
+  // Default sort: earliest joinedDate first, then alphabetical by last name
+  const joinDate = (c: AuthorContribution) => c.timeline?.joinedDate ?? '9999';
+  const lastName = (id: string) => authors.find(a => a.id === id)?.lastName ?? '';
+  contributions.sort((a, b) => joinDate(a).localeCompare(joinDate(b)) || lastName(a.authorId).localeCompare(lastName(b.authorId)));
+  const orderMap = new Map(contributions.map((c, i) => [c.authorId, i]));
   authors.sort((a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0));
 
   // Filter sections to only those with at least one contributor

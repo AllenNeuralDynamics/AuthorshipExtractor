@@ -104,11 +104,6 @@ export default function AuthorDetailModal({ author, contribution, paper, onClose
                   ✉ Corresponding Author
                 </span>
               )}
-              {contribution.equalContribution && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-medium rounded-full bg-white/20 text-white border border-white/30">
-                  = Equal Contribution
-                </span>
-              )}
             </div>
           </div>
 

@@ -33,7 +33,11 @@ export default function SectionContributions({ paper, onAuthorSelect }: Props) {
     // Find authors who contributed to this section
     const sectionAuthors = paper.contributions
       .filter(c => c.sectionContributions.some(sc => sc.sectionId === section.id))
-      .sort((a, b) => a.authorOrder - b.authorOrder);
+      .sort((a, b) => {
+        const aName = paper.authors.find(au => au.id === a.authorId)?.lastName ?? '';
+        const bName = paper.authors.find(au => au.id === b.authorId)?.lastName ?? '';
+        return aName.localeCompare(bName);
+      });
 
     // Find figure contributions for this section
     const sectionFigures = section.figures || [];

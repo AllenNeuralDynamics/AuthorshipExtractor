@@ -10,12 +10,7 @@ interface Props {
 export default function AuthorListCompact({ paper, onAuthorSelect }: Props) {
   const [expanded, setExpanded] = useState(false);
 
-  const sortedContributions = [...paper.contributions].sort((a, b) => a.authorOrder - b.authorOrder);
-
-  // Find equal-contribution groups
-  const equalIds = new Set(
-    paper.contributions.filter(c => c.equalContribution).map(c => c.authorId)
-  );
+  const sortedContributions = paper.contributions;
 
   return (
     <div className="bg-white rounded-2xl border border-gray-200 shadow-sm">
@@ -33,7 +28,6 @@ export default function AuthorListCompact({ paper, onAuthorSelect }: Props) {
           {sortedContributions.map((c, i) => {
             const author = paper.authors.find(a => a.id === c.authorId)!;
             const isLast = i === sortedContributions.length - 1;
-            const showEqual = equalIds.has(c.authorId);
             return (
               <span key={c.authorId} className="inline-flex items-baseline">
                 <button
@@ -42,9 +36,6 @@ export default function AuthorListCompact({ paper, onAuthorSelect }: Props) {
                 >
                   {author.firstName} {author.lastName}
                 </button>
-                {showEqual && (
-                  <span className="text-[9px] text-journal-500 ml-0.5 align-super" title="Equal contribution">*</span>
-                )}
                 {c.isCorresponding && (
                   <span className="text-[10px] text-amber-500 ml-0.5" title="Corresponding author">✉</span>
                 )}
@@ -62,7 +53,6 @@ export default function AuthorListCompact({ paper, onAuthorSelect }: Props) {
         {/* Legend + expand toggle */}
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-3 text-[10px] text-gray-400">
-            {equalIds.size > 0 && <span>* Equal contribution</span>}
             <span>✉ Corresponding author</span>
           </div>
           <button
@@ -136,11 +126,6 @@ export default function AuthorListCompact({ paper, onAuthorSelect }: Props) {
                     </span>
                   ))}
                 </div>
-
-                {/* Order */}
-                <span className="text-[10px] text-gray-300 font-mono flex-shrink-0">
-                  #{c.authorOrder}
-                </span>
               </button>
             );
           })}

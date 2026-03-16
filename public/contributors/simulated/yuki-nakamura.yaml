@@ -100,5 +100,3 @@ contribution:
       - date: "2025-04"
         event: Final data model validated against real journal data
   isCorresponding: false
-  equalContribution: true
-  authorOrder: 2

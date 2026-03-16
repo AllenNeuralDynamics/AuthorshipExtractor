@@ -149,8 +149,6 @@ export interface AuthorContribution {
     milestones?: { date: string; event: string }[];
   };
   isCorresponding: boolean;
-  equalContribution?: boolean;
-  authorOrder: number;
 }
 
 // ============================================================

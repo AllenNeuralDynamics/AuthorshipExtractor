@@ -13,8 +13,7 @@ export default function ContributionMatrix({ paper, onAuthorSelect }: Props) {
   const [hoveredAuthor, setHoveredAuthor] = useState<string | null>(null);
   const [hoveredRole, setHoveredRole] = useState<CreditRole | null>(null);
 
-  // Sort authors by order
-  const sortedContributions = [...paper.contributions].sort((a, b) => a.authorOrder - b.authorOrder);
+  const sortedContributions = paper.contributions;
 
   // Build lookup: (authorId, role) -> level
   const lookup = new Map<string, ContributionLevel>();

@@ -114,8 +114,6 @@ contribution:
         event: First pull request
 
   isCorresponding: false
-  equalContribution: false
-  authorOrder: 99              # Use a high number; ordering is managed centrally
 ```
 
 </details>

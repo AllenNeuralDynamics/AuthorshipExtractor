@@ -30,11 +30,6 @@ export default function AuthorCard({ author, contribution, onSelect }: Props) {
               ✉
             </span>
           )}
-          {contribution.equalContribution && (
-            <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-journal-500 rounded-full flex items-center justify-center text-[9px] text-white border-2 border-white" title="Equal contribution">
-              =
-            </span>
-          )}
         </div>
 
         {/* Info */}
@@ -94,10 +89,6 @@ export default function AuthorCard({ author, contribution, onSelect }: Props) {
           )}
         </div>
 
-        {/* Order badge */}
-        <div className="flex-shrink-0 text-right">
-          <span className="text-[10px] text-gray-400 font-mono">#{contribution.authorOrder}</span>
-        </div>
       </div>
     </button>
   );

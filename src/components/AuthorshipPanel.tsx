@@ -156,10 +156,6 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
 
   const currentSort = ALL_SORT_OPTIONS.find(o => o.key === sortKey) ?? MAIN_SORT_OPTIONS[0];
 
-  const equalIds = new Set(
-    paper.contributions.filter(c => c.equalContribution).map(c => c.authorId)
-  );
-
   const isCreditSort = sortKey.startsWith('credit:');
 
   return (
@@ -251,7 +247,6 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
           {sortedContributions.map((c, i) => {
             const author = paper.authors.find(a => a.id === c.authorId)!;
             const isLast = i === sortedContributions.length - 1;
-            const showEqual = equalIds.has(c.authorId);
 
             // For credit sorts, show the level badge
             const creditLevel = isCreditSort
@@ -275,9 +270,6 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
                     {creditLevel === 'lead' ? 'L' : creditLevel === 'equal' ? 'E' : 'S'}
                   </span>
                 )}
-                {!creditLevel && !isCreditSort && showEqual && (
-                  <span className="text-[9px] text-journal-500 ml-0.5 align-super" title="Equal contribution">*</span>
-                )}
                 {c.isCorresponding && (
                   <span className="text-[10px] text-amber-500 ml-0.5" title="Corresponding author">✉</span>
                 )}
@@ -295,7 +287,6 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
         {/* Legend + expand toggle */}
         <div className="flex items-center justify-between mt-3">
           <div className="flex items-center gap-3 text-[10px] text-gray-400">
-            {equalIds.size > 0 && !isCreditSort && <span>* Equal contribution</span>}
             {isCreditSort && <span><span className="inline-block w-2.5 h-2.5 rounded-full bg-journal-700 align-middle mr-0.5" />Lead <span className="inline-block w-2.5 h-2.5 rounded-full bg-journal-200 align-middle mx-0.5" />Equal <span className="inline-block w-2.5 h-2.5 rounded-full bg-gray-200 align-middle mx-0.5" />Supporting</span>}
             <span>✉ Corresponding</span>
           </div>
@@ -356,9 +347,6 @@ export default function AuthorshipPanel({ paper, onAuthorSelect }: Props) {
                         {initials(author.firstName, author.lastName)}
                         {c.isCorresponding && (
                           <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-amber-400 rounded-full flex items-center justify-center text-[8px] border-2 border-white">✉</span>
-                        )}
-                        {c.equalContribution && (
-                          <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-journal-500 rounded-full flex items-center justify-center text-[8px] text-white border-2 border-white">=</span>
                         )}
                       </div>
 
