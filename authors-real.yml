@@ -1,0 +1,108 @@
+# authors-real.yml — Real contributor data
+# Loaded as alternative dataset by the authorship-explorer widget.
+
+version: 1
+
+project:
+  contributors:
+    # ──────────────────────────────────────────────────
+    # Jérôme Lecoq — Sole Author
+    # ──────────────────────────────────────────────────
+    - id: author-lecoq
+      name: Jérôme Lecoq
+      orcid: 0000-0002-0131-0938
+      email: jeromel@alleninstitute.org
+      corresponding: true
+      roles:
+        - Conceptualization
+        - Methodology
+        - Software
+        - Validation
+        - Writing – original draft
+        - Writing – review & editing
+        - Visualization
+        - Project Administration
+        - Data Curation
+      affiliations:
+        - allen-nd
+
+      # --- Extended fields (read by our plugin) ---
+      first_name: Jérôme
+      last_name: Lecoq
+      career_stage: Research Scientist
+      credit_levels:
+        - role: Conceptualization
+          level: lead
+        - role: Methodology
+          level: lead
+        - role: Software
+          level: lead
+        - role: Validation
+          level: lead
+        - role: "Writing – Original Draft"
+          level: lead
+        - role: "Writing – Review & Editing"
+          level: lead
+        - role: Visualization
+          level: lead
+        - role: Project Administration
+          level: lead
+        - role: Data Curation
+          level: lead
+      section_contributions:
+        - section: intro
+          description: Conceived the project and wrote the introduction
+          effort: lead
+        - section: bg-credit
+          description: Wrote the CRediT taxonomy background section
+          effort: lead
+        - section: bg-limits
+          description: Wrote the limitations of current approaches section
+          effort: lead
+        - section: bg-team
+          description: Wrote the team science background section
+          effort: lead
+        - section: fw-model
+          description: Defined and documented the multi-dimensional data model
+          effort: lead
+        - section: fw-sort
+          description: Designed and documented the multi-dimensional sorting approach
+          effort: lead
+        - section: fw-viz
+          description: Designed and documented the visualization architecture
+          effort: lead
+        - section: impl-inline
+          description: Built and documented inline contribution highlighting
+          effort: lead
+        - section: impl-matrix
+          description: Built and documented the contribution matrix
+          effort: lead
+        - section: impl-timeline
+          description: Built and documented the project timeline
+          effort: lead
+        - section: discussion
+          description: Wrote the discussion section
+          effort: lead
+        - section: references
+          description: Compiled and formatted all references
+          effort: lead
+      figure_contributions:
+        - figure: fig-author-growth
+          description: Created the author count growth visualization from bibliometric data
+      contribution_statement: >
+        Conceived the project, wrote the entire manuscript, designed
+        the framework, and built all software components.
+      timeline:
+        joined: "2026-03-15"
+        milestones:
+          - date: "2026-03-15"
+            event: Project created — concept, manuscript, and implementation
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0002-0131-0938
+        - platform: github
+          url: https://github.com/jeromelecoq
+        - platform: google-scholar
+          url: https://scholar.google.com/citations?hl=en&user=qEadPMEAAAAJ&view_op=list_works&sortby=pubdate
+        - platform: email
+          url: mailto:jeromel@alleninstitute.org

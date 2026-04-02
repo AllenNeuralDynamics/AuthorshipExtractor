@@ -1,19 +1,20 @@
 # AuthorshipExtractor
 
-A multi-dimensional scientific authorship framework — both a paper describing the approach and a live, interactive demonstration of it.
+A multi-dimensional scientific authorship framework — both a paper describing the approach and a live, interactive demonstration of it. Built with [MyST](https://mystmd.org/).
 
 ## What is this?
 
 The traditional author list compresses complex, multi-dimensional contributions into a single ordered sequence of names. **AuthorshipExtractor** reimagines this by letting readers explore contributions along multiple axes simultaneously:
 
-- **CRediT roles** — 14 standardized contributor roles with effort levels (lead / major / minor)
-- **Section-level attribution** — inline highlights showing who contributed to each part of the text
-- **Dynamic sorting** — re-order authors by name, career stage, CRediT role, institution, or join date
-- **Collaboration graph** — network visualization of shared contributions
+- **CRediT roles** — 14 standardized contributor roles with effort levels (lead / equal / supporting)
+- **Section-level attribution** — showing who contributed to each part of the text
+- **Dynamic sorting** — re-order authors by name, CRediT role, number of roles, or join date
+- **Collaboration graph** — network visualization of shared contributions with role-colored arcs
 - **Timeline** — when each contributor joined the project
-- **Rich profiles** — ORCID, affiliations, funding, social links, techniques
+- **Rich profiles** — ORCID, affiliations, social links
+- **Simulated ↔ Real toggle** — switch between a fictional demo team and real contributors
 
-The website renders a real academic paper about this framework while simultaneously demonstrating it.
+The site renders a real academic paper about this framework while simultaneously demonstrating it via an interactive anywidget plugin.
 
 ## Live demo
 
@@ -23,45 +24,43 @@ Deployed via GitHub Pages:
 ## Quick start
 
 ```bash
-# Install dependencies
-npm install
+# Install MyST CLI (requires Node.js 18+)
+npm install -g mystmd
 
 # Start dev server
-npm run dev
+myst start
 
 # Production build
-npm run build
+myst build
 ```
-
-Requires **Node.js 18+**.
 
 ## Project structure
 
 ```
-public/
-  paper.yaml              # Paper metadata (title, abstract, sections, figures)
-  paper.md                # Full article text with section/figure markers
-  contributors/           # Real contributor YAML profiles
-    simulated/            # Fictional demo contributors
-  figures/                # Generated figure data (YAML)
-src/
-  components/             # React components (PaperBody, AuthorshipPanel, etc.)
-  data/                   # Loaders for YAML contributors + paper metadata
-  types/                  # TypeScript interfaces
-figures/                  # Python scripts for generating figure data
-CONTRIBUTING.md           # How to add yourself as a contributor
+article.md                # Full paper in MyST Markdown
+myst.yml                  # MyST project configuration
+authors.yml               # Simulated contributor data (7 fictional authors)
+authors-real.yml           # Real contributor data
+authorship-plugin.mjs      # MyST plugin: directive + transform
+authorship-widget.mjs      # Interactive widget (vanilla JS, anywidget)
+authorship-widget.css      # Widget styles
+references.bib             # Bibliography
+gen_figure.py              # Script to regenerate the author-count figure
+author-count-growth.yaml   # Source data for the figure
+author-count-growth.png    # Pre-rendered figure
+CONTRIBUTING.md            # How to add yourself as a contributor
 ```
 
 ## Adding yourself as a contributor
 
-This project practices what it preaches — you can become a real contributor by opening a pull request with your YAML profile. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+This project practices what it preaches — you can become a real contributor by adding your profile to `authors-real.yml` and opening a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
 ## Tech stack
 
-- [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vite.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- YAML-based content loaded at runtime (no build-time content pipeline)
+- [MyST](https://mystmd.org/) — Markedly Structured Text for scientific publishing
+- [anywidget](https://anywidget.dev/) — Interactive widget framework
+- Vanilla JavaScript (no React/bundler required)
+- YAML-based contributor data
 
 ## License
 

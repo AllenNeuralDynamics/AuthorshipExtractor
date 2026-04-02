@@ -1,0 +1,500 @@
+# authors.yml — SINGLE SOURCE OF TRUTH for all author data
+# MyST reads this via `extends` and keeps fields it knows (name, orcid, roles, affiliations).
+# Our authorship-plugin.mjs re-reads this file from disk to get ALL fields,
+# including extended ones (credit_levels, section_contributions, timeline, etc.).
+
+version: 1
+
+project:
+  contributors:
+    # ──────────────────────────────────────────────────
+    # Mei-Lin Chen — PI, Corresponding Author
+    # ──────────────────────────────────────────────────
+    - id: author-chen
+      name: Mei-Lin Chen
+      orcid: 0000-0002-1234-5678
+      email: mchen@stanford.edu
+      corresponding: true
+      roles:
+        - Conceptualization
+        - Supervision
+        - Funding Acquisition
+        - Project Administration
+        - Writing – review & editing
+        - Methodology
+        - Writing – original draft
+      affiliations:
+        - stanford-comm
+        - cos
+
+      # --- Extended fields (dropped by MyST, read by our plugin) ---
+      first_name: Mei-Lin
+      last_name: Chen
+      career_stage: Associate Professor
+      credit_levels:
+        - role: Conceptualization
+          level: lead
+        - role: Supervision
+          level: lead
+        - role: Funding Acquisition
+          level: lead
+        - role: Project Administration
+          level: lead
+        - role: Writing – review & editing
+          level: lead
+        - role: Methodology
+          level: equal
+        - role: Writing – original draft
+          level: supporting
+      section_contributions:
+        - section: intro
+          description: Framed the authorship crisis argument and wrote the initial introduction
+          effort: lead
+        - section: bg-credit
+          description: Provided historical context on CRediT adoption and its limitations
+          effort: supporting
+        - section: fw-model
+          description: Designed the core multi-dimensional data model extending CRediT
+          effort: lead
+        - section: fw-sort
+          description: Defined the principle that no single author ordering is definitive
+          effort: supporting
+        - section: discussion
+          description: Wrote the discussion synthesizing implications for research evaluation
+          effort: lead
+      figure_contributions: []
+      contribution_statement: >
+        Conceived the project, secured funding, designed the multi-dimensional
+        data model, supervised all work, and wrote the introduction and discussion.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Conceived project and assembled team
+          - date: "2024-06"
+            event: Finalized the multi-dimensional framework design
+          - date: "2025-12"
+            event: Finalized manuscript
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0002-1234-5678
+        - platform: google-scholar
+          url: https://scholar.google.com/citations?user=example1
+        - platform: github
+          url: https://github.com/chen-lab
+        - platform: website
+          url: https://chenlab.stanford.edu
+
+    # ──────────────────────────────────────────────────
+    # Chukwuemeka Okafor — Lead Developer
+    # ──────────────────────────────────────────────────
+    - id: author-okafor
+      name: Chukwuemeka Okafor
+      orcid: 0000-0003-2345-6789
+      roles:
+        - Investigation
+        - Methodology
+        - Writing – original draft
+        - Formal analysis
+        - Data curation
+        - Validation
+        - Visualization
+      affiliations:
+        - stanford-cs
+
+      first_name: Chukwuemeka
+      last_name: Okafor
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: lead
+        - role: Methodology
+          level: lead
+        - role: Writing – original draft
+          level: lead
+        - role: Formal analysis
+          level: equal
+        - role: Data curation
+          level: lead
+        - role: Validation
+          level: equal
+        - role: Visualization
+          level: equal
+      section_contributions:
+        - section: impl-inline
+          description: Built the inline contribution highlighting system
+          effort: lead
+        - section: impl-matrix
+          description: Built the interactive CRediT contribution matrix
+          effort: lead
+        - section: impl-timeline
+          description: Developed the project timeline visualization
+          effort: lead
+        - section: fw-viz
+          description: Designed the four-view visualization architecture
+          effort: lead
+        - section: fw-sort
+          description: Implemented the multi-dimensional sort system
+          effort: lead
+        - section: bg-limits
+          description: Surveyed existing authorship display limitations
+          effort: lead
+        - section: intro
+          description: Contributed to the introduction framing
+          effort: supporting
+        - section: discussion
+          description: Wrote about user experience implications
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led the full-stack implementation of the interactive authorship display,
+        built all visualization components, and wrote the first draft of the manuscript.
+      timeline:
+        joined: "2023-03"
+        milestones:
+          - date: "2023-03"
+            event: Joined the project as lead developer
+          - date: "2023-09"
+            event: Completed first interactive prototype
+          - date: "2024-02"
+            event: CRediT matrix and sort system operational
+          - date: "2024-11"
+            event: All visualization components complete
+          - date: "2025-06"
+            event: Wrote first draft of manuscript
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0003-2345-6789
+        - platform: github
+          url: https://github.com/cokafor-dev
+        - platform: bluesky
+          url: https://bsky.app/profile/cokafor.bsky.social
+
+    # ──────────────────────────────────────────────────
+    # Yuki Nakamura — Data Architecture
+    # ──────────────────────────────────────────────────
+    - id: author-nakamura
+      name: Yuki Nakamura
+      orcid: 0000-0001-3456-7890
+      roles:
+        - Software
+        - Formal analysis
+        - Methodology
+        - Writing – original draft
+        - Visualization
+        - Validation
+      affiliations:
+        - stanford-cs
+
+      first_name: Yuki
+      last_name: Nakamura
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Software
+          level: lead
+        - role: Formal analysis
+          level: lead
+        - role: Methodology
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Visualization
+          level: equal
+        - role: Validation
+          level: lead
+      section_contributions:
+        - section: fw-model
+          description: Designed the three-layer contribution data model extending CRediT
+          effort: lead
+        - section: fw-sort
+          description: Developed the multi-dimensional ordering framework
+          effort: lead
+        - section: impl-matrix
+          description: Built the CRediT contribution matrix visualization
+          effort: lead
+        - section: discussion
+          description: Wrote about structured contribution data for research evaluation
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Designed the data model, implemented the type system
+        and sort algorithms, and co-wrote the manuscript.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Joined project to develop data architecture
+          - date: "2024-01"
+            event: First complete data model specification
+          - date: "2024-08"
+            event: API layer v1.0 complete
+          - date: "2025-04"
+            event: Final data model validated
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0001-3456-7890
+        - platform: github
+          url: https://github.com/yuki-compneuro
+        - platform: website
+          url: https://yukinakamura.dev
+
+    # ──────────────────────────────────────────────────
+    # Isabella Santos-Rivera — UX Design
+    # ──────────────────────────────────────────────────
+    - id: author-santos
+      name: Isabella Santos-Rivera
+      orcid: 0000-0002-4567-8901
+      roles:
+        - Investigation
+        - Methodology
+        - Resources
+        - Writing – review & editing
+      affiliations:
+        - stanford-dschool
+
+      first_name: Isabella
+      last_name: Santos-Rivera
+      career_stage: Research Scientist
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Methodology
+          level: supporting
+        - role: Resources
+          level: lead
+        - role: Writing – review & editing
+          level: supporting
+      section_contributions:
+        - section: fw-viz
+          description: Designed the four complementary views and their interaction patterns
+          effort: lead
+        - section: impl-inline
+          description: Designed the inline contribution highlighting visual treatment
+          effort: lead
+      figure_contributions: []
+      contribution_statement: >
+        Led the visual design of all authorship display components and
+        designed the inline contribution highlighting approach.
+      timeline:
+        joined: "2023-09"
+        left: "2025-02"
+        milestones:
+          - date: "2023-09"
+            event: Began design system development
+          - date: "2024-03"
+            event: Complete UI/UX design specification delivered
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0002-4567-8901
+        - platform: linkedin
+          url: https://linkedin.com/in/isabella-santos-rivera
+
+    # ──────────────────────────────────────────────────
+    # Jihoon Kim — Infrastructure
+    # ──────────────────────────────────────────────────
+    - id: author-kim
+      name: Jihoon Kim
+      orcid: 0000-0003-5678-9012
+      roles:
+        - Software
+        - Data curation
+        - Resources
+        - Validation
+      affiliations:
+        - stanford-lib
+
+      first_name: Jihoon
+      last_name: Kim
+      career_stage: Research Engineer
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Data curation
+          level: lead
+        - role: Resources
+          level: equal
+        - role: Validation
+          level: supporting
+      section_contributions:
+        - section: fw-model
+          description: Implemented the YAML-based contributor data system
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built the data infrastructure, YAML-based contributor pipeline,
+        and deployment system.
+      timeline:
+        joined: "2024-06"
+        milestones:
+          - date: "2024-06"
+            event: Joined to build data infrastructure
+          - date: "2025-01"
+            event: Data infrastructure fully deployed
+      social_links:
+        - platform: github
+          url: https://github.com/jihoonkim-eng
+        - platform: orcid
+          url: https://orcid.org/0000-0003-5678-9012
+        - platform: website
+          url: https://jihoonkim.dev
+
+    # ──────────────────────────────────────────────────
+    # Alexei Petrov — Interactive Components
+    # ──────────────────────────────────────────────────
+    - id: author-petrov
+      name: Alexei Petrov
+      orcid: 0000-0001-6789-0123
+      roles:
+        - Resources
+        - Methodology
+        - Software
+      affiliations:
+        - stanford-hci
+
+      first_name: Alexei
+      last_name: Petrov
+      career_stage: Graduate Student
+      credit_levels:
+        - role: Resources
+          level: lead
+        - role: Methodology
+          level: supporting
+        - role: Software
+          level: supporting
+      section_contributions:
+        - section: impl-inline
+          description: Built the interactive inline annotation components
+          effort: lead
+        - section: impl-timeline
+          description: Built the interactive timeline visualization
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built interactive UI components for the inline annotation system
+        and timeline visualization.
+      timeline:
+        joined: "2023-05"
+        left: "2024-04"
+        milestones:
+          - date: "2023-05"
+            event: Began interactive component development
+          - date: "2023-11"
+            event: Interactive components validated and integrated
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0001-6789-0123
+        - platform: github
+          url: https://github.com/apetrov-hw
+
+    # ──────────────────────────────────────────────────
+    # Diane Williams — Research Evaluation Policy
+    # ──────────────────────────────────────────────────
+    - id: author-williams
+      name: Diane Williams
+      orcid: 0000-0002-7890-1234
+      roles:
+        - Conceptualization
+        - Methodology
+        - Writing – review & editing
+        - Supervision
+        - Funding Acquisition
+      affiliations:
+        - columbia-is
+        - rori
+
+      first_name: Diane
+      last_name: Williams
+      career_stage: Full Professor
+      credit_levels:
+        - role: Conceptualization
+          level: supporting
+        - role: Methodology
+          level: supporting
+        - role: Writing – review & editing
+          level: equal
+        - role: Supervision
+          level: supporting
+        - role: Funding Acquisition
+          level: supporting
+      section_contributions:
+        - section: bg-credit
+          description: Provided expertise on CRediT taxonomy history and adoption
+          effort: supporting
+        - section: bg-team
+          description: Contributed analysis of team science growth trends
+          effort: supporting
+        - section: discussion
+          description: Contributed theoretical context on research evaluation reform
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Contributed the theoretical framework for multi-dimensional attribution,
+        provided expertise on research evaluation policy.
+      timeline:
+        joined: "2024-01"
+        milestones:
+          - date: "2024-01"
+            event: Joined as research evaluation policy advisor
+          - date: "2025-08"
+            event: Final manuscript review
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0002-7890-1234
+        - platform: google-scholar
+          url: https://scholar.google.com/citations?user=example7
+        - platform: website
+          url: https://williamslab.columbia.edu
+
+  affiliations:
+    - id: stanford-comm
+      name: Stanford University
+      department: Department of Communication
+      ror: https://ror.org/00f54p054
+      city: Stanford
+      region: CA
+      country: US
+    - id: cos
+      name: Center for Open Science
+      ror: https://ror.org/05d5mza29
+      city: Charlottesville
+      region: VA
+      country: US
+    - id: stanford-cs
+      name: Stanford University
+      department: Department of Computer Science
+      ror: https://ror.org/00f54p054
+      city: Stanford
+      region: CA
+      country: US
+    - id: stanford-dschool
+      name: Stanford University
+      department: d.school (Hasso Plattner Institute of Design)
+      ror: https://ror.org/00f54p054
+      city: Stanford
+      region: CA
+      country: US
+    - id: stanford-lib
+      name: Stanford University
+      department: Stanford Libraries / Research Data Services
+      ror: https://ror.org/00f54p054
+      city: Stanford
+      region: CA
+      country: US
+    - id: stanford-hci
+      name: Stanford University
+      department: Human-Computer Interaction Group
+      ror: https://ror.org/00f54p054
+      city: Stanford
+      region: CA
+      country: US
+    - id: columbia-is
+      name: Columbia University
+      department: Department of Information Science
+      ror: https://ror.org/00hj8s172
+      city: New York
+      region: NY
+      country: US
+    - id: rori
+      name: Research on Research Institute
+      city: London
+      country: GB

@@ -1,0 +1,37 @@
+version: 1
+extends:
+  - authors.yml
+project:
+  title: >
+    Making contributions visible: An interactive authorship viewer
+    for team science
+  description: >
+    A multi-dimensional authorship framework that allows readers to explore
+    contributions along multiple axes simultaneously.
+  keywords:
+    - authorship
+    - CRediT taxonomy
+    - team science
+    - contributor roles
+    - scholarly communication
+    - open science
+    - research attribution
+  license: CC-BY-4.0
+  open_access: true
+  date: 2026-02-20
+  authors:
+    - id: author-chen
+    - id: author-okafor
+    - id: author-nakamura
+    - id: author-santos
+    - id: author-kim
+    - id: author-petrov
+    - id: author-williams
+  plugins:
+    - authorship-plugin.mjs
+  bibliography:
+    - references.bib
+  toc:
+    - file: article.md
+site:
+  title: Interactive Authorship Viewer
