@@ -97,6 +97,8 @@ project:
         milestones:
           - date: "2026-03-15"
             event: Project created — concept, manuscript, and implementation
+          - date: "2026-04-01"
+            event: Migrated backend to MyST
       social_links:
         - platform: orcid
           url: https://orcid.org/0000-0002-0131-0938
