@@ -108,3 +108,11 @@ project:
           url: https://scholar.google.com/citations?hl=en&user=qEadPMEAAAAJ&view_op=list_works&sortby=pubdate
         - platform: email
           url: mailto:jeromel@alleninstitute.org
+
+  affiliations:
+    - id: allen-nd
+      name: Allen Institute for Neural Dynamics
+      ror: https://ror.org/04s5mat29
+      city: Seattle
+      region: WA
+      country: US

@@ -1,0 +1,2502 @@
+# authors-large.yml — 50-author neuroscience consortium for testing
+# Simulated data for authorship visualization tool testing.
+
+version: 1
+
+project:
+  contributors:
+    # ──────────────────────────────────────────────────
+    # 1. Amara Osei-Mensah — PI, Corresponding Author
+    # ──────────────────────────────────────────────────
+    - id: author-osei-mensah
+      name: Amara Osei-Mensah
+      orcid: 0000-0002-1100-2200
+      email: a.osei-mensah@ucl.ac.uk
+      corresponding: true
+      roles:
+        - Conceptualization
+        - Supervision
+        - Funding acquisition
+        - Project administration
+        - Writing – review & editing
+        - Methodology
+      affiliations:
+        - ucl-neuro
+
+      first_name: Amara
+      last_name: Osei-Mensah
+      career_stage: Professor
+      credit_levels:
+        - role: Conceptualization
+          level: lead
+        - role: Supervision
+          level: lead
+        - role: Funding acquisition
+          level: lead
+        - role: Project administration
+          level: lead
+        - role: Writing – review & editing
+          level: lead
+        - role: Methodology
+          level: equal
+      section_contributions:
+        - section: intro
+          description: Framed the overarching research question and wrote the introduction
+          effort: lead
+        - section: bg-credit
+          description: Provided context on CRediT taxonomy adoption in neuroscience
+          effort: equal
+        - section: fw-model
+          description: Designed the core multi-dimensional contribution model
+          effort: lead
+        - section: discussion
+          description: Led synthesis of implications for large-scale neuroscience consortia
+          effort: lead
+      figure_contributions: []
+      contribution_statement: >
+        Conceived the project, secured primary funding, designed the contribution
+        model, supervised all work, and led writing of the introduction and discussion.
+      timeline:
+        joined: "2021-01"
+        milestones:
+          - date: "2021-01"
+            event: Conceived the project and assembled initial team
+          - date: "2021-09"
+            event: Secured primary grant funding
+          - date: "2023-06"
+            event: Finalized multi-dimensional framework design
+          - date: "2025-03"
+            event: Finalized manuscript for submission
+
+    # ──────────────────────────────────────────────────
+    # 2. Hiroshi Tanaka — PI
+    # ──────────────────────────────────────────────────
+    - id: author-tanaka
+      name: Hiroshi Tanaka
+      orcid: 0000-0001-3300-4400
+      roles:
+        - Conceptualization
+        - Supervision
+        - Funding acquisition
+        - Writing – review & editing
+        - Methodology
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Hiroshi
+      last_name: Tanaka
+      career_stage: Professor
+      credit_levels:
+        - role: Conceptualization
+          level: equal
+        - role: Supervision
+          level: lead
+        - role: Funding acquisition
+          level: equal
+        - role: Writing – review & editing
+          level: equal
+        - role: Methodology
+          level: lead
+      section_contributions:
+        - section: bg-team
+          description: Led analysis of team science growth in neuroscience
+          effort: lead
+        - section: fw-sort
+          description: Co-designed the multi-dimensional author ordering framework
+          effort: equal
+        - section: discussion
+          description: Contributed perspective on Japanese consortium practices
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Co-conceived the project, secured Japanese funding, led team science
+        analysis, and co-designed the author ordering framework.
+      timeline:
+        joined: "2021-03"
+        milestones:
+          - date: "2021-03"
+            event: Joined as co-PI and secured JSPS funding
+          - date: "2022-06"
+            event: Completed team science survey across Japanese consortia
+          - date: "2025-01"
+            event: Final manuscript contributions
+
+    # ──────────────────────────────────────────────────
+    # 3. Elena Vasquez-Moreno — PI, Corresponding Author
+    # ──────────────────────────────────────────────────
+    - id: author-vasquez-moreno
+      name: Elena Vasquez-Moreno
+      orcid: 0000-0003-5500-6600
+      email: evasquez@ifc.unam.mx
+      corresponding: true
+      roles:
+        - Conceptualization
+        - Supervision
+        - Funding acquisition
+        - Writing – review & editing
+        - Writing – original draft
+      affiliations:
+        - unam-neuro
+
+      first_name: Elena
+      last_name: Vasquez-Moreno
+      career_stage: Professor
+      credit_levels:
+        - role: Conceptualization
+          level: equal
+        - role: Supervision
+          level: equal
+        - role: Funding acquisition
+          level: equal
+        - role: Writing – review & editing
+          level: equal
+        - role: Writing – original draft
+          level: equal
+      section_contributions:
+        - section: intro
+          description: Co-wrote the introduction with emphasis on Global South perspectives
+          effort: equal
+        - section: bg-limits
+          description: Led analysis of existing authorship display limitations
+          effort: lead
+        - section: discussion
+          description: Contributed perspective on equity in research attribution
+          effort: equal
+        - section: fw-viz
+          description: Advised on visualization accessibility requirements
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Co-conceived the project, led the analysis of authorship limitations,
+        contributed Global South perspectives, and co-wrote the manuscript.
+      timeline:
+        joined: "2021-06"
+        milestones:
+          - date: "2021-06"
+            event: Joined as co-PI with CONACYT funding
+          - date: "2022-12"
+            event: Completed systematic review of authorship limitations
+          - date: "2025-02"
+            event: Final manuscript review and revisions
+
+    # ──────────────────────────────────────────────────
+    # 4. Lars Eriksson — Senior Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-eriksson
+      name: Lars Eriksson
+      orcid: 0000-0002-7700-8800
+      roles:
+        - Methodology
+        - Formal analysis
+        - Writing – original draft
+        - Supervision
+      affiliations:
+        - karolinska-neuro
+
+      first_name: Lars
+      last_name: Eriksson
+      career_stage: Associate Professor
+      credit_levels:
+        - role: Methodology
+          level: lead
+        - role: Formal analysis
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Supervision
+          level: supporting
+      section_contributions:
+        - section: fw-model
+          description: Contributed statistical framework for contribution quantification
+          effort: equal
+        - section: fw-sort
+          description: Led design of the multi-criteria sorting algorithm
+          effort: lead
+        - section: bg-credit
+          description: Reviewed European CRediT adoption patterns
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Designed the multi-criteria sorting methodology, contributed statistical
+        framework, and supervised Scandinavian team members.
+      timeline:
+        joined: "2021-09"
+        milestones:
+          - date: "2021-09"
+            event: Joined to lead methodology design
+          - date: "2023-03"
+            event: Sorting algorithm specification complete
+          - date: "2024-09"
+            event: Methodology section drafted
+
+    # ──────────────────────────────────────────────────
+    # 5. Priya Chakraborty — Senior Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-chakraborty
+      name: Priya Chakraborty
+      orcid: 0000-0001-9900-1011
+      roles:
+        - Conceptualization
+        - Methodology
+        - Investigation
+        - Writing – review & editing
+      affiliations:
+        - aiims-neuro
+
+      first_name: Priya
+      last_name: Chakraborty
+      career_stage: Associate Professor
+      credit_levels:
+        - role: Conceptualization
+          level: supporting
+        - role: Methodology
+          level: equal
+        - role: Investigation
+          level: lead
+        - role: Writing – review & editing
+          level: equal
+      section_contributions:
+        - section: bg-team
+          description: Led survey of authorship practices in Indian neuroscience consortia
+          effort: equal
+        - section: bg-limits
+          description: Analyzed limitations of existing attribution in clinical studies
+          effort: equal
+        - section: discussion
+          description: Contributed clinical neuroscience perspective on attribution reform
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led investigation of authorship practices in clinical neuroscience,
+        contributed methodology and clinical perspective on attribution reform.
+      timeline:
+        joined: "2022-01"
+        milestones:
+          - date: "2022-01"
+            event: Joined to lead clinical neuroscience investigation
+          - date: "2023-06"
+            event: Completed survey across Indian consortia
+          - date: "2024-12"
+            event: Contributed clinical perspective to discussion
+
+    # ──────────────────────────────────────────────────
+    # 6. James Whitfield — Senior Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-whitfield
+      name: James Whitfield
+      orcid: 0000-0003-1122-3344
+      roles:
+        - Methodology
+        - Formal analysis
+        - Software
+        - Writing – original draft
+        - Supervision
+      affiliations:
+        - mit-neuro
+
+      first_name: James
+      last_name: Whitfield
+      career_stage: Associate Professor
+      credit_levels:
+        - role: Methodology
+          level: equal
+        - role: Formal analysis
+          level: lead
+        - role: Software
+          level: supporting
+        - role: Writing – original draft
+          level: equal
+        - role: Supervision
+          level: equal
+      section_contributions:
+        - section: fw-model
+          description: Contributed computational framework for contribution modeling
+          effort: equal
+        - section: impl-matrix
+          description: Advised on matrix visualization algorithms
+          effort: supporting
+        - section: bg-credit
+          description: Led bibliometric analysis of CRediT adoption rates
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Led formal analysis and bibliometrics, contributed computational
+        framework design, and supervised MIT team members.
+      timeline:
+        joined: "2021-06"
+        milestones:
+          - date: "2021-06"
+            event: Joined to lead computational methodology
+          - date: "2022-09"
+            event: Bibliometric analysis of CRediT adoption complete
+          - date: "2024-06"
+            event: Computational framework validated
+
+    # ──────────────────────────────────────────────────
+    # 7. Fatima Al-Rashidi — Senior Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-al-rashidi
+      name: Fatima Al-Rashidi
+      orcid: 0000-0002-4455-6677
+      roles:
+        - Investigation
+        - Methodology
+        - Writing – original draft
+        - Formal analysis
+      affiliations:
+        - mpibr
+
+      first_name: Fatima
+      last_name: Al-Rashidi
+      career_stage: Senior Research Scientist
+      credit_levels:
+        - role: Investigation
+          level: lead
+        - role: Methodology
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Formal analysis
+          level: equal
+      section_contributions:
+        - section: bg-credit
+          description: Led comprehensive review of CRediT taxonomy history and adoption
+          effort: lead
+        - section: bg-limits
+          description: Analyzed limitations of flat taxonomy approaches
+          effort: equal
+        - section: fw-model
+          description: Contributed hierarchical modeling concepts
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led the CRediT taxonomy review, analyzed limitations of existing
+        approaches, and contributed hierarchical modeling concepts.
+      timeline:
+        joined: "2022-03"
+        milestones:
+          - date: "2022-03"
+            event: Joined to lead CRediT taxonomy investigation
+          - date: "2023-09"
+            event: Comprehensive CRediT review published as preprint
+          - date: "2024-06"
+            event: Drafted background sections
+
+    # ──────────────────────────────────────────────────
+    # 8. Wei Zhang — Senior Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-zhang
+      name: Wei Zhang
+      orcid: 0000-0001-5566-7788
+      roles:
+        - Methodology
+        - Software
+        - Formal analysis
+        - Visualization
+        - Writing – review & editing
+      affiliations:
+        - ethz-neuro
+
+      first_name: Wei
+      last_name: Zhang
+      career_stage: Associate Professor
+      credit_levels:
+        - role: Methodology
+          level: equal
+        - role: Software
+          level: equal
+        - role: Formal analysis
+          level: equal
+        - role: Visualization
+          level: lead
+        - role: Writing – review & editing
+          level: supporting
+      section_contributions:
+        - section: fw-viz
+          description: Led design of the multi-view visualization architecture
+          effort: lead
+        - section: fw-sort
+          description: Contributed information-theoretic sorting criteria
+          effort: equal
+        - section: impl-matrix
+          description: Co-designed the interactive contribution matrix
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Led visualization architecture design, contributed sorting methodology,
+        and co-designed the interactive contribution matrix.
+      timeline:
+        joined: "2022-01"
+        milestones:
+          - date: "2022-01"
+            event: Joined to lead visualization design
+          - date: "2023-01"
+            event: Visualization architecture specification complete
+          - date: "2024-03"
+            event: Interactive matrix prototype validated
+
+    # ──────────────────────────────────────────────────
+    # 9. Kofi Asante — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-asante
+      name: Kofi Asante
+      orcid: 0000-0003-6677-8899
+      roles:
+        - Investigation
+        - Methodology
+        - Writing – original draft
+        - Formal analysis
+      affiliations:
+        - ucl-neuro
+
+      first_name: Kofi
+      last_name: Asante
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Methodology
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Formal analysis
+          level: equal
+      section_contributions:
+        - section: bg-credit
+          description: Conducted systematic review of CRediT implementation across journals
+          effort: equal
+        - section: bg-limits
+          description: Documented limitations of current author listing practices
+          effort: supporting
+        - section: fw-model
+          description: Co-developed the structured contribution schema
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Conducted systematic CRediT review, documented authorship limitations,
+        and co-developed the contribution data schema.
+      timeline:
+        joined: "2022-06"
+        milestones:
+          - date: "2022-06"
+            event: Joined as postdoc on the UCL team
+          - date: "2023-03"
+            event: Systematic review data collection complete
+          - date: "2024-01"
+            event: Contribution schema documented
+
+    # ──────────────────────────────────────────────────
+    # 10. Yuki Morimoto — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-morimoto
+      name: Yuki Morimoto
+      orcid: 0000-0002-7788-9900
+      roles:
+        - Software
+        - Validation
+        - Writing – original draft
+        - Methodology
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Yuki
+      last_name: Morimoto
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Validation
+          level: lead
+        - role: Writing – original draft
+          level: equal
+        - role: Methodology
+          level: supporting
+      section_contributions:
+        - section: fw-sort
+          description: Implemented and tested multi-criteria sorting algorithms
+          effort: equal
+        - section: impl-inline
+          description: Built inline annotation rendering for Japanese text layouts
+          effort: equal
+        - section: impl-timeline
+          description: Contributed to timeline data model validation
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Implemented sorting algorithms, built inline annotation rendering,
+        and led cross-cultural validation of the framework.
+      timeline:
+        joined: "2022-03"
+        milestones:
+          - date: "2022-03"
+            event: Joined Tokyo team as postdoc
+          - date: "2023-06"
+            event: Sorting algorithm implementation complete
+          - date: "2024-06"
+            event: Cross-cultural validation study complete
+
+    # ──────────────────────────────────────────────────
+    # 11. Maria da Silva Gonzalez — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-gonzalez
+      name: Maria da Silva Gonzalez
+      orcid: 0000-0001-8899-0011
+      roles:
+        - Investigation
+        - Writing – original draft
+        - Formal analysis
+        - Visualization
+      affiliations:
+        - usp-neuro
+
+      first_name: Maria
+      last_name: da Silva Gonzalez
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Investigation
+          level: lead
+        - role: Writing – original draft
+          level: equal
+        - role: Formal analysis
+          level: equal
+        - role: Visualization
+          level: supporting
+      section_contributions:
+        - section: bg-team
+          description: Led survey of team science practices across Brazilian neuroscience groups
+          effort: lead
+        - section: bg-limits
+          description: Documented authorship inequities in Global South research
+          effort: supporting
+        - section: discussion
+          description: Contributed perspective on authorship equity in developing countries
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led team science survey across Brazilian groups, documented authorship
+        inequities, and contributed equity perspectives to the discussion.
+      timeline:
+        joined: "2022-09"
+        milestones:
+          - date: "2022-09"
+            event: Joined as postdoc on the São Paulo team
+          - date: "2023-12"
+            event: Brazilian consortium survey complete
+          - date: "2024-09"
+            event: Drafted equity analysis sections
+
+    # ──────────────────────────────────────────────────
+    # 12. Oluwaseun Adeyemi — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-adeyemi
+      name: Oluwaseun Adeyemi
+      orcid: 0000-0003-9900-1122
+      roles:
+        - Software
+        - Methodology
+        - Validation
+        - Writing – original draft
+      affiliations:
+        - uct-neuro
+
+      first_name: Oluwaseun
+      last_name: Adeyemi
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Software
+          level: lead
+        - role: Methodology
+          level: equal
+        - role: Validation
+          level: equal
+        - role: Writing – original draft
+          level: equal
+      section_contributions:
+        - section: impl-inline
+          description: Led development of the inline contribution highlighting system
+          effort: lead
+        - section: impl-matrix
+          description: Co-built the interactive CRediT contribution matrix
+          effort: equal
+        - section: fw-viz
+          description: Contributed to accessibility-focused visualization design
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Led inline highlighting development, co-built the contribution matrix,
+        and contributed accessibility-focused design principles.
+      timeline:
+        joined: "2022-06"
+        milestones:
+          - date: "2022-06"
+            event: Joined as postdoc at University of Cape Town
+          - date: "2023-09"
+            event: Inline highlighting prototype complete
+          - date: "2024-06"
+            event: Accessibility testing and validation complete
+
+    # ──────────────────────────────────────────────────
+    # 13. Sanjay Krishnamurthy — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-krishnamurthy
+      name: Sanjay Krishnamurthy
+      orcid: 0000-0001-0011-2233
+      roles:
+        - Formal analysis
+        - Methodology
+        - Software
+        - Validation
+      affiliations:
+        - mit-neuro
+
+      first_name: Sanjay
+      last_name: Krishnamurthy
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Formal analysis
+          level: lead
+        - role: Methodology
+          level: equal
+        - role: Software
+          level: equal
+        - role: Validation
+          level: equal
+      section_contributions:
+        - section: fw-sort
+          description: Developed formal proofs for ordering consistency properties
+          effort: lead
+        - section: fw-model
+          description: Contributed mathematical formalization of contribution levels
+          effort: supporting
+        - section: impl-matrix
+          description: Implemented matrix layout optimization algorithms
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led formal analysis of ordering consistency, contributed mathematical
+        formalization, and implemented matrix layout algorithms.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Joined MIT team as postdoc
+          - date: "2023-09"
+            event: Ordering consistency proofs complete
+          - date: "2024-06"
+            event: Matrix layout optimization validated
+
+    # ──────────────────────────────────────────────────
+    # 14. Anastasia Volkov — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-volkov
+      name: Anastasia Volkov
+      orcid: 0000-0002-1122-3344
+      roles:
+        - Investigation
+        - Data curation
+        - Writing – original draft
+        - Writing – review & editing
+      affiliations:
+        - mpibr
+
+      first_name: Anastasia
+      last_name: Volkov
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Data curation
+          level: lead
+        - role: Writing – original draft
+          level: equal
+        - role: Writing – review & editing
+          level: equal
+      section_contributions:
+        - section: bg-credit
+          description: Compiled dataset of CRediT adoption across European journals
+          effort: supporting
+        - section: bg-team
+          description: Analyzed growth of neuroscience consortia in Europe
+          effort: equal
+        - section: impl-timeline
+          description: Designed the temporal contribution visualization data model
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Compiled European CRediT adoption data, analyzed consortium growth,
+        and designed the temporal visualization data model.
+      timeline:
+        joined: "2022-09"
+        milestones:
+          - date: "2022-09"
+            event: Joined Max Planck team as postdoc
+          - date: "2023-06"
+            event: European CRediT adoption dataset complete
+          - date: "2024-03"
+            event: Timeline data model specification finalized
+
+    # ──────────────────────────────────────────────────
+    # 15. Chen Wei-Lin — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-wei-lin
+      name: Chen Wei-Lin
+      orcid: 0000-0003-2233-4455
+      roles:
+        - Software
+        - Visualization
+        - Validation
+        - Formal analysis
+      affiliations:
+        - ethz-neuro
+
+      first_name: Wei-Lin
+      last_name: Chen
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Software
+          level: lead
+        - role: Visualization
+          level: equal
+        - role: Validation
+          level: equal
+        - role: Formal analysis
+          level: supporting
+      section_contributions:
+        - section: impl-matrix
+          description: Led implementation of the interactive contribution matrix
+          effort: lead
+        - section: impl-timeline
+          description: Co-built the project timeline visualization component
+          effort: equal
+        - section: fw-viz
+          description: Contributed to visualization performance optimization
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led matrix implementation, co-built the timeline visualization,
+        and optimized rendering performance for large author lists.
+      timeline:
+        joined: "2023-03"
+        milestones:
+          - date: "2023-03"
+            event: Joined ETH team as postdoc
+          - date: "2023-12"
+            event: Interactive matrix v1 complete
+          - date: "2024-09"
+            event: Performance optimization for 100+ author rendering
+
+    # ──────────────────────────────────────────────────
+    # 16. Tomoko Hashimoto — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-hashimoto
+      name: Tomoko Hashimoto
+      orcid: 0000-0001-3344-5566
+      roles:
+        - Investigation
+        - Data curation
+        - Writing – original draft
+        - Methodology
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Tomoko
+      last_name: Hashimoto
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Data curation
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Methodology
+          level: supporting
+      section_contributions:
+        - section: bg-limits
+          description: Analyzed limitations of authorship in large physics/neuro collaborations
+          effort: equal
+        - section: bg-team
+          description: Documented team composition patterns in Japanese neuroscience
+          effort: supporting
+        - section: fw-model
+          description: Contributed to cross-cultural data model requirements
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Analyzed authorship limitations in large collaborations, documented
+        Japanese team patterns, and contributed cross-cultural requirements.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Joined Tokyo team to study authorship practices
+          - date: "2023-09"
+            event: Large collaboration authorship analysis complete
+          - date: "2024-06"
+            event: Cross-cultural requirements documented
+
+    # ──────────────────────────────────────────────────
+    # 17. Rodrigo Ferreira — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-ferreira
+      name: Rodrigo Ferreira
+      orcid: 0000-0002-4455-6677
+      roles:
+        - Software
+        - Visualization
+        - Formal analysis
+        - Writing – original draft
+      affiliations:
+        - usp-neuro
+
+      first_name: Rodrigo
+      last_name: Ferreira
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Visualization
+          level: lead
+        - role: Formal analysis
+          level: supporting
+        - role: Writing – original draft
+          level: supporting
+      section_contributions:
+        - section: impl-inline
+          description: Built the interactive inline annotation styling engine
+          effort: equal
+        - section: fw-viz
+          description: Co-designed color-coding system for contribution levels
+          effort: equal
+        - section: impl-timeline
+          description: Contributed to timeline rendering and animation
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built inline annotation styling, co-designed the color-coding system,
+        and contributed to timeline rendering components.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Joined São Paulo team as postdoc
+          - date: "2024-01"
+            event: Inline annotation styling engine complete
+          - date: "2024-09"
+            event: Color-coding system validated with user testing
+
+    # ──────────────────────────────────────────────────
+    # 18. Nadia El-Amin — Postdoctoral Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-el-amin
+      name: Nadia El-Amin
+      orcid: 0000-0003-5566-7788
+      roles:
+        - Methodology
+        - Formal analysis
+        - Writing – original draft
+        - Investigation
+      affiliations:
+        - karolinska-neuro
+
+      first_name: Nadia
+      last_name: El-Amin
+      career_stage: Postdoctoral Researcher
+      credit_levels:
+        - role: Methodology
+          level: equal
+        - role: Formal analysis
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Investigation
+          level: supporting
+      section_contributions:
+        - section: fw-sort
+          description: Developed fairness metrics for author ordering algorithms
+          effort: equal
+        - section: fw-model
+          description: Contributed equity-aware contribution modeling
+          effort: equal
+        - section: discussion
+          description: Wrote about ethical implications of automated ordering
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Developed fairness metrics for ordering, contributed equity-aware
+        modeling, and wrote about ethical implications.
+      timeline:
+        joined: "2023-03"
+        milestones:
+          - date: "2023-03"
+            event: Joined Karolinska team as postdoc
+          - date: "2024-01"
+            event: Fairness metrics framework complete
+          - date: "2024-12"
+            event: Ethics analysis drafted
+
+    # ──────────────────────────────────────────────────
+    # 19. Hyunjin Park — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-park
+      name: Hyunjin Park
+      orcid: 0000-0001-6677-8899
+      roles:
+        - Software
+        - Validation
+        - Investigation
+      affiliations:
+        - snu-neuro
+
+      first_name: Hyunjin
+      last_name: Park
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Validation
+          level: equal
+        - role: Investigation
+          level: supporting
+      section_contributions:
+        - section: impl-inline
+          description: Built inline highlighting for CJK text rendering
+          effort: equal
+        - section: impl-matrix
+          description: Implemented responsive matrix layout for mobile displays
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built CJK text inline highlighting and implemented responsive
+        matrix layout for mobile devices.
+      timeline:
+        joined: "2022-09"
+        milestones:
+          - date: "2022-09"
+            event: Joined Seoul National team as PhD student
+          - date: "2023-06"
+            event: CJK inline highlighting prototype complete
+          - date: "2024-03"
+            event: Mobile matrix layout validated
+
+    # ──────────────────────────────────────────────────
+    # 20. Adesola Ogunlade — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-ogunlade
+      name: Adesola Ogunlade
+      orcid: 0000-0002-7788-9900
+      roles:
+        - Investigation
+        - Writing – original draft
+        - Formal analysis
+      affiliations:
+        - ucl-neuro
+
+      first_name: Adesola
+      last_name: Ogunlade
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Formal analysis
+          level: supporting
+      section_contributions:
+        - section: bg-credit
+          description: Surveyed CRediT adoption in African neuroscience journals
+          effort: equal
+        - section: bg-limits
+          description: Documented barriers to equitable attribution in low-resource settings
+          effort: supporting
+        - section: intro
+          description: Contributed framing on global equity in authorship
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Surveyed CRediT adoption in African journals, documented attribution
+        barriers, and contributed global equity framing to the introduction.
+      timeline:
+        joined: "2022-06"
+        milestones:
+          - date: "2022-06"
+            event: Began PhD research on authorship equity at UCL
+          - date: "2023-06"
+            event: African journal survey complete
+          - date: "2024-03"
+            event: Attribution barriers analysis drafted
+
+    # ──────────────────────────────────────────────────
+    # 21. Luisa Moretti — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-moretti
+      name: Luisa Moretti
+      orcid: 0000-0003-8899-0011
+      roles:
+        - Software
+        - Visualization
+        - Validation
+        - Formal analysis
+      affiliations:
+        - ethz-neuro
+
+      first_name: Luisa
+      last_name: Moretti
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Visualization
+          level: equal
+        - role: Validation
+          level: equal
+        - role: Formal analysis
+          level: supporting
+      section_contributions:
+        - section: impl-matrix
+          description: Built interactive filtering and search within the contribution matrix
+          effort: equal
+        - section: fw-viz
+          description: Contributed to responsive design specifications
+          effort: supporting
+        - section: impl-timeline
+          description: Implemented timeline zoom and pan interactions
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built matrix filtering and search features, contributed responsive
+        design specs, and implemented timeline interactions.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Started PhD at ETH Zurich
+          - date: "2023-09"
+            event: Matrix filtering prototype complete
+          - date: "2024-06"
+            event: Timeline interaction features validated
+
+    # ──────────────────────────────────────────────────
+    # 22. Ravi Sharma — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-sharma
+      name: Ravi Sharma
+      orcid: 0000-0001-9900-1122
+      roles:
+        - Investigation
+        - Methodology
+        - Writing – original draft
+      affiliations:
+        - aiims-neuro
+
+      first_name: Ravi
+      last_name: Sharma
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Methodology
+          level: supporting
+        - role: Writing – original draft
+          level: equal
+      section_contributions:
+        - section: bg-team
+          description: Surveyed authorship norms in Indian clinical neuroscience
+          effort: equal
+        - section: bg-limits
+          description: Documented hierarchical authorship challenges in medical research
+          effort: supporting
+        - section: discussion
+          description: Contributed perspective on authorship reform in hierarchical settings
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Surveyed Indian clinical authorship norms, documented hierarchical
+        challenges, and contributed reform perspectives.
+      timeline:
+        joined: "2023-03"
+        milestones:
+          - date: "2023-03"
+            event: Began PhD research on authorship norms at AIIMS
+          - date: "2024-01"
+            event: Clinical authorship survey complete
+          - date: "2024-09"
+            event: Hierarchical authorship analysis drafted
+
+    # ──────────────────────────────────────────────────
+    # 23. Ekaterina Sokolova — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-sokolova
+      name: Ekaterina Sokolova
+      orcid: 0000-0002-0011-2233
+      roles:
+        - Formal analysis
+        - Software
+        - Validation
+        - Investigation
+      affiliations:
+        - mpibr
+
+      first_name: Ekaterina
+      last_name: Sokolova
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Formal analysis
+          level: equal
+        - role: Software
+          level: equal
+        - role: Validation
+          level: equal
+        - role: Investigation
+          level: supporting
+      section_contributions:
+        - section: fw-sort
+          description: Implemented and benchmarked sorting algorithm variants
+          effort: supporting
+        - section: impl-inline
+          description: Built text parsing engine for contribution annotation
+          effort: supporting
+        - section: fw-model
+          description: Validated data model against real consortium datasets
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Benchmarked sorting algorithms, built annotation text parsing,
+        and validated the data model against consortium datasets.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Started PhD at Max Planck
+          - date: "2024-01"
+            event: Sorting algorithm benchmarks complete
+          - date: "2024-09"
+            event: Data model validation study complete
+
+    # ──────────────────────────────────────────────────
+    # 24. Diego Ramirez — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-ramirez
+      name: Diego Ramirez
+      orcid: 0000-0003-1122-3344
+      roles:
+        - Software
+        - Visualization
+        - Investigation
+      affiliations:
+        - unam-neuro
+
+      first_name: Diego
+      last_name: Ramirez
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Software
+          level: lead
+        - role: Visualization
+          level: equal
+        - role: Investigation
+          level: supporting
+      section_contributions:
+        - section: impl-timeline
+          description: Led implementation of the project timeline visualization
+          effort: lead
+        - section: impl-inline
+          description: Built tooltip and popover components for inline annotations
+          effort: supporting
+        - section: fw-viz
+          description: Designed animation specifications for timeline transitions
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led timeline visualization implementation, built inline annotation
+        interaction components, and designed timeline animations.
+      timeline:
+        joined: "2023-03"
+        milestones:
+          - date: "2023-03"
+            event: Started PhD at UNAM
+          - date: "2024-01"
+            event: Timeline visualization v1 complete
+          - date: "2024-09"
+            event: Animation system finalized
+
+    # ──────────────────────────────────────────────────
+    # 25. Mei Huang — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-huang
+      name: Mei Huang
+      orcid: 0000-0001-2233-4455
+      roles:
+        - Formal analysis
+        - Software
+        - Validation
+        - Writing – original draft
+      affiliations:
+        - mit-neuro
+
+      first_name: Mei
+      last_name: Huang
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Formal analysis
+          level: equal
+        - role: Software
+          level: equal
+        - role: Validation
+          level: lead
+        - role: Writing – original draft
+          level: supporting
+      section_contributions:
+        - section: fw-sort
+          description: Developed statistical validation tests for ordering fairness
+          effort: supporting
+        - section: impl-matrix
+          description: Built automated testing framework for the contribution matrix
+          effort: equal
+        - section: fw-model
+          description: Validated data model completeness through simulation studies
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Developed ordering fairness tests, built automated testing framework,
+        and validated data model completeness through simulations.
+      timeline:
+        joined: "2023-09"
+        milestones:
+          - date: "2023-09"
+            event: Started PhD at MIT
+          - date: "2024-06"
+            event: Fairness validation tests complete
+          - date: "2025-01"
+            event: Simulation-based model validation complete
+
+    # ──────────────────────────────────────────────────
+    # 26. Benjamin Nkrumah — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-nkrumah
+      name: Benjamin Nkrumah
+      orcid: 0000-0002-3344-5566
+      roles:
+        - Investigation
+        - Data curation
+        - Writing – original draft
+      affiliations:
+        - uct-neuro
+
+      first_name: Benjamin
+      last_name: Nkrumah
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Data curation
+          level: equal
+        - role: Writing – original draft
+          level: supporting
+      section_contributions:
+        - section: bg-team
+          description: Documented team science practices in African neuroscience networks
+          effort: supporting
+        - section: bg-credit
+          description: Analyzed CRediT awareness among African researchers
+          effort: supporting
+        - section: discussion
+          description: Contributed perspective on inclusive attribution systems
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Documented African team science practices, analyzed CRediT awareness,
+        and contributed inclusive attribution perspectives.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Started PhD at University of Cape Town
+          - date: "2024-03"
+            event: African team science documentation complete
+          - date: "2024-12"
+            event: Inclusive attribution analysis drafted
+
+    # ──────────────────────────────────────────────────
+    # 27. Aiko Watanabe — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-watanabe
+      name: Aiko Watanabe
+      orcid: 0000-0003-4455-6677
+      roles:
+        - Software
+        - Visualization
+        - Validation
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Aiko
+      last_name: Watanabe
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Visualization
+          level: equal
+        - role: Validation
+          level: supporting
+      section_contributions:
+        - section: impl-inline
+          description: Built bidirectional text support for inline annotations
+          effort: supporting
+        - section: impl-timeline
+          description: Implemented interactive milestone tooltip system
+          effort: equal
+        - section: fw-viz
+          description: Contributed to internationalization specifications
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built bidirectional text support, implemented milestone tooltips,
+        and contributed internationalization specifications.
+      timeline:
+        joined: "2023-09"
+        milestones:
+          - date: "2023-09"
+            event: Started PhD at University of Tokyo
+          - date: "2024-06"
+            event: Bidirectional text support complete
+          - date: "2025-01"
+            event: Internationalization features validated
+
+    # ──────────────────────────────────────────────────
+    # 28. Thiago Costa — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-costa
+      name: Thiago Costa
+      orcid: 0000-0001-5566-7788
+      roles:
+        - Investigation
+        - Formal analysis
+        - Writing – original draft
+      affiliations:
+        - usp-neuro
+
+      first_name: Thiago
+      last_name: Costa
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Formal analysis
+          level: supporting
+        - role: Writing – original draft
+          level: supporting
+      section_contributions:
+        - section: bg-limits
+          description: Analyzed author ordering disputes in neuroscience publications
+          effort: supporting
+        - section: bg-team
+          description: Contributed data on team size trends in Brazilian neuroscience
+          effort: supporting
+        - section: fw-model
+          description: Tested data model against Latin American case studies
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Analyzed ordering disputes, contributed Brazilian team size data,
+        and tested the data model against Latin American case studies.
+      timeline:
+        joined: "2024-01"
+        milestones:
+          - date: "2024-01"
+            event: Started PhD at University of São Paulo
+          - date: "2024-09"
+            event: Ordering dispute analysis complete
+          - date: "2025-03"
+            event: Latin American case study validation complete
+
+    # ──────────────────────────────────────────────────
+    # 29. Sarah O'Brien — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-obrien
+      name: Sarah O'Brien
+      orcid: 0000-0002-6677-8899
+      roles:
+        - Methodology
+        - Investigation
+        - Writing – original draft
+        - Data curation
+      affiliations:
+        - ucl-neuro
+
+      first_name: Sarah
+      last_name: O'Brien
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Methodology
+          level: supporting
+        - role: Investigation
+          level: equal
+        - role: Writing – original draft
+          level: equal
+        - role: Data curation
+          level: equal
+      section_contributions:
+        - section: fw-model
+          description: Developed user requirements through stakeholder interviews
+          effort: equal
+        - section: bg-credit
+          description: Analyzed publisher adoption of structured contribution data
+          effort: supporting
+        - section: intro
+          description: Contributed stakeholder perspectives to introduction framing
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Conducted stakeholder interviews, analyzed publisher CRediT adoption,
+        and contributed stakeholder perspectives to the introduction.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Started PhD at UCL
+          - date: "2023-09"
+            event: Stakeholder interview study complete
+          - date: "2024-06"
+            event: Publisher adoption analysis drafted
+
+    # ──────────────────────────────────────────────────
+    # 30. Kenji Yamamoto — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-yamamoto
+      name: Kenji Yamamoto
+      orcid: 0000-0003-7788-9900
+      roles:
+        - Software
+        - Formal analysis
+        - Validation
+      affiliations:
+        - karolinska-neuro
+
+      first_name: Kenji
+      last_name: Yamamoto
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Formal analysis
+          level: supporting
+        - role: Validation
+          level: equal
+      section_contributions:
+        - section: impl-matrix
+          description: Implemented keyboard navigation and screen reader support
+          effort: supporting
+        - section: fw-sort
+          description: Tested sorting algorithms with synthetic consortium datasets
+          effort: supporting
+        - section: impl-inline
+          description: Built automated accessibility testing for inline components
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Implemented accessibility features, tested sorting algorithms
+        with synthetic data, and built accessibility testing tools.
+      timeline:
+        joined: "2024-01"
+        milestones:
+          - date: "2024-01"
+            event: Started PhD at Karolinska
+          - date: "2024-09"
+            event: Accessibility features complete
+          - date: "2025-03"
+            event: Synthetic dataset testing complete
+
+    # ──────────────────────────────────────────────────
+    # 31. Deepa Venkatesh — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-venkatesh
+      name: Deepa Venkatesh
+      orcid: 0000-0001-8899-0011
+      roles:
+        - Investigation
+        - Data curation
+        - Writing – original draft
+      affiliations:
+        - aiims-neuro
+
+      first_name: Deepa
+      last_name: Venkatesh
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Data curation
+          level: lead
+        - role: Writing – original draft
+          level: equal
+      section_contributions:
+        - section: bg-team
+          description: Led data collection on team composition in clinical neuroscience
+          effort: equal
+        - section: bg-limits
+          description: Documented authorship disputes in Indian medical journals
+          effort: equal
+        - section: discussion
+          description: Contributed clinical research perspective on attribution reform
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led clinical team data collection, documented authorship disputes,
+        and contributed clinical perspective on attribution reform.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Started PhD at AIIMS
+          - date: "2024-03"
+            event: Clinical team composition data collection complete
+          - date: "2024-12"
+            event: Authorship dispute documentation drafted
+
+    # ──────────────────────────────────────────────────
+    # 32. Ahmed Hassan — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-hassan
+      name: Ahmed Hassan
+      orcid: 0000-0002-9900-1122
+      roles:
+        - Software
+        - Visualization
+        - Formal analysis
+      affiliations:
+        - mpibr
+
+      first_name: Ahmed
+      last_name: Hassan
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Visualization
+          level: equal
+        - role: Formal analysis
+          level: supporting
+      section_contributions:
+        - section: impl-timeline
+          description: Built animated timeline transitions and playback controls
+          effort: equal
+        - section: fw-viz
+          description: Designed data-driven animation specifications
+          effort: supporting
+        - section: impl-matrix
+          description: Implemented matrix cell tooltip interactions
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built timeline animations, designed data-driven animation specs,
+        and implemented matrix tooltip interactions.
+      timeline:
+        joined: "2024-03"
+        milestones:
+          - date: "2024-03"
+            event: Started PhD at Max Planck
+          - date: "2024-12"
+            event: Timeline animation system complete
+          - date: "2025-03"
+            event: Matrix interactions validated
+
+    # ──────────────────────────────────────────────────
+    # 33. Ji-Yeon Choi — PhD Candidate
+    # ──────────────────────────────────────────────────
+    - id: author-choi
+      name: Ji-Yeon Choi
+      orcid: 0000-0003-0011-2233
+      roles:
+        - Investigation
+        - Formal analysis
+        - Writing – original draft
+        - Methodology
+      affiliations:
+        - snu-neuro
+
+      first_name: Ji-Yeon
+      last_name: Choi
+      career_stage: PhD Candidate
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Formal analysis
+          level: equal
+        - role: Writing – original draft
+          level: supporting
+        - role: Methodology
+          level: supporting
+      section_contributions:
+        - section: fw-sort
+          description: Analyzed cultural differences in author ordering conventions
+          effort: supporting
+        - section: bg-limits
+          description: Documented East Asian authorship naming conventions
+          effort: supporting
+        - section: fw-model
+          description: Contributed CJK name handling requirements
+          effort: supporting
+        - section: discussion
+          description: Wrote about cultural adaptation of attribution systems
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Analyzed cultural ordering differences, documented CJK naming
+        conventions, and wrote about cultural adaptation requirements.
+      timeline:
+        joined: "2023-09"
+        milestones:
+          - date: "2023-09"
+            event: Started PhD at Seoul National University
+          - date: "2024-06"
+            event: Cultural ordering analysis complete
+          - date: "2025-01"
+            event: CJK naming convention documentation finalized
+
+    # ──────────────────────────────────────────────────
+    # 34. Marcus Jensen — Research Engineer
+    # ──────────────────────────────────────────────────
+    - id: author-jensen
+      name: Marcus Jensen
+      orcid: 0000-0001-1122-3344
+      roles:
+        - Software
+        - Resources
+        - Validation
+      affiliations:
+        - mit-neuro
+
+      first_name: Marcus
+      last_name: Jensen
+      career_stage: Research Engineer
+      credit_levels:
+        - role: Software
+          level: lead
+        - role: Resources
+          level: lead
+        - role: Validation
+          level: equal
+      section_contributions:
+        - section: impl-inline
+          description: Led frontend architecture and component library development
+          effort: lead
+        - section: impl-matrix
+          description: Built the matrix data pipeline and rendering engine
+          effort: equal
+        - section: impl-timeline
+          description: Architected the timeline component state management
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Led frontend architecture, built the matrix rendering engine,
+        and architected timeline state management.
+      timeline:
+        joined: "2022-01"
+        milestones:
+          - date: "2022-01"
+            event: Joined as lead research engineer at MIT
+          - date: "2022-09"
+            event: Frontend architecture and component library established
+          - date: "2023-06"
+            event: Matrix rendering engine v1 complete
+          - date: "2024-03"
+            event: All implementation components production-ready
+
+    # ──────────────────────────────────────────────────
+    # 35. Yuto Nakagawa — Research Engineer
+    # ──────────────────────────────────────────────────
+    - id: author-nakagawa
+      name: Yuto Nakagawa
+      orcid: 0000-0002-2233-4455
+      roles:
+        - Software
+        - Resources
+        - Data curation
+        - Validation
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Yuto
+      last_name: Nakagawa
+      career_stage: Research Engineer
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Resources
+          level: equal
+        - role: Data curation
+          level: equal
+        - role: Validation
+          level: supporting
+      section_contributions:
+        - section: impl-matrix
+          description: Built server-side rendering and data aggregation pipelines
+          effort: equal
+        - section: impl-inline
+          description: Implemented text processing pipeline for annotation extraction
+          effort: supporting
+        - section: fw-viz
+          description: Contributed to performance benchmarking specifications
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built server-side rendering pipelines, implemented text processing
+        for annotation extraction, and contributed performance benchmarks.
+      timeline:
+        joined: "2022-06"
+        milestones:
+          - date: "2022-06"
+            event: Joined Tokyo team as research engineer
+          - date: "2023-03"
+            event: Server-side rendering pipeline complete
+          - date: "2024-01"
+            event: Text processing pipeline validated
+
+    # ──────────────────────────────────────────────────
+    # 36. Olga Petersen — Research Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-petersen
+      name: Olga Petersen
+      orcid: 0000-0003-3344-5566
+      roles:
+        - Formal analysis
+        - Methodology
+        - Investigation
+        - Validation
+      affiliations:
+        - mpibr
+
+      first_name: Olga
+      last_name: Petersen
+      career_stage: Research Scientist
+      credit_levels:
+        - role: Formal analysis
+          level: equal
+        - role: Methodology
+          level: equal
+        - role: Investigation
+          level: equal
+        - role: Validation
+          level: lead
+      section_contributions:
+        - section: fw-sort
+          description: Developed formal evaluation criteria for sorting algorithms
+          effort: equal
+        - section: fw-model
+          description: Validated model consistency across use cases
+          effort: supporting
+        - section: bg-credit
+          description: Conducted quantitative analysis of CRediT usage patterns
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Developed sorting evaluation criteria, validated model consistency,
+        and conducted quantitative CRediT usage analysis.
+      timeline:
+        joined: "2022-09"
+        milestones:
+          - date: "2022-09"
+            event: Joined Max Planck team as research scientist
+          - date: "2023-06"
+            event: Sorting evaluation framework complete
+          - date: "2024-06"
+            event: Model consistency validation study complete
+
+    # ──────────────────────────────────────────────────
+    # 37. Tariq Mansoor — Research Engineer
+    # ──────────────────────────────────────────────────
+    - id: author-mansoor
+      name: Tariq Mansoor
+      orcid: 0000-0001-4455-6677
+      roles:
+        - Software
+        - Resources
+        - Validation
+      affiliations:
+        - ucl-neuro
+
+      first_name: Tariq
+      last_name: Mansoor
+      career_stage: Research Engineer
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Resources
+          level: equal
+        - role: Validation
+          level: equal
+      section_contributions:
+        - section: impl-timeline
+          description: Built deployment infrastructure and CI/CD pipeline
+          effort: equal
+        - section: impl-inline
+          description: Implemented lazy loading and performance optimization
+          effort: supporting
+        - section: impl-matrix
+          description: Set up automated regression testing suite
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Built deployment infrastructure, implemented performance optimization,
+        and set up automated regression testing.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Joined UCL team as research engineer
+          - date: "2024-01"
+            event: CI/CD pipeline and deployment infrastructure complete
+          - date: "2024-09"
+            event: Regression testing suite fully operational
+
+    # ──────────────────────────────────────────────────
+    # 38. Camila Reyes — Research Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-reyes
+      name: Camila Reyes
+      orcid: 0000-0002-5566-7788
+      roles:
+        - Investigation
+        - Formal analysis
+        - Writing – original draft
+        - Data curation
+      affiliations:
+        - usp-neuro
+
+      first_name: Camila
+      last_name: Reyes
+      career_stage: Research Scientist
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Formal analysis
+          level: equal
+        - role: Writing – original draft
+          level: supporting
+        - role: Data curation
+          level: equal
+      section_contributions:
+        - section: bg-team
+          description: Analyzed team science growth trends in Latin American neuroscience
+          effort: supporting
+        - section: bg-limits
+          description: Documented language barriers in authorship communication
+          effort: supporting
+        - section: discussion
+          description: Contributed perspective on multilingual attribution challenges
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Analyzed Latin American team science trends, documented language
+        barriers, and contributed multilingual attribution perspectives.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Joined São Paulo team as research scientist
+          - date: "2023-09"
+            event: Latin American team science trend analysis complete
+          - date: "2024-06"
+            event: Language barrier documentation drafted
+
+    # ──────────────────────────────────────────────────
+    # 39. David Chang — Research Engineer
+    # ──────────────────────────────────────────────────
+    - id: author-chang
+      name: David Chang
+      orcid: 0000-0003-6677-8899
+      roles:
+        - Software
+        - Resources
+        - Visualization
+      affiliations:
+        - mit-neuro
+
+      first_name: David
+      last_name: Chang
+      career_stage: Research Engineer
+      credit_levels:
+        - role: Software
+          level: lead
+        - role: Resources
+          level: equal
+        - role: Visualization
+          level: equal
+      section_contributions:
+        - section: impl-matrix
+          description: Led matrix component architecture and SVG rendering
+          effort: lead
+        - section: impl-inline
+          description: Co-built the inline annotation rendering system
+          effort: equal
+        - section: fw-viz
+          description: Contributed to cross-browser compatibility specifications
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Led matrix SVG rendering, co-built inline annotation rendering,
+        and ensured cross-browser compatibility.
+      timeline:
+        joined: "2022-03"
+        milestones:
+          - date: "2022-03"
+            event: Joined MIT team as research engineer
+          - date: "2022-12"
+            event: Matrix SVG rendering engine complete
+          - date: "2023-09"
+            event: Cross-browser compatibility verified
+          - date: "2024-06"
+            event: All components production-ready
+
+    # ──────────────────────────────────────────────────
+    # 40. Nneka Igwe — Research Scientist
+    # ──────────────────────────────────────────────────
+    - id: author-igwe
+      name: Nneka Igwe
+      orcid: 0000-0001-7788-9900
+      roles:
+        - Investigation
+        - Methodology
+        - Formal analysis
+        - Writing – original draft
+      affiliations:
+        - uct-neuro
+
+      first_name: Nneka
+      last_name: Igwe
+      career_stage: Research Scientist
+      credit_levels:
+        - role: Investigation
+          level: equal
+        - role: Methodology
+          level: equal
+        - role: Formal analysis
+          level: equal
+        - role: Writing – original draft
+          level: supporting
+      section_contributions:
+        - section: bg-credit
+          description: Analyzed CRediT adoption disparities across global regions
+          effort: equal
+        - section: bg-limits
+          description: Documented barriers to structured attribution in resource-limited settings
+          effort: equal
+        - section: fw-model
+          description: Contributed requirements for offline-compatible contribution tools
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Analyzed global CRediT adoption disparities, documented barriers
+        in resource-limited settings, and contributed offline compatibility requirements.
+      timeline:
+        joined: "2023-03"
+        milestones:
+          - date: "2023-03"
+            event: Joined Cape Town team as research scientist
+          - date: "2024-01"
+            event: Global CRediT adoption disparity analysis complete
+          - date: "2024-09"
+            event: Offline compatibility requirements documented
+
+    # ──────────────────────────────────────────────────
+    # 41. Sofia Lindqvist — Research Engineer
+    # ──────────────────────────────────────────────────
+    - id: author-lindqvist
+      name: Sofia Lindqvist
+      orcid: 0000-0002-8899-0011
+      roles:
+        - Software
+        - Visualization
+        - Resources
+        - Validation
+      affiliations:
+        - karolinska-neuro
+
+      first_name: Sofia
+      last_name: Lindqvist
+      career_stage: Research Engineer
+      credit_levels:
+        - role: Software
+          level: equal
+        - role: Visualization
+          level: lead
+        - role: Resources
+          level: supporting
+        - role: Validation
+          level: equal
+      section_contributions:
+        - section: impl-timeline
+          description: Led timeline component visual design and rendering
+          effort: equal
+        - section: impl-inline
+          description: Built inline annotation accessibility features
+          effort: supporting
+        - section: fw-viz
+          description: Co-designed the responsive visualization layout system
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Led timeline visual design, built accessibility features,
+        and co-designed the responsive layout system.
+      timeline:
+        joined: "2023-09"
+        milestones:
+          - date: "2023-09"
+            event: Joined Karolinska team as research engineer
+          - date: "2024-06"
+            event: Timeline visual design complete
+          - date: "2025-01"
+            event: Accessibility audit and fixes complete
+
+    # ──────────────────────────────────────────────────
+    # 42. Hannah Becker — Data Curator
+    # ──────────────────────────────────────────────────
+    - id: author-becker
+      name: Hannah Becker
+      orcid: 0000-0003-9900-1122
+      roles:
+        - Data curation
+        - Resources
+        - Validation
+      affiliations:
+        - mpibr
+
+      first_name: Hannah
+      last_name: Becker
+      career_stage: Data Curator
+      credit_levels:
+        - role: Data curation
+          level: lead
+        - role: Resources
+          level: equal
+        - role: Validation
+          level: supporting
+      section_contributions:
+        - section: bg-team
+          description: Compiled and curated consortium metadata across European institutions
+          effort: supporting
+        - section: impl-matrix
+          description: Curated test datasets for matrix visualization validation
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Curated consortium metadata, compiled test datasets, and maintained
+        data quality across European partner institutions.
+      timeline:
+        joined: "2023-06"
+        milestones:
+          - date: "2023-06"
+            event: Joined Max Planck as data curator
+          - date: "2024-01"
+            event: European consortium metadata fully curated
+          - date: "2024-09"
+            event: Test datasets for all visualization components complete
+
+    # ──────────────────────────────────────────────────
+    # 43. Raj Patel — Lab Manager
+    # ──────────────────────────────────────────────────
+    - id: author-patel
+      name: Raj Patel
+      orcid: 0000-0001-0011-2233
+      roles:
+        - Resources
+        - Project administration
+        - Data curation
+      affiliations:
+        - aiims-neuro
+
+      first_name: Raj
+      last_name: Patel
+      career_stage: Lab Manager
+      credit_levels:
+        - role: Resources
+          level: lead
+        - role: Project administration
+          level: equal
+        - role: Data curation
+          level: supporting
+      section_contributions:
+        - section: bg-team
+          description: Coordinated cross-site data collection logistics
+          effort: supporting
+        - section: impl-timeline
+          description: Managed project milestone tracking and documentation
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Coordinated cross-site logistics, managed milestone tracking,
+        and maintained resource allocation across Indian partner sites.
+      timeline:
+        joined: "2022-01"
+        milestones:
+          - date: "2022-01"
+            event: Joined AIIMS team as lab manager
+          - date: "2023-01"
+            event: Cross-site coordination protocols established
+          - date: "2024-06"
+            event: All project milestones tracked and documented
+
+    # ──────────────────────────────────────────────────
+    # 44. Mitsuki Endo — Research Coordinator
+    # ──────────────────────────────────────────────────
+    - id: author-endo
+      name: Mitsuki Endo
+      orcid: 0000-0002-1122-3344
+      roles:
+        - Project administration
+        - Resources
+        - Data curation
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Mitsuki
+      last_name: Endo
+      career_stage: Research Coordinator
+      credit_levels:
+        - role: Project administration
+          level: equal
+        - role: Resources
+          level: equal
+        - role: Data curation
+          level: equal
+      section_contributions:
+        - section: bg-team
+          description: Coordinated Japanese team logistics and institutional agreements
+          effort: supporting
+        - section: impl-matrix
+          description: Managed test data collection from Japanese consortium partners
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Coordinated Japanese team logistics, managed institutional agreements,
+        and organized test data collection from consortium partners.
+      timeline:
+        joined: "2022-09"
+        milestones:
+          - date: "2022-09"
+            event: Joined Tokyo team as research coordinator
+          - date: "2023-06"
+            event: All Japanese institutional agreements in place
+          - date: "2024-03"
+            event: Test data collection from all partners complete
+
+    # ──────────────────────────────────────────────────
+    # 45. Grace Mensah — Data Curator
+    # ──────────────────────────────────────────────────
+    - id: author-mensah
+      name: Grace Mensah
+      orcid: 0000-0003-2233-4456
+      roles:
+        - Data curation
+        - Validation
+        - Resources
+      affiliations:
+        - uct-neuro
+
+      first_name: Grace
+      last_name: Mensah
+      career_stage: Data Curator
+      credit_levels:
+        - role: Data curation
+          level: lead
+        - role: Validation
+          level: equal
+        - role: Resources
+          level: supporting
+      section_contributions:
+        - section: bg-credit
+          description: Curated dataset of CRediT implementation across African journals
+          effort: supporting
+        - section: bg-team
+          description: Compiled team composition data from African research networks
+          effort: supporting
+        - section: impl-matrix
+          description: Validated matrix visualization with curated test datasets
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Curated African CRediT implementation data, compiled team composition
+        datasets, and validated matrix visualizations.
+      timeline:
+        joined: "2024-01"
+        milestones:
+          - date: "2024-01"
+            event: Joined Cape Town team as data curator
+          - date: "2024-09"
+            event: African CRediT dataset complete
+          - date: "2025-03"
+            event: Validation datasets finalized
+
+    # ──────────────────────────────────────────────────
+    # 46. Carlos Rivera — Lab Manager
+    # ──────────────────────────────────────────────────
+    - id: author-rivera
+      name: Carlos Rivera
+      orcid: 0000-0001-3344-5567
+      roles:
+        - Resources
+        - Project administration
+        - Data curation
+      affiliations:
+        - unam-neuro
+
+      first_name: Carlos
+      last_name: Rivera
+      career_stage: Lab Manager
+      credit_levels:
+        - role: Resources
+          level: lead
+        - role: Project administration
+          level: equal
+        - role: Data curation
+          level: supporting
+      section_contributions:
+        - section: bg-team
+          description: Coordinated data collection across Latin American partner sites
+          effort: supporting
+        - section: impl-timeline
+          description: Managed project timeline documentation and progress tracking
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Coordinated Latin American data collection, managed project timeline
+        documentation, and maintained resource allocation across partner sites.
+      timeline:
+        joined: "2023-01"
+        milestones:
+          - date: "2023-01"
+            event: Joined UNAM team as lab manager
+          - date: "2023-09"
+            event: Latin American coordination protocols established
+          - date: "2024-06"
+            event: All partner site data contributions received
+
+    # ──────────────────────────────────────────────────
+    # 47. Emma Thompson — Undergraduate Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-thompson
+      name: Emma Thompson
+      orcid: 0000-0002-4455-6678
+      roles:
+        - Investigation
+        - Data curation
+      affiliations:
+        - ucl-neuro
+
+      first_name: Emma
+      last_name: Thompson
+      career_stage: Undergraduate Researcher
+      credit_levels:
+        - role: Investigation
+          level: supporting
+        - role: Data curation
+          level: supporting
+      section_contributions:
+        - section: bg-limits
+          description: Assisted with coding authorship display practices across journal websites
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Assisted with systematic coding of authorship display practices
+        across neuroscience journal websites.
+      timeline:
+        joined: "2024-06"
+        milestones:
+          - date: "2024-06"
+            event: Joined UCL team as summer research intern
+          - date: "2024-09"
+            event: Journal website coding complete
+
+    # ──────────────────────────────────────────────────
+    # 48. Takeshi Mori — Undergraduate Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-mori
+      name: Takeshi Mori
+      orcid: 0000-0003-5566-7789
+      roles:
+        - Software
+        - Visualization
+      affiliations:
+        - utokyo-neuro
+
+      first_name: Takeshi
+      last_name: Mori
+      career_stage: Undergraduate Researcher
+      credit_levels:
+        - role: Software
+          level: supporting
+        - role: Visualization
+          level: supporting
+      section_contributions:
+        - section: impl-inline
+          description: Assisted with CSS styling and visual polish of inline annotations
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Assisted with CSS styling and visual refinement of the inline
+        annotation display components.
+      timeline:
+        joined: "2024-06"
+        milestones:
+          - date: "2024-06"
+            event: Joined Tokyo team as undergraduate researcher
+          - date: "2024-12"
+            event: Inline annotation styling contributions complete
+
+    # ──────────────────────────────────────────────────
+    # 49. Zara Khan — Undergraduate Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-khan
+      name: Zara Khan
+      orcid: 0000-0001-6677-8890
+      roles:
+        - Investigation
+        - Data curation
+      affiliations:
+        - mit-neuro
+
+      first_name: Zara
+      last_name: Khan
+      career_stage: Undergraduate Researcher
+      credit_levels:
+        - role: Investigation
+          level: supporting
+        - role: Data curation
+          level: supporting
+      section_contributions:
+        - section: bg-credit
+          description: Assisted with data extraction from CRediT adoption surveys
+          effort: supporting
+        - section: bg-team
+          description: Helped compile team size statistics from published literature
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Assisted with CRediT adoption survey data extraction and compiled
+        team size statistics from published neuroscience literature.
+      timeline:
+        joined: "2024-09"
+        milestones:
+          - date: "2024-09"
+            event: Joined MIT team as undergraduate researcher
+          - date: "2025-03"
+            event: Data extraction and compilation complete
+
+    # ──────────────────────────────────────────────────
+    # 50. Lucas Almeida — Undergraduate Researcher
+    # ──────────────────────────────────────────────────
+    - id: author-almeida
+      name: Lucas Almeida
+      orcid: 0000-0002-7788-9901
+      roles:
+        - Investigation
+        - Visualization
+      affiliations:
+        - usp-neuro
+
+      first_name: Lucas
+      last_name: Almeida
+      career_stage: Undergraduate Researcher
+      credit_levels:
+        - role: Investigation
+          level: supporting
+        - role: Visualization
+          level: supporting
+      section_contributions:
+        - section: impl-timeline
+          description: Assisted with visual design assets for timeline components
+          effort: supporting
+        - section: bg-team
+          description: Helped gather team composition data from Brazilian research groups
+          effort: supporting
+      figure_contributions: []
+      contribution_statement: >
+        Assisted with timeline visual design assets and gathered team
+        composition data from Brazilian neuroscience research groups.
+      timeline:
+        joined: "2024-03"
+        milestones:
+          - date: "2024-03"
+            event: Joined São Paulo team as undergraduate researcher
+          - date: "2024-09"
+            event: Visual design assets and data collection complete
+
+  affiliations:
+    - id: ucl-neuro
+      name: University College London
+      department: UCL Queen Square Institute of Neurology
+      ror: https://ror.org/02jx3x895
+      city: London
+      country: GB
+    - id: utokyo-neuro
+      name: University of Tokyo
+      department: Department of Neurophysiology
+      ror: https://ror.org/057zh3y96
+      city: Tokyo
+      country: JP
+    - id: unam-neuro
+      name: National Autonomous University of Mexico
+      department: Institute of Neurobiology
+      ror: https://ror.org/01tmp8f25
+      city: Querétaro
+      region: Querétaro
+      country: MX
+    - id: karolinska-neuro
+      name: Karolinska Institute
+      department: Department of Neuroscience
+      ror: https://ror.org/056d84691
+      city: Stockholm
+      country: SE
+    - id: aiims-neuro
+      name: All India Institute of Medical Sciences
+      department: Department of Neurology
+      ror: https://ror.org/02dwcqs71
+      city: New Delhi
+      country: IN
+    - id: mit-neuro
+      name: Massachusetts Institute of Technology
+      department: Department of Brain and Cognitive Sciences
+      ror: https://ror.org/042nb2s44
+      city: Cambridge
+      region: MA
+      country: US
+    - id: mpibr
+      name: Max Planck Institute for Brain Research
+      department: Department of Connectomics
+      ror: https://ror.org/03a1kwg48
+      city: Frankfurt
+      region: Hesse
+      country: DE
+    - id: ethz-neuro
+      name: ETH Zurich
+      department: Institute of Neuroinformatics
+      ror: https://ror.org/05a28rw58
+      city: Zurich
+      country: CH
+    - id: uct-neuro
+      name: University of Cape Town
+      department: Division of Neuroscience
+      ror: https://ror.org/03p74gp79
+      city: Cape Town
+      country: ZA
+    - id: snu-neuro
+      name: Seoul National University
+      department: Department of Brain and Cognitive Sciences
+      ror: https://ror.org/04h9pn542
+      city: Seoul
+      country: KR
+    - id: usp-neuro
+      name: University of São Paulo
+      department: Department of Neuroscience and Behavior
+      ror: https://ror.org/036rp1748
+      city: São Paulo
+      country: BR
+    - id: umelb-neuro
+      name: University of Melbourne
+      department: Melbourne Brain Centre
+      ror: https://ror.org/01ej9dk98
+      city: Melbourne
+      region: Victoria
+      country: AU

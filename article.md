@@ -25,8 +25,10 @@ abstract: >
 
 ```{authorship-explorer}
 :authors: ./authors.yml
-:authors-alt: ./authors-real.yml
-:alt-label: Real contributors
+:authors-alt: ./authors-large.yml
+:alt-label: Simulated large team
+:authors-alt2: ./authors-real.yml
+:alt2-label: Real contributors
 :height: 800px
 ```
 

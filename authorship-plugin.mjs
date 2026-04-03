@@ -23,6 +23,14 @@ const authorshipDirective = {
       type: String,
       doc: 'Label for the alternate dataset (default: "Real contributors")',
     },
+    'authors-alt2': {
+      type: String,
+      doc: 'Path to second alternate authors YAML file',
+    },
+    'alt2-label': {
+      type: String,
+      doc: 'Label for the second alternate dataset',
+    },
     height: {
       type: String,
       doc: 'Widget height, e.g. "800px"',
@@ -35,6 +43,8 @@ const authorshipDirective = {
         authorsPath: data.options?.authors || './authors.yml',
         authorsAltPath: data.options?.['authors-alt'] || null,
         altLabel: data.options?.['alt-label'] || 'Real contributors',
+        authorsAlt2Path: data.options?.['authors-alt2'] || null,
+        alt2Label: data.options?.['alt2-label'] || 'Large team',
         height: data.options?.height || '800px',
       },
     ];
@@ -56,7 +66,24 @@ const authorshipTransform = {
           const raw = readFileSync(yamlPath, 'utf-8');
           const { parse } = require('yaml');
           const fullData = parse(raw);
-          const contributors = fullData?.project?.contributors || fullData?.contributors || [];
+
+          // Helper: resolve affiliation ID strings to full objects
+          function resolveAffiliations(data) {
+            const contribs = data?.project?.contributors || data?.contributors || [];
+            const affDefs = data?.project?.affiliations || data?.affiliations || [];
+            const affMap = Object.fromEntries(affDefs.map(a => [a.id, a]));
+            return contribs.map(c => {
+              if (!c.affiliations) return c;
+              return {
+                ...c,
+                affiliations: c.affiliations.map(aff =>
+                  typeof aff === 'string' ? (affMap[aff] || { id: aff, name: aff }) : aff
+                ),
+              };
+            });
+          }
+
+          const contributors = resolveAffiliations(fullData);
 
           // Load alternate authors if specified
           let altContributors = null;
@@ -66,9 +93,23 @@ const authorshipTransform = {
               const altPath = resolve(docDir, node.authorsAltPath);
               const altRaw = readFileSync(altPath, 'utf-8');
               const altData = parse(altRaw);
-              altContributors = altData?.project?.contributors || altData?.contributors || [];
+              altContributors = resolveAffiliations(altData);
             } catch (altErr) {
               console.warn(`authorship-plugin: Alt authors error: ${altErr.message}`);
+            }
+          }
+
+          // Load second alternate authors if specified
+          let alt2Contributors = null;
+          let alt2Label = node.alt2Label || 'Large team';
+          if (node.authorsAlt2Path) {
+            try {
+              const alt2Path = resolve(docDir, node.authorsAlt2Path);
+              const alt2Raw = readFileSync(alt2Path, 'utf-8');
+              const alt2Data = parse(alt2Raw);
+              alt2Contributors = resolveAffiliations(alt2Data);
+            } catch (alt2Err) {
+              console.warn(`authorship-plugin: Alt2 authors error: ${alt2Err.message}`);
             }
           }
 
@@ -79,6 +120,10 @@ const authorshipTransform = {
           if (altContributors) {
             envelope.alt = altContributors;
             envelope.altLabel = altLabel;
+          }
+          if (alt2Contributors) {
+            envelope.alt2 = alt2Contributors;
+            envelope.alt2Label = alt2Label;
           }
 
           // Convert to anywidget node
@@ -93,6 +138,8 @@ const authorshipTransform = {
           delete node.authorsPath;
           delete node.authorsAltPath;
           delete node.altLabel;
+          delete node.authorsAlt2Path;
+          delete node.alt2Label;
           delete node.height;
         } catch (err) {
           console.warn(`authorship-plugin: Error: ${err.message}`);
