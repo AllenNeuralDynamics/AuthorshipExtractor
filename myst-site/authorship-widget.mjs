@@ -118,23 +118,20 @@ function render({ model, el: rootEl }) {
   const authorsRaw = model.get('authors');
   const parsed = typeof authorsRaw === 'string' ? JSON.parse(authorsRaw) : authorsRaw;
 
-  // Unpack envelope: { primary: [...], alt?: [...], alt2?: [...] }
+  // Unpack envelope: { primary: [...], alt?: [...], altLabel?: string }
   // or fall back to legacy flat array format
-  let authors, authorsAlt, altLabel, authorsAlt2, alt2Label;
+  let authors, authorsAlt, altLabel;
   if (Array.isArray(parsed)) {
+    // Legacy: plain array of contributors
     authors = parsed;
     authorsAlt = null;
-    altLabel = 'Simulated large team';
-    authorsAlt2 = null;
-    alt2Label = 'Real contributors';
+    altLabel = 'Real contributors';
   } else {
     authors = parsed.primary || [];
     authorsAlt = parsed.alt || null;
-    altLabel = parsed.altLabel || 'Simulated large team';
-    authorsAlt2 = parsed.alt2 || null;
-    alt2Label = parsed.alt2Label || 'Real contributors';
+    altLabel = parsed.altLabel || 'Real contributors';
   }
-  const hasToggle = !!(authorsAlt && authorsAlt.length) || !!(authorsAlt2 && authorsAlt2.length);
+  const hasToggle = !!(authorsAlt && authorsAlt.length);
 
   if (!authors || !authors.length) {
     rootEl.appendChild(el('p', {}, 'No author data available.'));
@@ -167,7 +164,7 @@ function render({ model, el: rootEl }) {
 
   // State
   let sortKey = 'alpha';
-  let expanded = true;
+  let expanded = false;
   let activeTab = 'network';
   let showCreditMenu = false;
   let authorMode = 'simulated'; // 'simulated' or 'real'
@@ -186,15 +183,10 @@ function render({ model, el: rootEl }) {
     }
   }
 
-  function getActiveAuthors() {
-    if (authorMode === 'large') return authorsAlt || authors;
-    if (authorMode === 'real') return authorsAlt2 || authors;
-    return authors;
-  }
-
   function buildWidget() {
-    const activeAuthors = getActiveAuthors();
+    const activeAuthors = (hasToggle && authorMode === 'real') ? authorsAlt : authors;
     const sorted = sortAuthors(activeAuthors, sortKey);
+    const isCreditSort = sortKey.startsWith('credit:');
 
     const container = el('div', { className: 'ae-widget' });
 
@@ -204,87 +196,21 @@ function render({ model, el: rootEl }) {
       toggle.appendChild(el('button', {
         className: `ae-mode-btn ${authorMode === 'simulated' ? 'ae-mode-active' : ''}`,
         onClick: () => { authorMode = 'simulated'; sortKey = 'alpha'; rerender(); },
-      }, 'Simulated small team'));
-      if (authorsAlt && authorsAlt.length) {
-        toggle.appendChild(el('button', {
-          className: `ae-mode-btn ${authorMode === 'large' ? 'ae-mode-active' : ''}`,
-          onClick: () => { authorMode = 'large'; sortKey = 'alpha'; rerender(); },
-        }, altLabel));
-      }
-      if (authorsAlt2 && authorsAlt2.length) {
-        toggle.appendChild(el('button', {
-          className: `ae-mode-btn ${authorMode === 'real' ? 'ae-mode-active' : ''}`,
-          onClick: () => { authorMode = 'real'; sortKey = 'alpha'; rerender(); },
-        }, alt2Label));
-      }
+      }, 'Simulated team'));
+      toggle.appendChild(el('button', {
+        className: `ae-mode-btn ${authorMode === 'real' ? 'ae-mode-active' : ''}`,
+        onClick: () => { authorMode = 'real'; sortKey = 'alpha'; rerender(); },
+      }, altLabel));
       container.appendChild(toggle);
 
-      // Disclaimer for simulated modes
-      if (authorMode === 'simulated' || authorMode === 'large') {
+      // Disclaimer for simulated mode
+      if (authorMode === 'simulated') {
         container.appendChild(el('p', { className: 'ae-mode-note' },
           'The simulated team and their contributions are fictional, for demonstration purposes only.'));
       }
     }
 
-    // ──── Title ────
-    const titleBar = el('div', { className: 'ae-title-bar' },
-      el('h3', { className: 'ae-title' }, 'Contributors'),
-      el('span', { className: 'ae-title-count' }, `${sorted.length} authors`),
-    );
-    container.appendChild(titleBar);
-
-    // ──── Panel (always visible) ────
-    const panel = el('div', { className: 'ae-panel' });
-
-    // Tabs
-    const tabs = el('div', { className: 'ae-tabs' });
-    const tabDefs = [
-      { id: 'network', label: 'Collaboration' },
-      { id: 'matrix', label: 'CRediT' },
-      { id: 'sections', label: 'Sections' },
-      { id: 'timeline', label: 'Timeline' },
-      { id: 'authors', label: 'Sorted List' },
-      { id: 'profiles', label: 'Profiles' },
-    ];
-    for (const t of tabDefs) {
-      tabs.appendChild(el('button', {
-        className: `ae-tab ${activeTab === t.id ? 'ae-tab-active' : ''}`,
-        onClick: () => { activeTab = t.id; rerender(); },
-      }, t.label));
-    }
-    panel.appendChild(tabs);
-
-    // Tab content
-    const content = el('div', { className: 'ae-tab-content' });
-
-    if (activeTab === 'authors') {
-      content.appendChild(buildAuthorListTab());
-    } else if (activeTab === 'network') {
-      content.appendChild(buildNetworkTab(sorted));
-    } else if (activeTab === 'profiles') {
-      content.appendChild(buildProfilesTab(sorted));
-    } else if (activeTab === 'matrix') {
-      content.appendChild(buildMatrixTab(sorted));
-    } else if (activeTab === 'sections') {
-      content.appendChild(buildSectionsTab(sorted));
-    } else if (activeTab === 'timeline') {
-      content.appendChild(buildTimelineTab(sorted));
-    }
-
-    panel.appendChild(content);
-    container.appendChild(panel);
-
-    return container;
-  }
-
-  // ──── Author List tab ────
-  function buildAuthorListTab() {
-    const activeAuthors = getActiveAuthors();
-    const isCreditSort = sortKey.startsWith('credit:');
-    const resorted = sortAuthors(activeAuthors, sortKey);
-    const wrap = el('div', { className: 'ae-author-list-tab' });
-
-    // Sort bar
+    // ──── Sort bar ────
     const sortBar = el('div', { className: 'ae-sort-bar' });
 
     const sortHeader = el('div', { className: 'ae-sort-header' },
@@ -312,7 +238,7 @@ function render({ model, el: rootEl }) {
     creditWrap.appendChild(creditBtn);
 
     if (showCreditMenu) {
-      const menu = el('div', { className: 'ae-credit-menu ae-credit-menu-fixed' });
+      const menu = el('div', { className: 'ae-credit-menu' });
       menu.appendChild(el('div', { className: 'ae-credit-menu-title' }, 'Sort by specific CRediT role'));
       for (const role of ALL_CREDIT_ROLES) {
         const key = `credit:${role}`;
@@ -329,12 +255,7 @@ function render({ model, el: rootEl }) {
         menu.appendChild(item);
       }
       creditWrap.appendChild(menu);
-      // Position the menu after it's in the DOM
-      requestAnimationFrame(() => {
-        const btnRect = creditBtn.getBoundingClientRect();
-        menu.style.top = (btnRect.bottom + 4) + 'px';
-        menu.style.left = btnRect.left + 'px';
-      });
+      // Backdrop
       const backdrop = el('div', { className: 'ae-backdrop', onClick: () => { showCreditMenu = false; rerender(); } });
       creditWrap.appendChild(backdrop);
     }
@@ -361,50 +282,18 @@ function render({ model, el: rootEl }) {
     else if (isCreditSort) sortDesc = `By "${sortKey.slice(7)}" — lead → equal → supporting → none`;
     sortBar.appendChild(el('p', { className: 'ae-sort-desc' }, `Sorted: ${sortDesc}`));
 
-    wrap.appendChild(sortBar);
+    container.appendChild(sortBar);
 
-    // Build unique affiliation list with indices
-    const affList = []; // [{name, dept, id}]
-    const affIndexMap = new Map(); // affiliation key -> 1-based index
-    function getAffKey(aff) {
-      if (typeof aff === 'string') return aff;
-      return aff.id || aff.name || JSON.stringify(aff);
-    }
-    function getAffLabel(aff) {
-      if (typeof aff === 'string') return aff;
-      let label = aff.name || aff.id || '';
-      if (aff.department) label = `${aff.department}, ${label}`;
-      if (aff.city) label += `, ${aff.city}`;
-      if (aff.country) label += `, ${aff.country}`;
-      return label;
-    }
-    resorted.forEach(author => {
-      if (!author.affiliations) return;
-      author.affiliations.forEach(aff => {
-        const key = getAffKey(aff);
-        if (!affIndexMap.has(key)) {
-          affIndexMap.set(key, affList.length + 1);
-          affList.push(aff);
-        }
-      });
-    });
-
-    // Author names with superscript affiliation numbers
+    // ──── Author byline ────
+    const byline = el('div', { className: 'ae-byline' });
     const namesList = el('div', { className: 'ae-names' });
-    resorted.forEach((author, i) => {
-      const isLast = i === resorted.length - 1;
+
+    sorted.forEach((author, i) => {
+      const isLast = i === sorted.length - 1;
       const span = el('span', { className: 'ae-name-wrap' });
 
       const nameBtn = el('button', { className: 'ae-name' }, author.name);
       span.appendChild(nameBtn);
-
-      // Superscript affiliation numbers
-      if (author.affiliations?.length && affList.length > 0) {
-        const indices = author.affiliations.map(aff => affIndexMap.get(getAffKey(aff))).filter(Boolean);
-        if (indices.length) {
-          span.appendChild(el('sup', { className: 'ae-aff-sup' }, indices.join(',')));
-        }
-      }
 
       if (isCreditSort) {
         const level = findCreditLevel(author, sortKey.slice(7));
@@ -423,20 +312,21 @@ function render({ model, el: rootEl }) {
       if (!isLast) span.appendChild(el('span', { className: 'ae-comma' }, ', '));
       namesList.appendChild(span);
     });
-    wrap.appendChild(namesList);
+    byline.appendChild(namesList);
 
-    // Numbered affiliations list
-    if (affList.length) {
-      const affDiv = el('div', { className: 'ae-affiliations ae-aff-numbered' });
-      affList.forEach((aff, idx) => {
-        const line = el('div', { className: 'ae-aff-line' });
-        line.appendChild(el('sup', { className: 'ae-aff-sup' }, String(idx + 1)));
-        line.appendChild(document.createTextNode(' ' + getAffLabel(aff)));
-        affDiv.appendChild(line);
-      });
-      wrap.appendChild(affDiv);
+    // Affiliations line
+    const allAffs = [...new Set(activeAuthors.flatMap(a => {
+      if (a.affiliations) {
+        return a.affiliations.map(aff => typeof aff === 'string' ? aff : (aff.name || aff));
+      }
+      return [];
+    }))];
+    if (allAffs.length) {
+      byline.appendChild(el('div', { className: 'ae-affiliations' }, allAffs.join(' · ')));
     }
 
+    // Expand button
+    const actions = el('div', { className: 'ae-actions' });
     if (isCreditSort) {
       const legend = el('span', { className: 'ae-legend' });
       legend.appendChild(el('span', { className: 'ae-legend-dot ae-dot-lead' }));
@@ -445,10 +335,58 @@ function render({ model, el: rootEl }) {
       legend.appendChild(document.createTextNode('Equal '));
       legend.appendChild(el('span', { className: 'ae-legend-dot ae-dot-supporting' }));
       legend.appendChild(document.createTextNode('Supporting'));
-      wrap.appendChild(legend);
+      actions.appendChild(legend);
+    }
+    const expandBtn = el('button', {
+      className: `ae-expand-btn ${expanded ? 'ae-expand-active' : ''}`,
+      onClick: () => { expanded = !expanded; rerender(); },
+    }, expanded ? 'Collapse ▴' : '✦ Explore contributions ▾');
+    actions.appendChild(expandBtn);
+    byline.appendChild(actions);
+
+    container.appendChild(byline);
+
+    // ──── Expanded panel ────
+    if (expanded) {
+      const panel = el('div', { className: 'ae-panel' });
+
+      // Tabs
+      const tabs = el('div', { className: 'ae-tabs' });
+      const tabDefs = [
+        { id: 'network', label: '🕸️ Overview' },
+        { id: 'profiles', label: '👤 Profiles' },
+        { id: 'matrix', label: '🔵 CRediT Matrix' },
+        { id: 'sections', label: '📑 Section Map' },
+        { id: 'timeline', label: '📅 Timeline' },
+      ];
+      for (const t of tabDefs) {
+        tabs.appendChild(el('button', {
+          className: `ae-tab ${activeTab === t.id ? 'ae-tab-active' : ''}`,
+          onClick: () => { activeTab = t.id; rerender(); },
+        }, t.label));
+      }
+      panel.appendChild(tabs);
+
+      // Tab content
+      const content = el('div', { className: 'ae-tab-content' });
+
+      if (activeTab === 'network') {
+        content.appendChild(buildNetworkTab(sorted));
+      } else if (activeTab === 'profiles') {
+        content.appendChild(buildProfilesTab(sorted));
+      } else if (activeTab === 'matrix') {
+        content.appendChild(buildMatrixTab(sorted));
+      } else if (activeTab === 'sections') {
+        content.appendChild(buildSectionsTab(sorted));
+      } else if (activeTab === 'timeline') {
+        content.appendChild(buildTimelineTab(sorted));
+      }
+
+      panel.appendChild(content);
+      container.appendChild(panel);
     }
 
-    return wrap;
+    return container;
   }
 
   // ──── Profiles tab ────
@@ -548,7 +486,7 @@ function render({ model, el: rootEl }) {
         className: 'ae-matrix-avatar',
         style: { backgroundColor: color },
       }, getInitials(author.name)));
-      th.appendChild(el('div', { className: 'ae-matrix-author-name' }, author.name));
+      th.appendChild(el('div', { className: 'ae-matrix-author-name' }, getLastName(author.name)));
       headerRow.appendChild(th);
     }
     thead.appendChild(headerRow);
@@ -740,22 +678,19 @@ function render({ model, el: rootEl }) {
     }
     const maxWeight = Math.max(1, ...links.map(l => l.weight));
 
-    // SVG dimensions — scale up for large teams
-    const isLarge = n > 20;
-    const W = isLarge ? 900 : 600;
-    const H = isLarge ? 900 : 420;
-    const CX = W / 2, CY = H / 2;
-    const ORBIT = Math.min(W, H) * (isLarge ? 0.38 : 0.32);
+    // SVG dimensions
+    const W = 600, H = 480;
+    const CX = W / 2, CY = H / 2 - 10;
+    const ORBIT = Math.min(W, H) * 0.32;
 
-    // Compute node sizes — smaller for large teams
+    // Compute node sizes
     const maxRoles = Math.max(1, ...sorted.map((a, i) => authorRoles[i].length));
     const nodeData = sorted.map((a, i) => {
       const angle = (2 * Math.PI * i) / n - Math.PI / 2;
       const roles = authorRoles[i];
       const secCount = (a.section_contributions || []).length;
       const weight = roles.length + secCount;
-      const minR = isLarge ? 10 : 20;
-      const maxR = isLarge ? 22 : 44;
+      const minR = 20, maxR = 44;
       const radius = minR + ((weight / (maxRoles + 10)) * (maxR - minR));
       return {
         x: CX + ORBIT * Math.cos(angle),
@@ -805,7 +740,7 @@ function render({ model, el: rootEl }) {
         const s = nodeData[link.i], t = nodeData[link.j];
         const isHL = hoveredIdx === link.i || hoveredIdx === link.j;
         const isDim = hoveredIdx !== null && !isHL;
-        const baseOpacity = isDim ? 0.05 : isHL ? 0.7 : (isLarge ? 0.1 : 0.25);
+        const baseOpacity = isDim ? 0.05 : isHL ? 0.7 : 0.25;
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -914,16 +849,15 @@ function render({ model, el: rootEl }) {
         g.appendChild(init);
 
         // Name label below
-        const labelFontSize = isLarge ? '8' : '11';
         const label = document.createElementNS(ns, 'text');
-        label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
+        label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + 18));
         label.setAttribute('text-anchor', 'middle');
         label.setAttribute('fill', isHovered ? '#1e3a5f' : '#64748b');
-        label.setAttribute('font-size', labelFontSize);
+        label.setAttribute('font-size', '11');
         label.setAttribute('font-weight', isHovered ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
-        label.textContent = isLarge ? nd.lastName : `${nd.firstName} ${nd.lastName}`;
+        label.textContent = `${nd.firstName} ${nd.lastName}`;
         g.appendChild(label);
 
         // Career stage on hover
@@ -955,16 +889,7 @@ function render({ model, el: rootEl }) {
       const authorEdges = links.filter(l => l.i === hoveredIdx || l.j === hoveredIdx);
       const totalShared = authorEdges.reduce((s, l) => s + l.sharedRoles.length, 0);
 
-      // Position card on opposite side from hovered author
-      const onRight = nd.x > CX;
-      const onBottom = nd.y > CY;
-      const cardStyle = {};
-      if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
-      else { cardStyle.right = '12px'; cardStyle.left = 'auto'; }
-      if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
-      else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
-
-      const card = el('div', { className: 'ae-info-card', style: cardStyle },
+      const card = el('div', { className: 'ae-info-card' },
         el('p', { className: 'ae-info-name' }, nd.name),
         el('p', { className: 'ae-info-stage' }, nd.careerStage),
         el('div', { className: 'ae-info-stats' },
@@ -990,93 +915,9 @@ function render({ model, el: rootEl }) {
     // Container for SVG + info card
     const graphWrap = el('div', { className: 'ae-network-graph' });
 
-    // Zoom/pan state — operates on SVG viewBox for crisp rendering
-    let vbX = 0, vbY = 0, vbW = W, vbH = H; // viewBox state
-    let isPanning = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
-
-    function applyViewBox() {
-      const svg = graphWrap.querySelector('.ae-network-svg');
-      if (svg) svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
-    }
-
-    graphWrap.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const factor = e.deltaY > 0 ? 1.1 : 0.9;
-      const newW = Math.max(W * 0.2, Math.min(W * 2, vbW * factor));
-      const newH = Math.max(H * 0.2, Math.min(H * 2, vbH * factor));
-      // Zoom toward mouse position
-      const rect = graphWrap.getBoundingClientRect();
-      const mx = (e.clientX - rect.left) / rect.width;
-      const my = (e.clientY - rect.top) / rect.height;
-      vbX += (vbW - newW) * mx;
-      vbY += (vbH - newH) * my;
-      vbW = newW;
-      vbH = newH;
-      applyViewBox();
-    }, { passive: false });
-
-    graphWrap.addEventListener('mousedown', (e) => {
-      if (e.button !== 0) return;
-      isPanning = true;
-      panStartX = e.clientX;
-      panStartY = e.clientY;
-      panStartVbX = vbX;
-      panStartVbY = vbY;
-      graphWrap.style.cursor = 'grabbing';
-    });
-
-    graphWrap.addEventListener('mousemove', (e) => {
-      if (!isPanning) return;
-      const rect = graphWrap.getBoundingClientRect();
-      const scaleX = vbW / rect.width;
-      const scaleY = vbH / rect.height;
-      vbX = panStartVbX - (e.clientX - panStartX) * scaleX;
-      vbY = panStartVbY - (e.clientY - panStartY) * scaleY;
-      applyViewBox();
-    });
-
-    const stopPan = () => { isPanning = false; graphWrap.style.cursor = 'grab'; };
-    graphWrap.addEventListener('mouseup', stopPan);
-    graphWrap.addEventListener('mouseleave', stopPan);
-
-    // Zoom controls
-    const zoomControls = el('div', { className: 'ae-zoom-controls' });
-    zoomControls.appendChild(el('button', {
-      className: 'ae-zoom-btn',
-      onClick: () => {
-        const newW = Math.max(W * 0.2, vbW * 0.7);
-        const newH = Math.max(H * 0.2, vbH * 0.7);
-        vbX += (vbW - newW) / 2;
-        vbY += (vbH - newH) / 2;
-        vbW = newW; vbH = newH;
-        applyViewBox();
-      },
-      title: 'Zoom in',
-    }, '+'));
-    zoomControls.appendChild(el('button', {
-      className: 'ae-zoom-btn',
-      onClick: () => {
-        const newW = Math.min(W * 2, vbW * 1.4);
-        const newH = Math.min(H * 2, vbH * 1.4);
-        vbX += (vbW - newW) / 2;
-        vbY += (vbH - newH) / 2;
-        vbW = newW; vbH = newH;
-        applyViewBox();
-      },
-      title: 'Zoom out',
-    }, '−'));
-    zoomControls.appendChild(el('button', {
-      className: 'ae-zoom-btn',
-      onClick: () => { vbX = 0; vbY = 0; vbW = W; vbH = H; applyViewBox(); },
-      title: 'Reset zoom',
-    }, '⟲'));
-    graphWrap.appendChild(zoomControls);
-
     function rerenderNetwork() {
       const oldSvg = graphWrap.querySelector('.ae-network-svg');
       const newSvg = renderSVG();
-      // Preserve current viewBox on rerender
-      newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
 
       const oldCard = graphWrap.querySelector('.ae-info-card');
