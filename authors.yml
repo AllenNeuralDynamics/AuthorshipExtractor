@@ -59,7 +59,11 @@ project:
         - section: discussion
           description: Wrote the discussion synthesizing implications for research evaluation
           effort: lead
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-author-growth
+          description: Conceived and reviewed the author count growth visualization
+        - figure: fig-data-model
+          description: Designed the data model schema diagram
       contribution_statement: >
         Conceived the project, secured funding, designed the multi-dimensional
         data model, supervised all work, and wrote the introduction and discussion.
@@ -136,7 +140,15 @@ project:
         - section: discussion
           description: Wrote about user experience implications
           effort: supporting
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-credit-matrix
+          description: Built the interactive CRediT contribution matrix figure
+        - figure: fig-chord-diagram
+          description: Developed the collaboration chord diagram
+        - figure: fig-timeline
+          description: Created the project timeline visualization
+        - figure: fig-author-growth
+          description: Generated the author count growth data and chart
       contribution_statement: >
         Led the full-stack implementation of the interactive authorship display,
         built all visualization components, and wrote the first draft of the manuscript.
@@ -203,7 +215,11 @@ project:
         - section: discussion
           description: Wrote about structured contribution data for research evaluation
           effort: supporting
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-data-model
+          description: Created the data model schema diagram
+        - figure: fig-credit-matrix
+          description: Designed the matrix layout and data structure
       contribution_statement: >
         Designed the data model, implemented the type system
         and sort algorithms, and co-wrote the manuscript.
@@ -259,7 +275,11 @@ project:
         - section: methods
           description: Designed the inline contribution highlighting visual treatment
           effort: lead
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-chord-diagram
+          description: Designed the visual style and color palette for the chord diagram
+        - figure: fig-credit-matrix
+          description: Designed the visual layout for the contribution matrix
       contribution_statement: >
         Led the visual design of all authorship display components and
         designed the inline contribution highlighting approach.
@@ -307,7 +327,9 @@ project:
         - section: data-model
           description: Implemented the YAML-based contributor data system
           effort: supporting
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-data-model
+          description: Produced the data pipeline diagram
       contribution_statement: >
         Built the data infrastructure, YAML-based contributor pipeline,
         and deployment system.
@@ -353,7 +375,11 @@ project:
         - section: methods
           description: Built the interactive inline annotation components; Built the interactive timeline visualization
           effort: lead
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-timeline
+          description: Built the interactive timeline component
+        - figure: fig-chord-diagram
+          description: Implemented the chord diagram interaction logic
       contribution_statement: >
         Built interactive UI components for the inline annotation system
         and timeline visualization.
@@ -411,7 +437,9 @@ project:
         - section: discussion
           description: Contributed theoretical context on research evaluation reform
           effort: supporting
-      figure_contributions: []
+      figure_contributions:
+        - figure: fig-author-growth
+          description: Provided bibliometric data analysis for the growth chart
       contribution_statement: >
         Contributed the theoretical framework for multi-dimensional attribution,
         provided expertise on research evaluation policy.

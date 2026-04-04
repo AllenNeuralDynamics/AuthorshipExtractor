@@ -814,6 +814,7 @@ function render({ model, el: rootEl }) {
       { key: 'institutions', label: '🏛️ By Institutions' },
       { key: 'force', label: '🎯 By Role' },
       { key: 'sections', label: '📄 By Section' },
+      { key: 'figures', label: '📊 By Figure' },
     ];
     for (const m of modes) {
       modeBar.appendChild(el('button', {
@@ -830,6 +831,7 @@ function render({ model, el: rootEl }) {
     if (networkMode === 'institutions') return buildInstitutionChord(sorted);
     if (networkMode === 'force') return buildForceGraph(sorted);
     if (networkMode === 'sections') return buildSectionCircles(sorted);
+    if (networkMode === 'figures') return buildFigureCircles(sorted);
 
     const wrap = el('div', { className: 'ae-network' });
     const ns = 'http://www.w3.org/2000/svg';
@@ -2079,6 +2081,39 @@ function render({ model, el: rootEl }) {
       }));
 
     return buildCircleOfCircles(sorted, groups, { groupLabel: 'Sections', linkLabel: 'Shared contributors' });
+  }
+
+  // ──── By Figure circle-of-circles ────
+  function buildFigureCircles(sorted) {
+    const n = sorted.length;
+
+    const FIGURE_COLORS = [
+      '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6',
+      '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1',
+    ];
+
+    function figureLabel(id) {
+      return id.replace(/^fig-/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    const figMap = new Map();
+    for (let i = 0; i < n; i++) {
+      const figs = sorted[i].figure_contributions || [];
+      for (const fc of figs) {
+        if (!figMap.has(fc.figure)) figMap.set(fc.figure, new Set());
+        figMap.get(fc.figure).add(i);
+      }
+    }
+
+    const groups = [...figMap.entries()]
+      .filter(([, members]) => members.size > 0)
+      .map(([figId, members], idx) => ({
+        label: figureLabel(figId),
+        color: FIGURE_COLORS[idx % FIGURE_COLORS.length],
+        members: [...members],
+      }));
+
+    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Figures', linkLabel: 'Shared contributors' });
   }
 
   // ──── Timeline tab ────
