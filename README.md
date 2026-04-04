@@ -1,18 +1,18 @@
 # AuthorshipExtractor
 
-A multi-dimensional scientific authorship framework — both a paper describing the approach and a live, interactive demonstration of it. Built with [MyST](https://mystmd.org/).
+A multi-dimensional scientific authorship framework, both a paper describing the approach and a live, interactive demonstration of it. Built with [MyST](https://mystmd.org/).
 
 ## What is this?
 
 The traditional author list compresses complex, multi-dimensional contributions into a single ordered sequence of names. **AuthorshipExtractor** reimagines this by letting readers explore contributions along multiple axes simultaneously:
 
 - **CRediT roles** — 14 standardized contributor roles with effort levels (lead / equal / supporting)
-- **Section-level attribution** — showing who contributed to each part of the text
-- **Dynamic sorting** — re-order authors by name, CRediT role, number of roles, or join date
-- **Collaboration graph** — network visualization of shared contributions with role-colored arcs
+- **Section & figure attribution** — who contributed to the work described in each section and figure
+- **Dynamic sorting** — re-order authors by name, CRediT role, number of roles, join date, or institution
+- **Collaboration views** — chord diagram of shared roles, plus circle-of-circles views grouping authors by institution, role, or section & figure
 - **Timeline** — when each contributor joined the project
-- **Rich profiles** — ORCID, affiliations, social links
-- **Simulated ↔ Real toggle** — switch between a fictional demo team and real contributors
+- **Rich profiles** — ORCID, affiliations, CRediT roles
+- **Dataset switcher** — switch between a small simulated team, a large simulated team (50 authors), and real contributors
 
 The site renders a real academic paper about this framework while simultaneously demonstrating it via an interactive anywidget plugin.
 
@@ -40,6 +40,7 @@ myst build
 article.md                # Full paper in MyST Markdown
 myst.yml                  # MyST project configuration
 authors.yml               # Simulated contributor data (7 fictional authors)
+authors-large.yml          # Simulated large team (50 fictional authors)
 authors-real.yml           # Real contributor data
 authorship-plugin.mjs      # MyST plugin: directive + transform
 authorship-widget.mjs      # Interactive widget (vanilla JS, anywidget)
