@@ -54,7 +54,7 @@ project:
           effort: lead
       figure_contributions:
         - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Conceived the project, secured primary funding, designed the contribution
         model, supervised all work, and led writing of the introduction and discussion.
@@ -109,11 +109,7 @@ project:
         - section: discussion
           description: Contributed perspective on Japanese consortium practices
           effort: equal
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Co-conceived the project, secured Japanese funding, led team science
         analysis, and co-designed the author ordering framework.
@@ -171,13 +167,7 @@ project:
         - section: interactive-display
           description: Advised on visualization accessibility requirements
           effort: supporting
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Co-conceived the project, led the analysis of authorship limitations,
         contributed Global South perspectives, and co-wrote the manuscript.
@@ -225,8 +215,8 @@ project:
           description: Reviewed European CRediT adoption patterns
           effort: supporting
       figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Designed the multi-criteria sorting methodology, contributed statistical
         framework, and supervised Scandinavian team members.
@@ -276,11 +266,7 @@ project:
         - section: discussion
           description: Contributed clinical neuroscience perspective on attribution reform
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Led investigation of authorship practices in clinical neuroscience,
         contributed methodology and clinical perspective on attribution reform.
@@ -333,13 +319,7 @@ project:
         - section: the-credit-taxonomy
           description: Led bibliometric analysis of CRediT adoption rates
           effort: equal
-      figure_contributions:
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Led formal analysis and bibliometrics, contributed computational
         framework design, and supervised MIT team members.
@@ -390,8 +370,8 @@ project:
           description: Contributed hierarchical modeling concepts
           effort: supporting
       figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Led the CRediT taxonomy review, analyzed limitations of existing
         approaches, and contributed hierarchical modeling concepts.
@@ -444,11 +424,7 @@ project:
         - section: methods
           description: Co-designed the interactive contribution matrix
           effort: equal
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+      figure_contributions: []
       contribution_statement: >
         Led visualization architecture design, contributed sorting methodology,
         and co-designed the interactive contribution matrix.
@@ -498,13 +474,7 @@ project:
         - section: data-model
           description: Co-developed the structured contribution schema
           effort: equal
-      figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Conducted systematic CRediT review, documented authorship limitations,
         and co-developed the contribution data schema.
@@ -552,8 +522,8 @@ project:
           description: Built inline annotation rendering for Japanese text layouts; Contributed to timeline data model validation
           effort: equal
       figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Implemented sorting algorithms, built inline annotation rendering,
         and led cross-cultural validation of the framework.
@@ -603,11 +573,7 @@ project:
         - section: discussion
           description: Contributed perspective on authorship equity in developing countries
           effort: supporting
-      figure_contributions:
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+      figure_contributions: []
       contribution_statement: >
         Led team science survey across Brazilian groups, documented authorship
         inequities, and contributed equity perspectives to the discussion.
@@ -654,13 +620,7 @@ project:
         - section: interactive-display
           description: Contributed to accessibility-focused visualization design
           effort: equal
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+      figure_contributions: []
       contribution_statement: >
         Led inline highlighting development, co-built the contribution matrix,
         and contributed accessibility-focused design principles.
@@ -708,8 +668,8 @@ project:
           description: Implemented matrix layout optimization algorithms
           effort: supporting
       figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Led formal analysis of ordering consistency, contributed mathematical
         formalization, and implemented matrix layout algorithms.
@@ -759,11 +719,7 @@ project:
         - section: methods
           description: Designed the temporal contribution visualization data model
           effort: equal
-      figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Compiled European CRediT adoption data, analyzed consortium growth,
         and designed the temporal visualization data model.
@@ -810,13 +766,7 @@ project:
         - section: interactive-display
           description: Contributed to visualization performance optimization
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+      figure_contributions: []
       contribution_statement: >
         Led matrix implementation, co-built the timeline visualization,
         and optimized rendering performance for large author lists.
@@ -868,7 +818,7 @@ project:
           effort: supporting
       figure_contributions:
         - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Analyzed authorship limitations in large collaborations, documented
         Japanese team patterns, and contributed cross-cultural requirements.
@@ -915,11 +865,7 @@ project:
         - section: interactive-display
           description: Co-designed color-coding system for contribution levels
           effort: equal
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Built inline annotation styling, co-designed the color-coding system,
         and contributed to timeline rendering components.
@@ -966,13 +912,7 @@ project:
         - section: discussion
           description: Wrote about ethical implications of automated ordering
           effort: supporting
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Developed fairness metrics for ordering, contributed equity-aware
         modeling, and wrote about ethical implications.
@@ -1014,8 +954,8 @@ project:
           description: Built inline highlighting for CJK text rendering; Implemented responsive matrix layout for mobile displays
           effort: equal
       figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Built CJK text inline highlighting and implemented responsive
         matrix layout for mobile devices.
@@ -1062,11 +1002,7 @@ project:
         - section: introduction
           description: Contributed framing on global equity in authorship
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Surveyed CRediT adoption in African journals, documented attribution
         barriers, and contributed global equity framing to the introduction.
@@ -1113,13 +1049,7 @@ project:
         - section: interactive-display
           description: Contributed to responsive design specifications
           effort: supporting
-      figure_contributions:
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Built matrix filtering and search features, contributed responsive
         design specs, and implemented timeline interactions.
@@ -1167,8 +1097,8 @@ project:
           description: Contributed perspective on authorship reform in hierarchical settings
           effort: supporting
       figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Surveyed Indian clinical authorship norms, documented hierarchical
         challenges, and contributed reform perspectives.
@@ -1215,11 +1145,7 @@ project:
         - section: methods
           description: Built text parsing engine for contribution annotation
           effort: supporting
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+      figure_contributions: []
       contribution_statement: >
         Benchmarked sorting algorithms, built annotation text parsing,
         and validated the data model against consortium datasets.
@@ -1263,13 +1189,7 @@ project:
         - section: interactive-display
           description: Designed animation specifications for timeline transitions
           effort: supporting
-      figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Led timeline visualization implementation, built inline annotation
         interaction components, and designed timeline animations.
@@ -1317,8 +1237,8 @@ project:
           description: Built automated testing framework for the contribution matrix
           effort: equal
       figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Developed ordering fairness tests, built automated testing framework,
         and validated data model completeness through simulations.
@@ -1365,11 +1285,7 @@ project:
         - section: discussion
           description: Contributed perspective on inclusive attribution systems
           effort: supporting
-      figure_contributions:
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+      figure_contributions: []
       contribution_statement: >
         Documented African team science practices, analyzed CRediT awareness,
         and contributed inclusive attribution perspectives.
@@ -1413,13 +1329,7 @@ project:
         - section: interactive-display
           description: Contributed to internationalization specifications
           effort: supporting
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+      figure_contributions: []
       contribution_statement: >
         Built bidirectional text support, implemented milestone tooltips,
         and contributed internationalization specifications.
@@ -1467,8 +1377,8 @@ project:
           description: Tested data model against Latin American case studies
           effort: supporting
       figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Analyzed ordering disputes, contributed Brazilian team size data,
         and tested the data model against Latin American case studies.
@@ -1518,11 +1428,7 @@ project:
         - section: introduction
           description: Contributed stakeholder perspectives to introduction framing
           effort: supporting
-      figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Conducted stakeholder interviews, analyzed publisher CRediT adoption,
         and contributed stakeholder perspectives to the introduction.
@@ -1566,13 +1472,7 @@ project:
         - section: data-model
           description: Tested sorting algorithms with synthetic consortium datasets
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+      figure_contributions: []
       contribution_statement: >
         Implemented accessibility features, tested sorting algorithms
         with synthetic data, and built accessibility testing tools.
@@ -1621,7 +1521,7 @@ project:
           effort: supporting
       figure_contributions:
         - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Led clinical team data collection, documented authorship disputes,
         and contributed clinical perspective on attribution reform.
@@ -1665,11 +1565,7 @@ project:
         - section: interactive-display
           description: Designed data-driven animation specifications
           effort: supporting
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Built timeline animations, designed data-driven animation specs,
         and implemented matrix tooltip interactions.
@@ -1719,13 +1615,7 @@ project:
         - section: discussion
           description: Wrote about cultural adaptation of attribution systems
           effort: supporting
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Analyzed cultural ordering differences, documented CJK naming
         conventions, and wrote about cultural adaptation requirements.
@@ -1767,8 +1657,8 @@ project:
           description: Led frontend architecture and component library development; Built the matrix data pipeline and rendering engine; Architected the timeline component state management
           effort: lead
       figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Led frontend architecture, built the matrix rendering engine,
         and architected timeline state management.
@@ -1817,11 +1707,7 @@ project:
         - section: interactive-display
           description: Contributed to performance benchmarking specifications
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Built server-side rendering pipelines, implemented text processing
         for annotation extraction, and contributed performance benchmarks.
@@ -1868,13 +1754,7 @@ project:
         - section: the-credit-taxonomy
           description: Conducted quantitative analysis of CRediT usage patterns
           effort: supporting
-      figure_contributions:
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Developed sorting evaluation criteria, validated model consistency,
         and conducted quantitative CRediT usage analysis.
@@ -1916,8 +1796,8 @@ project:
           description: Built deployment infrastructure and CI/CD pipeline; Implemented lazy loading and performance optimization; Set up automated regression testing suite
           effort: equal
       figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Built deployment infrastructure, implemented performance optimization,
         and set up automated regression testing.
@@ -1967,11 +1847,7 @@ project:
         - section: discussion
           description: Contributed perspective on multilingual attribution challenges
           effort: supporting
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+      figure_contributions: []
       contribution_statement: >
         Analyzed Latin American team science trends, documented language
         barriers, and contributed multilingual attribution perspectives.
@@ -2015,13 +1891,7 @@ project:
         - section: interactive-display
           description: Contributed to cross-browser compatibility specifications
           effort: supporting
-      figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Led matrix SVG rendering, co-built inline annotation rendering,
         and ensured cross-browser compatibility.
@@ -2074,8 +1944,8 @@ project:
           description: Contributed requirements for offline-compatible contribution tools
           effort: supporting
       figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Analyzed global CRediT adoption disparities, documented barriers
         in resource-limited settings, and contributed offline compatibility requirements.
@@ -2122,11 +1992,7 @@ project:
         - section: interactive-display
           description: Co-designed the responsive visualization layout system
           effort: equal
-      figure_contributions:
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+      figure_contributions: []
       contribution_statement: >
         Led timeline visual design, built accessibility features,
         and co-designed the responsive layout system.
@@ -2170,13 +2036,7 @@ project:
         - section: methods
           description: Curated test datasets for matrix visualization validation
           effort: supporting
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+      figure_contributions: []
       contribution_statement: >
         Curated consortium metadata, compiled test datasets, and maintained
         data quality across European partner institutions.
@@ -2221,8 +2081,8 @@ project:
           description: Managed project milestone tracking and documentation
           effort: supporting
       figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Coordinated cross-site logistics, managed milestone tracking,
         and maintained resource allocation across Indian partner sites.
@@ -2266,11 +2126,7 @@ project:
         - section: methods
           description: Managed test data collection from Japanese consortium partners
           effort: supporting
-      figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Coordinated Japanese team logistics, managed institutional agreements,
         and organized test data collection from consortium partners.
@@ -2317,13 +2173,7 @@ project:
         - section: methods
           description: Validated matrix visualization with curated test datasets
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
+      figure_contributions: []
       contribution_statement: >
         Curated African CRediT implementation data, compiled team composition
         datasets, and validated matrix visualizations.
@@ -2369,7 +2219,7 @@ project:
           effort: supporting
       figure_contributions:
         - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Coordinated Latin American data collection, managed project timeline
         documentation, and maintained resource allocation across partner sites.
@@ -2407,11 +2257,7 @@ project:
         - section: limitations-of-current-approaches
           description: Assisted with coding authorship display practices across journal websites
           effort: supporting
-      figure_contributions:
-        - figure: fig-credit-matrix
-          description: Contributed to the CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
+      figure_contributions: []
       contribution_statement: >
         Assisted with systematic coding of authorship display practices
         across neuroscience journal websites.
@@ -2447,13 +2293,7 @@ project:
         - section: methods
           description: Assisted with CSS styling and visual polish of inline annotations
           effort: supporting
-      figure_contributions:
-        - figure: fig-chord-diagram
-          description: Contributed to the collaboration chord diagram
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
+      figure_contributions: []
       contribution_statement: >
         Assisted with CSS styling and visual refinement of the inline
         annotation display components.
@@ -2493,8 +2333,8 @@ project:
           description: Helped compile team size statistics from published literature
           effort: supporting
       figure_contributions:
-        - figure: fig-data-model
-          description: Contributed to the data model schema diagram
+        - figure: fig-author-growth
+          description: Contributed to the author count growth visualization
       contribution_statement: >
         Assisted with CRediT adoption survey data extraction and compiled
         team size statistics from published neuroscience literature.
@@ -2533,11 +2373,7 @@ project:
         - section: team-science-and-rising-author-lists
           description: Helped gather team composition data from Brazilian research groups
           effort: supporting
-      figure_contributions:
-        - figure: fig-timeline
-          description: Contributed to the project timeline visualization
-        - figure: fig-author-growth
-          description: Contributed to the author count growth chart
+      figure_contributions: []
       contribution_statement: >
         Assisted with timeline visual design assets and gathered team
         composition data from Brazilian neuroscience research groups.

@@ -80,14 +80,6 @@ project:
       figure_contributions:
         - figure: fig-author-growth
           description: Created the author count growth visualization from bibliometric data
-        - figure: fig-credit-matrix
-          description: Built the interactive CRediT contribution matrix figure
-        - figure: fig-chord-diagram
-          description: Designed and built the collaboration chord diagram
-        - figure: fig-data-model
-          description: Created the data model schema diagram
-        - figure: fig-timeline
-          description: Built the project timeline visualization
       contribution_statement: >
         Conceived the project, wrote the entire manuscript, designed
         the framework, and built all software components.
