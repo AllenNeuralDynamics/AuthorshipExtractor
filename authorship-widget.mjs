@@ -219,7 +219,7 @@ function render({ model, el: rootEl }) {
 
       // Summary info (no names to avoid implying ordering)
       const info = el('div', { className: 'ae-collapsed-info' });
-      info.appendChild(el('span', { className: 'ae-collapsed-title' }, `${sorted.length} Contributors`));
+      info.appendChild(el('span', { className: 'ae-collapsed-title' }, `${sorted.length} Contributor${sorted.length === 1 ? '' : 's'}`));
 
       const roleCount = new Set(sorted.flatMap(a => (a.credit_levels || []).map(r => r.role))).size;
       const instCount = new Set(sorted.flatMap(a => (a.affiliations || []).map(aff =>
