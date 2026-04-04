@@ -55,6 +55,21 @@ const authorshipTransform = {
   name: 'authorship-data-loader',
   stage: 'document',
   plugin: (opts, utils) => (tree, vfile) => {
+    // Build section ID → heading text map from the document AST
+    const sectionLabels = {};
+    function collectHeadings(n) {
+      if (!n) return;
+      if (n.type === 'heading' && n.identifier) {
+        const text = (n.children || [])
+          .filter(c => c.type === 'text')
+          .map(c => c.value)
+          .join('');
+        if (text) sectionLabels[n.identifier] = text;
+      }
+      if (n.children) for (const child of n.children) collectHeadings(child);
+    }
+    collectHeadings(tree);
+
     function transform(node) {
       if (!node) return;
 
@@ -116,14 +131,17 @@ const authorshipTransform = {
           // Build the data envelope with primary + optional alt dataset
           const envelope = {
             primary: contributors,
+            sourceFiles: [node.authorsPath || './authors.yml'],
           };
           if (altContributors) {
             envelope.alt = altContributors;
             envelope.altLabel = altLabel;
+            if (node.authorsAltPath) envelope.sourceFiles.push(node.authorsAltPath);
           }
           if (alt2Contributors) {
             envelope.alt2 = alt2Contributors;
             envelope.alt2Label = alt2Label;
+            if (node.authorsAlt2Path) envelope.sourceFiles.push(node.authorsAlt2Path);
           }
 
           // Convert to anywidget node
@@ -133,6 +151,7 @@ const authorshipTransform = {
           node.css = './authorship-widget.css';
           node.model = {
             authors: JSON.stringify(envelope),
+            sectionLabels: JSON.stringify(sectionLabels),
             height: node.height || '800px',
           };
           delete node.authorsPath;

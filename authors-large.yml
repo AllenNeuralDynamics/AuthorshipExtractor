@@ -40,13 +40,13 @@ project:
         - role: Methodology
           level: equal
       section_contributions:
-        - section: intro
+        - section: introduction
           description: Framed the overarching research question and wrote the introduction
           effort: lead
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Provided context on CRediT taxonomy adoption in neuroscience
           effort: equal
-        - section: fw-model
+        - section: data-model
           description: Designed the core multi-dimensional contribution model
           effort: lead
         - section: discussion
@@ -98,10 +98,10 @@ project:
         - role: Methodology
           level: lead
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Led analysis of team science growth in neuroscience
           effort: lead
-        - section: fw-sort
+        - section: data-model
           description: Co-designed the multi-dimensional author ordering framework
           effort: equal
         - section: discussion
@@ -153,16 +153,16 @@ project:
         - role: Writing – original draft
           level: equal
       section_contributions:
-        - section: intro
+        - section: introduction
           description: Co-wrote the introduction with emphasis on Global South perspectives
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Led analysis of existing authorship display limitations
           effort: lead
         - section: discussion
           description: Contributed perspective on equity in research attribution
           effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Advised on visualization accessibility requirements
           effort: supporting
       figure_contributions: []
@@ -206,13 +206,10 @@ project:
         - role: Supervision
           level: supporting
       section_contributions:
-        - section: fw-model
-          description: Contributed statistical framework for contribution quantification
-          effort: equal
-        - section: fw-sort
-          description: Led design of the multi-criteria sorting algorithm
+        - section: data-model
+          description: Contributed statistical framework for contribution quantification; Led design of the multi-criteria sorting algorithm
           effort: lead
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Reviewed European CRediT adoption patterns
           effort: supporting
       figure_contributions: []
@@ -256,10 +253,10 @@ project:
         - role: Writing – review & editing
           level: equal
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Led survey of authorship practices in Indian neuroscience consortia
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Analyzed limitations of existing attribution in clinical studies
           effort: equal
         - section: discussion
@@ -309,13 +306,13 @@ project:
         - role: Supervision
           level: equal
       section_contributions:
-        - section: fw-model
+        - section: data-model
           description: Contributed computational framework for contribution modeling
           effort: equal
-        - section: impl-matrix
+        - section: methods
           description: Advised on matrix visualization algorithms
           effort: supporting
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Led bibliometric analysis of CRediT adoption rates
           effort: equal
       figure_contributions: []
@@ -359,13 +356,13 @@ project:
         - role: Formal analysis
           level: equal
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Led comprehensive review of CRediT taxonomy history and adoption
           effort: lead
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Analyzed limitations of flat taxonomy approaches
           effort: equal
-        - section: fw-model
+        - section: data-model
           description: Contributed hierarchical modeling concepts
           effort: supporting
       figure_contributions: []
@@ -412,13 +409,13 @@ project:
         - role: Writing – review & editing
           level: supporting
       section_contributions:
-        - section: fw-viz
+        - section: interactive-display
           description: Led design of the multi-view visualization architecture
           effort: lead
-        - section: fw-sort
+        - section: data-model
           description: Contributed information-theoretic sorting criteria
           effort: equal
-        - section: impl-matrix
+        - section: methods
           description: Co-designed the interactive contribution matrix
           effort: equal
       figure_contributions: []
@@ -462,13 +459,13 @@ project:
         - role: Formal analysis
           level: equal
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Conducted systematic review of CRediT implementation across journals
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented limitations of current author listing practices
           effort: supporting
-        - section: fw-model
+        - section: data-model
           description: Co-developed the structured contribution schema
           effort: equal
       figure_contributions: []
@@ -512,15 +509,12 @@ project:
         - role: Methodology
           level: supporting
       section_contributions:
-        - section: fw-sort
+        - section: data-model
           description: Implemented and tested multi-criteria sorting algorithms
           effort: equal
-        - section: impl-inline
-          description: Built inline annotation rendering for Japanese text layouts
+        - section: methods
+          description: Built inline annotation rendering for Japanese text layouts; Contributed to timeline data model validation
           effort: equal
-        - section: impl-timeline
-          description: Contributed to timeline data model validation
-          effort: supporting
       figure_contributions: []
       contribution_statement: >
         Implemented sorting algorithms, built inline annotation rendering,
@@ -562,10 +556,10 @@ project:
         - role: Visualization
           level: supporting
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Led survey of team science practices across Brazilian neuroscience groups
           effort: lead
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented authorship inequities in Global South research
           effort: supporting
         - section: discussion
@@ -612,13 +606,10 @@ project:
         - role: Writing – original draft
           level: equal
       section_contributions:
-        - section: impl-inline
-          description: Led development of the inline contribution highlighting system
+        - section: methods
+          description: Led development of the inline contribution highlighting system; Co-built the interactive CRediT contribution matrix
           effort: lead
-        - section: impl-matrix
-          description: Co-built the interactive CRediT contribution matrix
-          effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Contributed to accessibility-focused visualization design
           effort: equal
       figure_contributions: []
@@ -662,13 +653,10 @@ project:
         - role: Validation
           level: equal
       section_contributions:
-        - section: fw-sort
-          description: Developed formal proofs for ordering consistency properties
+        - section: data-model
+          description: Developed formal proofs for ordering consistency properties; Contributed mathematical formalization of contribution levels
           effort: lead
-        - section: fw-model
-          description: Contributed mathematical formalization of contribution levels
-          effort: supporting
-        - section: impl-matrix
+        - section: methods
           description: Implemented matrix layout optimization algorithms
           effort: supporting
       figure_contributions: []
@@ -712,13 +700,13 @@ project:
         - role: Writing – review & editing
           level: equal
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Compiled dataset of CRediT adoption across European journals
           effort: supporting
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Analyzed growth of neuroscience consortia in Europe
           effort: equal
-        - section: impl-timeline
+        - section: methods
           description: Designed the temporal contribution visualization data model
           effort: equal
       figure_contributions: []
@@ -762,13 +750,10 @@ project:
         - role: Formal analysis
           level: supporting
       section_contributions:
-        - section: impl-matrix
-          description: Led implementation of the interactive contribution matrix
+        - section: methods
+          description: Led implementation of the interactive contribution matrix; Co-built the project timeline visualization component
           effort: lead
-        - section: impl-timeline
-          description: Co-built the project timeline visualization component
-          effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Contributed to visualization performance optimization
           effort: supporting
       figure_contributions: []
@@ -812,13 +797,13 @@ project:
         - role: Methodology
           level: supporting
       section_contributions:
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Analyzed limitations of authorship in large physics/neuro collaborations
           effort: equal
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Documented team composition patterns in Japanese neuroscience
           effort: supporting
-        - section: fw-model
+        - section: data-model
           description: Contributed to cross-cultural data model requirements
           effort: supporting
       figure_contributions: []
@@ -862,15 +847,12 @@ project:
         - role: Writing – original draft
           level: supporting
       section_contributions:
-        - section: impl-inline
-          description: Built the interactive inline annotation styling engine
+        - section: methods
+          description: Built the interactive inline annotation styling engine; Contributed to timeline rendering and animation
           effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Co-designed color-coding system for contribution levels
           effort: equal
-        - section: impl-timeline
-          description: Contributed to timeline rendering and animation
-          effort: supporting
       figure_contributions: []
       contribution_statement: >
         Built inline annotation styling, co-designed the color-coding system,
@@ -912,11 +894,8 @@ project:
         - role: Investigation
           level: supporting
       section_contributions:
-        - section: fw-sort
-          description: Developed fairness metrics for author ordering algorithms
-          effort: equal
-        - section: fw-model
-          description: Contributed equity-aware contribution modeling
+        - section: data-model
+          description: Developed fairness metrics for author ordering algorithms; Contributed equity-aware contribution modeling
           effort: equal
         - section: discussion
           description: Wrote about ethical implications of automated ordering
@@ -959,12 +938,9 @@ project:
         - role: Investigation
           level: supporting
       section_contributions:
-        - section: impl-inline
-          description: Built inline highlighting for CJK text rendering
+        - section: methods
+          description: Built inline highlighting for CJK text rendering; Implemented responsive matrix layout for mobile displays
           effort: equal
-        - section: impl-matrix
-          description: Implemented responsive matrix layout for mobile displays
-          effort: supporting
       figure_contributions: []
       contribution_statement: >
         Built CJK text inline highlighting and implemented responsive
@@ -1003,13 +979,13 @@ project:
         - role: Formal analysis
           level: supporting
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Surveyed CRediT adoption in African neuroscience journals
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented barriers to equitable attribution in low-resource settings
           effort: supporting
-        - section: intro
+        - section: introduction
           description: Contributed framing on global equity in authorship
           effort: supporting
       figure_contributions: []
@@ -1053,14 +1029,11 @@ project:
         - role: Formal analysis
           level: supporting
       section_contributions:
-        - section: impl-matrix
-          description: Built interactive filtering and search within the contribution matrix
+        - section: methods
+          description: Built interactive filtering and search within the contribution matrix; Implemented timeline zoom and pan interactions
           effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Contributed to responsive design specifications
-          effort: supporting
-        - section: impl-timeline
-          description: Implemented timeline zoom and pan interactions
           effort: supporting
       figure_contributions: []
       contribution_statement: >
@@ -1100,10 +1073,10 @@ project:
         - role: Writing – original draft
           level: equal
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Surveyed authorship norms in Indian clinical neuroscience
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented hierarchical authorship challenges in medical research
           effort: supporting
         - section: discussion
@@ -1150,14 +1123,11 @@ project:
         - role: Investigation
           level: supporting
       section_contributions:
-        - section: fw-sort
-          description: Implemented and benchmarked sorting algorithm variants
+        - section: data-model
+          description: Implemented and benchmarked sorting algorithm variants; Validated data model against real consortium datasets
           effort: supporting
-        - section: impl-inline
+        - section: methods
           description: Built text parsing engine for contribution annotation
-          effort: supporting
-        - section: fw-model
-          description: Validated data model against real consortium datasets
           effort: supporting
       figure_contributions: []
       contribution_statement: >
@@ -1197,13 +1167,10 @@ project:
         - role: Investigation
           level: supporting
       section_contributions:
-        - section: impl-timeline
-          description: Led implementation of the project timeline visualization
+        - section: methods
+          description: Led implementation of the project timeline visualization; Built tooltip and popover components for inline annotations
           effort: lead
-        - section: impl-inline
-          description: Built tooltip and popover components for inline annotations
-          effort: supporting
-        - section: fw-viz
+        - section: interactive-display
           description: Designed animation specifications for timeline transitions
           effort: supporting
       figure_contributions: []
@@ -1247,15 +1214,12 @@ project:
         - role: Writing – original draft
           level: supporting
       section_contributions:
-        - section: fw-sort
-          description: Developed statistical validation tests for ordering fairness
+        - section: data-model
+          description: Developed statistical validation tests for ordering fairness; Validated data model completeness through simulation studies
           effort: supporting
-        - section: impl-matrix
+        - section: methods
           description: Built automated testing framework for the contribution matrix
           effort: equal
-        - section: fw-model
-          description: Validated data model completeness through simulation studies
-          effort: supporting
       figure_contributions: []
       contribution_statement: >
         Developed ordering fairness tests, built automated testing framework,
@@ -1294,10 +1258,10 @@ project:
         - role: Writing – original draft
           level: supporting
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Documented team science practices in African neuroscience networks
           effort: supporting
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Analyzed CRediT awareness among African researchers
           effort: supporting
         - section: discussion
@@ -1341,13 +1305,10 @@ project:
         - role: Validation
           level: supporting
       section_contributions:
-        - section: impl-inline
-          description: Built bidirectional text support for inline annotations
-          effort: supporting
-        - section: impl-timeline
-          description: Implemented interactive milestone tooltip system
+        - section: methods
+          description: Built bidirectional text support for inline annotations; Implemented interactive milestone tooltip system
           effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Contributed to internationalization specifications
           effort: supporting
       figure_contributions: []
@@ -1388,13 +1349,13 @@ project:
         - role: Writing – original draft
           level: supporting
       section_contributions:
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Analyzed author ordering disputes in neuroscience publications
           effort: supporting
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Contributed data on team size trends in Brazilian neuroscience
           effort: supporting
-        - section: fw-model
+        - section: data-model
           description: Tested data model against Latin American case studies
           effort: supporting
       figure_contributions: []
@@ -1438,13 +1399,13 @@ project:
         - role: Data curation
           level: equal
       section_contributions:
-        - section: fw-model
+        - section: data-model
           description: Developed user requirements through stakeholder interviews
           effort: equal
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Analyzed publisher adoption of structured contribution data
           effort: supporting
-        - section: intro
+        - section: introduction
           description: Contributed stakeholder perspectives to introduction framing
           effort: supporting
       figure_contributions: []
@@ -1485,14 +1446,11 @@ project:
         - role: Validation
           level: equal
       section_contributions:
-        - section: impl-matrix
-          description: Implemented keyboard navigation and screen reader support
+        - section: methods
+          description: Implemented keyboard navigation and screen reader support; Built automated accessibility testing for inline components
           effort: supporting
-        - section: fw-sort
+        - section: data-model
           description: Tested sorting algorithms with synthetic consortium datasets
-          effort: supporting
-        - section: impl-inline
-          description: Built automated accessibility testing for inline components
           effort: supporting
       figure_contributions: []
       contribution_statement: >
@@ -1532,10 +1490,10 @@ project:
         - role: Writing – original draft
           level: equal
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Led data collection on team composition in clinical neuroscience
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented authorship disputes in Indian medical journals
           effort: equal
         - section: discussion
@@ -1579,14 +1537,11 @@ project:
         - role: Formal analysis
           level: supporting
       section_contributions:
-        - section: impl-timeline
-          description: Built animated timeline transitions and playback controls
+        - section: methods
+          description: Built animated timeline transitions and playback controls; Implemented matrix cell tooltip interactions
           effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Designed data-driven animation specifications
-          effort: supporting
-        - section: impl-matrix
-          description: Implemented matrix cell tooltip interactions
           effort: supporting
       figure_contributions: []
       contribution_statement: >
@@ -1629,14 +1584,11 @@ project:
         - role: Methodology
           level: supporting
       section_contributions:
-        - section: fw-sort
-          description: Analyzed cultural differences in author ordering conventions
+        - section: data-model
+          description: Analyzed cultural differences in author ordering conventions; Contributed CJK name handling requirements
           effort: supporting
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented East Asian authorship naming conventions
-          effort: supporting
-        - section: fw-model
-          description: Contributed CJK name handling requirements
           effort: supporting
         - section: discussion
           description: Wrote about cultural adaptation of attribution systems
@@ -1679,15 +1631,9 @@ project:
         - role: Validation
           level: equal
       section_contributions:
-        - section: impl-inline
-          description: Led frontend architecture and component library development
+        - section: methods
+          description: Led frontend architecture and component library development; Built the matrix data pipeline and rendering engine; Architected the timeline component state management
           effort: lead
-        - section: impl-matrix
-          description: Built the matrix data pipeline and rendering engine
-          effort: equal
-        - section: impl-timeline
-          description: Architected the timeline component state management
-          effort: equal
       figure_contributions: []
       contribution_statement: >
         Led frontend architecture, built the matrix rendering engine,
@@ -1731,13 +1677,10 @@ project:
         - role: Validation
           level: supporting
       section_contributions:
-        - section: impl-matrix
-          description: Built server-side rendering and data aggregation pipelines
+        - section: methods
+          description: Built server-side rendering and data aggregation pipelines; Implemented text processing pipeline for annotation extraction
           effort: equal
-        - section: impl-inline
-          description: Implemented text processing pipeline for annotation extraction
-          effort: supporting
-        - section: fw-viz
+        - section: interactive-display
           description: Contributed to performance benchmarking specifications
           effort: supporting
       figure_contributions: []
@@ -1781,13 +1724,10 @@ project:
         - role: Validation
           level: lead
       section_contributions:
-        - section: fw-sort
-          description: Developed formal evaluation criteria for sorting algorithms
+        - section: data-model
+          description: Developed formal evaluation criteria for sorting algorithms; Validated model consistency across use cases
           effort: equal
-        - section: fw-model
-          description: Validated model consistency across use cases
-          effort: supporting
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Conducted quantitative analysis of CRediT usage patterns
           effort: supporting
       figure_contributions: []
@@ -1828,15 +1768,9 @@ project:
         - role: Validation
           level: equal
       section_contributions:
-        - section: impl-timeline
-          description: Built deployment infrastructure and CI/CD pipeline
+        - section: methods
+          description: Built deployment infrastructure and CI/CD pipeline; Implemented lazy loading and performance optimization; Set up automated regression testing suite
           effort: equal
-        - section: impl-inline
-          description: Implemented lazy loading and performance optimization
-          effort: supporting
-        - section: impl-matrix
-          description: Set up automated regression testing suite
-          effort: supporting
       figure_contributions: []
       contribution_statement: >
         Built deployment infrastructure, implemented performance optimization,
@@ -1878,10 +1812,10 @@ project:
         - role: Data curation
           level: equal
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Analyzed team science growth trends in Latin American neuroscience
           effort: supporting
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented language barriers in authorship communication
           effort: supporting
         - section: discussion
@@ -1925,13 +1859,10 @@ project:
         - role: Visualization
           level: equal
       section_contributions:
-        - section: impl-matrix
-          description: Led matrix component architecture and SVG rendering
+        - section: methods
+          description: Led matrix component architecture and SVG rendering; Co-built the inline annotation rendering system
           effort: lead
-        - section: impl-inline
-          description: Co-built the inline annotation rendering system
-          effort: equal
-        - section: fw-viz
+        - section: interactive-display
           description: Contributed to cross-browser compatibility specifications
           effort: supporting
       figure_contributions: []
@@ -1977,13 +1908,13 @@ project:
         - role: Writing – original draft
           level: supporting
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Analyzed CRediT adoption disparities across global regions
           effort: equal
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Documented barriers to structured attribution in resource-limited settings
           effort: equal
-        - section: fw-model
+        - section: data-model
           description: Contributed requirements for offline-compatible contribution tools
           effort: supporting
       figure_contributions: []
@@ -2027,13 +1958,10 @@ project:
         - role: Validation
           level: equal
       section_contributions:
-        - section: impl-timeline
-          description: Led timeline component visual design and rendering
+        - section: methods
+          description: Led timeline component visual design and rendering; Built inline annotation accessibility features
           effort: equal
-        - section: impl-inline
-          description: Built inline annotation accessibility features
-          effort: supporting
-        - section: fw-viz
+        - section: interactive-display
           description: Co-designed the responsive visualization layout system
           effort: equal
       figure_contributions: []
@@ -2074,10 +2002,10 @@ project:
         - role: Validation
           level: supporting
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Compiled and curated consortium metadata across European institutions
           effort: supporting
-        - section: impl-matrix
+        - section: methods
           description: Curated test datasets for matrix visualization validation
           effort: supporting
       figure_contributions: []
@@ -2118,10 +2046,10 @@ project:
         - role: Data curation
           level: supporting
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Coordinated cross-site data collection logistics
           effort: supporting
-        - section: impl-timeline
+        - section: methods
           description: Managed project milestone tracking and documentation
           effort: supporting
       figure_contributions: []
@@ -2162,10 +2090,10 @@ project:
         - role: Data curation
           level: equal
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Coordinated Japanese team logistics and institutional agreements
           effort: supporting
-        - section: impl-matrix
+        - section: methods
           description: Managed test data collection from Japanese consortium partners
           effort: supporting
       figure_contributions: []
@@ -2206,13 +2134,13 @@ project:
         - role: Resources
           level: supporting
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Curated dataset of CRediT implementation across African journals
           effort: supporting
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Compiled team composition data from African research networks
           effort: supporting
-        - section: impl-matrix
+        - section: methods
           description: Validated matrix visualization with curated test datasets
           effort: supporting
       figure_contributions: []
@@ -2253,10 +2181,10 @@ project:
         - role: Data curation
           level: supporting
       section_contributions:
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Coordinated data collection across Latin American partner sites
           effort: supporting
-        - section: impl-timeline
+        - section: methods
           description: Managed project timeline documentation and progress tracking
           effort: supporting
       figure_contributions: []
@@ -2294,7 +2222,7 @@ project:
         - role: Data curation
           level: supporting
       section_contributions:
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Assisted with coding authorship display practices across journal websites
           effort: supporting
       figure_contributions: []
@@ -2330,7 +2258,7 @@ project:
         - role: Visualization
           level: supporting
       section_contributions:
-        - section: impl-inline
+        - section: methods
           description: Assisted with CSS styling and visual polish of inline annotations
           effort: supporting
       figure_contributions: []
@@ -2366,10 +2294,10 @@ project:
         - role: Data curation
           level: supporting
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Assisted with data extraction from CRediT adoption surveys
           effort: supporting
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Helped compile team size statistics from published literature
           effort: supporting
       figure_contributions: []
@@ -2405,10 +2333,10 @@ project:
         - role: Visualization
           level: supporting
       section_contributions:
-        - section: impl-timeline
+        - section: methods
           description: Assisted with visual design assets for timeline components
           effort: supporting
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Helped gather team composition data from Brazilian research groups
           effort: supporting
       figure_contributions: []

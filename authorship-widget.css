@@ -15,6 +15,103 @@
   font-size: 14px;
 }
 
+/* ─── Collapsed state ─── */
+.ae-collapsed-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ae-collapsed-header:hover {
+  background: #f9fafb;
+}
+
+.ae-collapsed-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.ae-collapsed-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+.ae-collapsed-subtitle {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.ae-expand-btn {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4338ca;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 20px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.ae-expand-btn:hover {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+}
+
+.ae-collapse-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #6b7280;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.ae-collapse-btn:hover {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+/* ─── Source links ─── */
+.ae-source-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 20px 10px;
+  font-size: 11px;
+}
+.ae-source-links-expanded {
+  border-top: 1px solid #f3f4f6;
+  padding: 8px 20px;
+}
+.ae-source-label {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+.ae-source-link {
+  color: #6366f1;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1px 6px;
+  background: #f5f3ff;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.ae-source-link:hover {
+  background: #ede9fe;
+  text-decoration: underline;
+}
+
 /* ─── Title bar ─── */
 .ae-title-bar {
   display: flex;
@@ -326,6 +423,17 @@
   position: relative;
   top: -0.5em;
   display: inline;
+}
+
+.ae-inst-line {
+  padding: 3px 0;
+  line-height: 1.5;
+}
+
+.ae-inst-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
 }
 
 .ae-actions {
@@ -846,6 +954,37 @@
 /* ─── Network / Chord Diagram ─── */
 .ae-network {
   padding: 16px;
+}
+
+.ae-mode-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.ae-mode-chip {
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.ae-mode-chip:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+}
+
+.ae-mode-chip.ae-active {
+  background: #1e3a5f;
+  color: #fff;
+  border-color: #1e3a5f;
 }
 
 .ae-network-graph {

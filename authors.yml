@@ -47,18 +47,15 @@ project:
         - role: Writing – original draft
           level: supporting
       section_contributions:
-        - section: intro
+        - section: introduction
           description: Framed the authorship crisis argument and wrote the initial introduction
           effort: lead
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Provided historical context on CRediT adoption and its limitations
           effort: supporting
-        - section: fw-model
-          description: Designed the core multi-dimensional data model extending CRediT
+        - section: data-model
+          description: Designed the core multi-dimensional data model extending CRediT; Defined the principle that no single author ordering is definitive
           effort: lead
-        - section: fw-sort
-          description: Defined the principle that no single author ordering is definitive
-          effort: supporting
         - section: discussion
           description: Wrote the discussion synthesizing implications for research evaluation
           effort: lead
@@ -121,25 +118,19 @@ project:
         - role: Visualization
           level: equal
       section_contributions:
-        - section: impl-inline
-          description: Built the inline contribution highlighting system
+        - section: methods
+          description: Built the inline contribution highlighting system; Built the interactive CRediT contribution matrix; Developed the project timeline visualization
           effort: lead
-        - section: impl-matrix
-          description: Built the interactive CRediT contribution matrix
-          effort: lead
-        - section: impl-timeline
-          description: Developed the project timeline visualization
-          effort: lead
-        - section: fw-viz
+        - section: interactive-display
           description: Designed the four-view visualization architecture
           effort: lead
-        - section: fw-sort
+        - section: data-model
           description: Implemented the multi-dimensional sort system
           effort: lead
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Surveyed existing authorship display limitations
           effort: lead
-        - section: intro
+        - section: introduction
           description: Contributed to the introduction framing
           effort: supporting
         - section: discussion
@@ -203,13 +194,10 @@ project:
         - role: Validation
           level: lead
       section_contributions:
-        - section: fw-model
-          description: Designed the three-layer contribution data model extending CRediT
+        - section: data-model
+          description: Designed the three-layer contribution data model extending CRediT; Developed the multi-dimensional ordering framework
           effort: lead
-        - section: fw-sort
-          description: Developed the multi-dimensional ordering framework
-          effort: lead
-        - section: impl-matrix
+        - section: methods
           description: Built the CRediT contribution matrix visualization
           effort: lead
         - section: discussion
@@ -265,10 +253,10 @@ project:
         - role: Writing – review & editing
           level: supporting
       section_contributions:
-        - section: fw-viz
+        - section: interactive-display
           description: Designed the four complementary views and their interaction patterns
           effort: lead
-        - section: impl-inline
+        - section: methods
           description: Designed the inline contribution highlighting visual treatment
           effort: lead
       figure_contributions: []
@@ -316,7 +304,7 @@ project:
         - role: Validation
           level: supporting
       section_contributions:
-        - section: fw-model
+        - section: data-model
           description: Implemented the YAML-based contributor data system
           effort: supporting
       figure_contributions: []
@@ -362,12 +350,9 @@ project:
         - role: Software
           level: supporting
       section_contributions:
-        - section: impl-inline
-          description: Built the interactive inline annotation components
+        - section: methods
+          description: Built the interactive inline annotation components; Built the interactive timeline visualization
           effort: lead
-        - section: impl-timeline
-          description: Built the interactive timeline visualization
-          effort: supporting
       figure_contributions: []
       contribution_statement: >
         Built interactive UI components for the inline annotation system
@@ -417,10 +402,10 @@ project:
         - role: Funding Acquisition
           level: supporting
       section_contributions:
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Provided expertise on CRediT taxonomy history and adoption
           effort: supporting
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Contributed analysis of team science growth trends
           effort: supporting
         - section: discussion

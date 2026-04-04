@@ -50,35 +50,26 @@ project:
         - role: Data Curation
           level: lead
       section_contributions:
-        - section: intro
+        - section: introduction
           description: Conceived the project and wrote the introduction
           effort: lead
-        - section: bg-credit
+        - section: the-credit-taxonomy
           description: Wrote the CRediT taxonomy background section
           effort: lead
-        - section: bg-limits
+        - section: limitations-of-current-approaches
           description: Wrote the limitations of current approaches section
           effort: lead
-        - section: bg-team
+        - section: team-science-and-rising-author-lists
           description: Wrote the team science background section
           effort: lead
-        - section: fw-model
-          description: Defined and documented the multi-dimensional data model
+        - section: data-model
+          description: Defined and documented the multi-dimensional data model; Designed and documented the multi-dimensional sorting approach
           effort: lead
-        - section: fw-sort
-          description: Designed and documented the multi-dimensional sorting approach
-          effort: lead
-        - section: fw-viz
+        - section: interactive-display
           description: Designed and documented the visualization architecture
           effort: lead
-        - section: impl-inline
-          description: Built and documented inline contribution highlighting
-          effort: lead
-        - section: impl-matrix
-          description: Built and documented the contribution matrix
-          effort: lead
-        - section: impl-timeline
-          description: Built and documented the project timeline
+        - section: methods
+          description: Built and documented inline contribution highlighting; Built and documented the contribution matrix; Built and documented the project timeline
           effort: lead
         - section: discussion
           description: Wrote the discussion section
