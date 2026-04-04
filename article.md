@@ -6,8 +6,8 @@ abstract: >
   The scientific author list has remained a linear, ordered sequence of names
   for over three centuries, despite radical changes in how research is conducted.
   This compression of multi-dimensional contributions into a one-dimensional
-  ranking creates well-documented tensions: authorship disputes, gift
-  authorship, invisibility of infrastructure contributors, and incentive
+  ranking creates well-documented tensions: authorship disputes,
+  invisibility of infrastructure contributors, and incentive
   structures that actively hinder collaborative team science. We present a
   multi-dimensional authorship framework that allows readers, institutions,
   and metrics systems to explore contributions along multiple axes
