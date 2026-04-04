@@ -813,8 +813,7 @@ function render({ model, el: rootEl }) {
       { key: 'chord', label: '👤 Authors' },
       { key: 'institutions', label: '🏛️ By Institutions' },
       { key: 'force', label: '🎯 By Role' },
-      { key: 'sections', label: '📄 By Section' },
-      { key: 'figures', label: '📊 By Figure' },
+      { key: 'sections', label: '📄 By Section & Figure' },
     ];
     for (const m of modes) {
       modeBar.appendChild(el('button', {
@@ -831,7 +830,6 @@ function render({ model, el: rootEl }) {
     if (networkMode === 'institutions') return buildInstitutionChord(sorted);
     if (networkMode === 'force') return buildForceGraph(sorted);
     if (networkMode === 'sections') return buildSectionCircles(sorted);
-    if (networkMode === 'figures') return buildFigureCircles(sorted);
 
     const wrap = el('div', { className: 'ae-network' });
     const ns = 'http://www.w3.org/2000/svg';
@@ -2053,7 +2051,7 @@ function render({ model, el: rootEl }) {
     return buildCircleOfCircles(sorted, groups, { groupLabel: 'Roles', linkLabel: 'Shared contributors' });
   }
 
-  // ──── By Section circle-of-circles ────
+  // ──── By Section & Figure circle-of-circles ────
   function buildSectionCircles(sorted) {
     const n = sorted.length;
 
@@ -2062,7 +2060,15 @@ function render({ model, el: rootEl }) {
       '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e',
       '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6', '#4c6ef5',
     ];
+    const FIGURE_COLORS = [
+      '#f59e0b', '#fbbf24', '#f97316', '#fb923c', '#fca5a1',
+    ];
 
+    function figureLabel(id) {
+      return id.replace(/^fig-/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    // Section groups
     const sectionMap = new Map();
     for (let i = 0; i < n; i++) {
       const secs = sorted[i].section_contributions || [];
@@ -2071,8 +2077,7 @@ function render({ model, el: rootEl }) {
         sectionMap.get(sc.section).add(i);
       }
     }
-
-    const groups = [...sectionMap.entries()]
+    const sectionGroups = [...sectionMap.entries()]
       .filter(([, members]) => members.size > 0)
       .map(([sectionId, members], idx) => ({
         label: sectionLabel(sectionId),
@@ -2080,22 +2085,7 @@ function render({ model, el: rootEl }) {
         members: [...members],
       }));
 
-    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Sections', linkLabel: 'Shared contributors' });
-  }
-
-  // ──── By Figure circle-of-circles ────
-  function buildFigureCircles(sorted) {
-    const n = sorted.length;
-
-    const FIGURE_COLORS = [
-      '#f59e0b', '#10b981', '#3b82f6', '#ef4444', '#8b5cf6',
-      '#ec4899', '#06b6d4', '#84cc16', '#f97316', '#6366f1',
-    ];
-
-    function figureLabel(id) {
-      return id.replace(/^fig-/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-    }
-
+    // Figure groups
     const figMap = new Map();
     for (let i = 0; i < n; i++) {
       const figs = sorted[i].figure_contributions || [];
@@ -2104,16 +2094,17 @@ function render({ model, el: rootEl }) {
         figMap.get(fc.figure).add(i);
       }
     }
-
-    const groups = [...figMap.entries()]
+    const figureGroups = [...figMap.entries()]
       .filter(([, members]) => members.size > 0)
       .map(([figId, members], idx) => ({
-        label: figureLabel(figId),
+        label: '📊 ' + figureLabel(figId),
         color: FIGURE_COLORS[idx % FIGURE_COLORS.length],
         members: [...members],
       }));
 
-    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Figures', linkLabel: 'Shared contributors' });
+    const groups = [...sectionGroups, ...figureGroups];
+
+    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Sections & Figures', linkLabel: 'Shared contributors' });
   }
 
   // ──── Timeline tab ────
