@@ -103,19 +103,7 @@ A central design principle is that there is no single correct author ordering. T
 
 The interactive panel also allows the reader to switch between multiple datasets: for this paper, a simulated small team, a simulated large team of fifty authors, and the real contributor data. This makes it possible to explore how the framework scales and adapts to different team sizes.
 
-The framework presents authorship information through six complementary views, accessible via tabs in the interactive panel above:
-
-The **Collaboration** tab visualizes the collaboration network. In its default Authors mode, a chord diagram shows all authors as arcs along a perimeter, with chords connecting authors who share CRediT roles—thicker chords indicate more shared roles. This immediately reveals the social topology of a research team: tightly connected clusters, bridging individuals, and independent contributors. The tab also offers three circle-of-circles views that group authors By Institution, By Role, or By Section & Figure. In each, a large circle represents the group (an institution, a CRediT role, or a manuscript section or figure) and the authors who belong to it appear as smaller circles inside. These views make visible the organizational structure of collaboration that a linear author list cannot convey.
-
-The **CRediT** tab encodes the fourteen-role contribution landscape as a colored grid, with lead, equal, and supporting contributions distinguished by intensity. This makes immediately apparent what the byline obscures: a "middle author" might lead three critical roles that no one else contributed to.
-
-The **Sections** tab shows which authors contributed to the work described in each manuscript section and figure, enabling readers to identify the relevant expert for any part of the paper. This captures all forms of contribution—research, design, implementation, analysis—not just who wrote the text.
-
-The **Timeline** reveals the temporal dynamics of collaboration. Scientific projects are dynamic, with contributors entering and leaving at different stages. The designer who created the visual system may have completed her work a year before publication; the engineer who built interactive components contributed during a bounded period. Each of these contributions was essential; none is captured by a static author list.
-
-The **Sorted List** tab presents the traditional author list but with the ability to dynamically re-sort: by alphabetical order, number of CRediT roles, any individual CRediT role, project join date, or institution. This view makes explicit that author ordering is a choice, not a fact, and that different orderings highlight different contributions.
-
-The **Profiles** view displays structured author metadata (affiliation, CRediT roles, and ORCID identifiers), offering far more context than a name in a byline.
+The framework presents authorship information through six complementary views, accessible via tabs in the interactive panel above. The **Collaboration** tab visualizes the collaboration network as a chord diagram connecting authors who share CRediT roles, with alternative circle-of-circles views grouping authors by institution, role, or manuscript section. The **CRediT** tab encodes the contribution landscape as a colored grid, with lead, equal, and supporting contributions distinguished by intensity. The **Sections** tab maps which authors contributed to each manuscript section and figure. The **Timeline** reveals when each contributor joined and what phases they participated in. The **Sorted List** allows dynamic re-sorting by alphabetical order, number of CRediT roles, any individual role, project join date, or institution, making explicit that author ordering is a choice, not a fact. The **Profiles** view displays structured author metadata including affiliation, CRediT roles, and ORCID identifiers.
 
 # Methods
 
