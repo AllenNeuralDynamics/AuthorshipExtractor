@@ -54,7 +54,7 @@ CRediT has gained nominal adoption. Many submission platforms now include CRediT
 
 Current authorship display suffers from several interconnected limitations. First, the linear ordering implies a ranking that may not exist. In team science, contributions are often orthogonal: the person who built the data infrastructure, the person who designed the experiments, the person who wrote the theoretical framework, and the person who led the experimental work each contribute indispensably but along entirely different dimensions. Compressing these into positions 1 through N forces a false hierarchy.
 
-Second, the convention of "first author did most work" and "last author is the PI" is not universal. In mathematics and high-energy physics, authors are traditionally listed alphabetically. Readers from different disciplines routinely misinterpret authorship signals from other fields {cite}`birnholtz2006`.
+Second, the convention of "first author did most work" and "last author is the PI" is not universal. In high-energy physics, for example, collaborations involving hundreds or thousands of researchers have stretched the traditional authorship model to the point where author position conveys little about individual contributions {cite}`birnholtz2006`. In mathematics and economics, authors are traditionally listed alphabetically.
 
 Third, the static nature of the author list conceals the temporal dynamics of contributions. Projects increasingly involve contributors who participate intensely during one phase but not others. A publication often begins with a key conceptual insight, followed by intensive experimental design and execution, and later by data curation and analysis: each phase potentially led by different people. The byline flattens this rich temporal structure into a single snapshot, hiding who contributed when and to what phase of the work.
 
@@ -85,7 +85,7 @@ Mean number of authors per paper in biomedical sciences (2003–2025). Data from
 
 This growth reflects a genuine change in how research happens. Modern scientific problems, from understanding complex systems to building research infrastructure, require deep specialization in design, analysis, engineering, data management, and domain knowledge that no individual or small group possesses. The question is not whether to do team science but how to credit it fairly.
 
-Current systems fail team science in specific, quantifiable ways: infrastructure contributors (e.g. engineers or data curators) are often listed in the "author positions of least credit" {cite}`lariviere2016`. Trainees who make crucial but bounded contributions face pressure to negotiate for first-author status {cite}`sauermann2017`. The proliferation of workarounds (co-first authors, co-second authors, co-senior authors, equal-contribution footnotes) reveals how strained the linear model has become: teams are inventing ad hoc mechanisms to inject dimensionality into a format that was never designed for it. A richer attribution framework would reduce these tensions by making the nature and extent of each contribution transparent {cite}`rennie1997,holcombe2019`.
+Current systems fail team science in specific, quantifiable ways: middle authors, who often include infrastructure contributors such as engineers and data curators, contribute to fewer documented tasks and occupy positions associated with less credit than first or last authors {cite}`lariviere2016`. Trainees who make crucial but bounded contributions face pressure to negotiate for first-author status {cite}`sauermann2017`. The proliferation of workarounds (co-first authors, co-second authors, co-senior authors, equal-contribution footnotes) reveals how strained the linear model has become: teams are inventing ad hoc mechanisms to inject dimensionality into a format that was never designed for it. A richer attribution framework would reduce these tensions by making the nature and extent of each contribution transparent {cite}`rennie1997,holcombe2019`.
 
 ## Data model
 
@@ -95,7 +95,7 @@ The second layer is figure-level contributions, documenting who generated data, 
 
 The third layer is a project timeline: when each contributor joined the project, key milestones in their participation, and optionally when their active contribution ended. This temporal dimension makes visible the trajectory of a project and the different phases of contribution that characterize modern collaborative research.
 
-Each author profile includes structured metadata aligned with ORCID standards {cite}`vasilevsky2021`: institutional affiliations (linked to ROR IDs where available) and persistent identifiers. Critically, we focus on permanent, publication-relevant data: the facts about contributions that form part of the scholarly record.
+Each author profile includes structured metadata: institutional affiliations (linked to ROR IDs where available) and persistent identifiers such as ORCID. Critically, we focus on permanent, publication-relevant data: the facts about contributions that form part of the scholarly record.
 
 ## Interactive display
 
