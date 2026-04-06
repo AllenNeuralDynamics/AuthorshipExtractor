@@ -115,6 +115,8 @@ The interactive display is implemented as a custom MyST directive (`{authorship-
 
 The implementation renders inside a Shadow DOM to isolate widget styles from the host document, ensuring consistent appearance across different MyST themes. The widget also injects minimal styles into the host document to relocate itself into the article's frontmatter region and hide the default linear author list, replacing it with the interactive display.
 
+The plugin and widget code were developed with the assistance of Claude Opus 4.6 (Anthropic), used as a coding agent within VS Code. The LLM generated the initial implementation of the MyST plugin, the anywidget ESM module, and the SVG-based visualizations, with the author providing architectural direction, iterative feedback, and manual refinements. This paper was also drafted collaboratively with the same model.
+
 # Discussion
 
 The framework presented here addresses a structural problem in scholarly communication that has been recognized for decades. As early as 1997, Rennie, Yank, and Emanuel argued in JAMA that traditional authorship was failing and proposed replacing it with explicit contributorship {cite}`rennie1997`. Their core insight, that a single byline cannot meaningfully represent the diverse roles within a research team, remains as urgent today as it was then, perhaps more so given the continued growth of team science documented by Wuchty, Jones, and Uzzi {cite}`wuchty2007`.
