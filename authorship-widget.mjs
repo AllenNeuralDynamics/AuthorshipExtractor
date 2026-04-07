@@ -183,6 +183,37 @@ function render({ model, el: rootEl }) {
   let showCreditMenu = false;
   let authorMode = 'simulated'; // 'simulated' or 'real'
   let networkMode = 'chord'; // 'chord' | 'institutions' | 'force' | 'sections'
+  let searchQuery = ''; // search/filter across all views
+
+  // Search highlight: matches name, institution, or CRediT role
+  function matchesSearch(author, query) {
+    if (!query) return true;
+    const q = query.toLowerCase();
+    if (author.name.toLowerCase().includes(q)) return true;
+    if (author.affiliations) {
+      for (const aff of author.affiliations) {
+        const affStr = typeof aff === 'string' ? aff : (aff.name || aff.id || '');
+        if (affStr.toLowerCase().includes(q)) return true;
+      }
+    }
+    if (author.credit_levels) {
+      for (const cl of author.credit_levels) {
+        if (cl.role.toLowerCase().includes(q)) return true;
+      }
+    }
+    if (author.career_stage && author.career_stage.toLowerCase().includes(q)) return true;
+    return false;
+  }
+
+  // Returns a Set of indices into the sorted array that match search
+  function getHighlightedSet(authors) {
+    if (!searchQuery) return null; // null = no highlighting, show all normally
+    const set = new Set();
+    for (let i = 0; i < authors.length; i++) {
+      if (matchesSearch(authors[i], searchQuery)) set.add(i);
+    }
+    return set;
+  }
 
   function rerender() {
     // Build new content first, then swap to avoid flash/blink
@@ -210,6 +241,7 @@ function render({ model, el: rootEl }) {
   function buildWidget() {
     const activeAuthors = getActiveAuthors();
     const sorted = sortAuthors(activeAuthors, sortKey);
+    const highlightSet = getHighlightedSet(sorted); // null if no search
 
     const container = el('div', { className: `ae-widget ${expanded ? '' : 'ae-collapsed'}` });
 
@@ -273,9 +305,13 @@ function render({ model, el: rootEl }) {
     }
 
     // ──── Title ────
+    const matchCount = highlightSet ? highlightSet.size : sorted.length;
+    const countLabel = searchQuery
+      ? `${matchCount} of ${sorted.length} highlighted`
+      : `${sorted.length} authors`;
     const titleBar = el('div', { className: 'ae-title-bar' },
       el('h3', { className: 'ae-title' }, 'Contributors'),
-      el('span', { className: 'ae-title-count' }, `${sorted.length} authors`),
+      el('span', { className: 'ae-title-count' }, countLabel),
       el('button', {
         className: 'ae-collapse-btn',
         onClick: () => { expanded = false; rerender(); },
@@ -288,7 +324,7 @@ function render({ model, el: rootEl }) {
     const panel = el('div', { className: 'ae-panel' });
 
     // Tabs
-    const tabs = el('div', { className: 'ae-tabs' });
+    const tabs = el('div', { className: 'ae-tabs', role: 'tablist', 'aria-label': 'Authorship views' });
     const tabDefs = [
       { id: 'network', label: 'Collaboration' },
       { id: 'matrix', label: 'CRediT' },
@@ -297,21 +333,82 @@ function render({ model, el: rootEl }) {
       { id: 'authors', label: 'Sorted List' },
       { id: 'profiles', label: 'Profiles' },
     ];
-    for (const t of tabDefs) {
-      tabs.appendChild(el('button', {
-        className: `ae-tab ${activeTab === t.id ? 'ae-tab-active' : ''}`,
+    for (let ti = 0; ti < tabDefs.length; ti++) {
+      const t = tabDefs[ti];
+      const isActive = activeTab === t.id;
+      const tabBtn = el('button', {
+        className: `ae-tab ${isActive ? 'ae-tab-active' : ''}`,
+        role: 'tab',
+        'aria-selected': String(isActive),
+        tabindex: isActive ? '0' : '-1',
         onClick: () => { activeTab = t.id; rerender(); },
-      }, t.label));
+      }, t.label);
+      tabBtn.addEventListener('keydown', (e) => {
+        let next = -1;
+        if (e.key === 'ArrowRight') next = (ti + 1) % tabDefs.length;
+        else if (e.key === 'ArrowLeft') next = (ti - 1 + tabDefs.length) % tabDefs.length;
+        else if (e.key === 'Home') next = 0;
+        else if (e.key === 'End') next = tabDefs.length - 1;
+        if (next >= 0) {
+          e.preventDefault();
+          activeTab = tabDefs[next].id;
+          rerender();
+          // Focus the new active tab after rerender
+          requestAnimationFrame(() => {
+            const newTab = rootEl.querySelector('.ae-tab-active');
+            if (newTab) newTab.focus();
+          });
+        }
+      });
+      tabs.appendChild(tabBtn);
     }
     panel.appendChild(tabs);
 
-    // Tab content
-    const content = el('div', { className: 'ae-tab-content' });
+    // Search bar
+    const searchBar = el('div', { className: 'ae-search-bar' });
+    const searchInput = el('input', {
+      className: 'ae-search-input',
+      type: 'text',
+      placeholder: 'Filter by name, institution, or role…',
+      'aria-label': 'Filter contributors',
+    });
+    searchInput.value = searchQuery;
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      rerender();
+      // Restore focus to search input after rerender
+      requestAnimationFrame(() => {
+        const inp = rootEl.querySelector('.ae-search-input');
+        if (inp) { inp.focus(); inp.selectionStart = inp.selectionEnd = inp.value.length; }
+      });
+    });
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        searchQuery = '';
+        rerender();
+      }
+    });
+    searchBar.appendChild(el('span', { className: 'ae-search-icon', 'aria-hidden': 'true' }, '🔍'));
+    searchBar.appendChild(searchInput);
+    if (searchQuery) {
+      searchBar.appendChild(el('button', {
+        className: 'ae-search-clear',
+        onClick: () => { searchQuery = ''; rerender(); },
+        'aria-label': 'Clear search',
+        title: 'Clear',
+      }, '×'));
+    }
+    panel.appendChild(searchBar);
 
-    if (activeTab === 'authors') {
+    // Tab content
+    const content = el('div', { className: 'ae-tab-content', role: 'tabpanel' });
+
+    if (sorted.length === 0) {
+      content.appendChild(el('p', { className: 'ae-empty' }, 'No contributor data available.'));
+    } else if (activeTab === 'authors') {
       content.appendChild(buildAuthorListTab());
     } else if (activeTab === 'network') {
-      content.appendChild(buildNetworkTab(sorted));
+      content.appendChild(buildNetworkTab(sorted, highlightSet));
     } else if (activeTab === 'profiles') {
       content.appendChild(buildProfilesTab(sorted));
     } else if (activeTab === 'matrix') {
@@ -487,7 +584,9 @@ function render({ model, el: rootEl }) {
       const authorKeyDiv = el('div', { className: 'ae-names' });
       resorted.forEach((author, i) => {
         const isLast = i === resorted.length - 1;
+        const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
         const span = el('span', { className: 'ae-name-wrap' });
+        if (isDimmed) span.style.opacity = '0.3';
         span.appendChild(el('sup', { className: 'ae-aff-sup' }, String(i + 1)));
         span.appendChild(el('button', { className: 'ae-name' }, author.name));
         if (author.corresponding) {
@@ -526,7 +625,9 @@ function render({ model, el: rootEl }) {
       const namesList = el('div', { className: 'ae-names' });
       resorted.forEach((author, i) => {
         const isLast = i === resorted.length - 1;
+        const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
         const span = el('span', { className: 'ae-name-wrap' });
+        if (isDimmed) span.style.opacity = '0.3';
 
         const nameBtn = el('button', { className: 'ae-name' }, author.name);
         span.appendChild(nameBtn);
@@ -588,9 +689,12 @@ function render({ model, el: rootEl }) {
   // ──── Profiles tab ────
   function buildProfilesTab(sorted) {
     const wrap = el('div', { className: 'ae-profiles' });
-    for (const author of sorted) {
+    for (let ai = 0; ai < sorted.length; ai++) {
+      const author = sorted[ai];
+      const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
       const color = getColor(author.name);
       const card = el('div', { className: 'ae-profile-card' });
+      if (isDimmed) card.style.opacity = '0.3';
 
       // Avatar
       const avatar = el('div', {
@@ -675,9 +779,12 @@ function render({ model, el: rootEl }) {
     const thead = el('thead');
     const headerRow = el('tr');
     headerRow.appendChild(el('th', { className: 'ae-matrix-corner' }));
-    for (const author of sorted) {
+    for (let ai = 0; ai < sorted.length; ai++) {
+      const author = sorted[ai];
+      const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
       const color = getColor(author.name);
       const th = el('th', { className: 'ae-matrix-author-th' });
+      if (isDimmed) th.style.opacity = '0.3';
       th.appendChild(el('div', {
         className: 'ae-matrix-avatar',
         style: { backgroundColor: color },
@@ -754,7 +861,9 @@ function render({ model, el: rootEl }) {
       const contributors = el('div', { className: 'ae-section-contributors' });
       for (const c of contribs) {
         const color = getColor(c.author.name);
+        const isDimmed = searchQuery && !matchesSearch(c.author, searchQuery);
         const chip = el('div', { className: 'ae-section-chip' });
+        if (isDimmed) chip.style.opacity = '0.3';
         chip.appendChild(el('div', {
           className: 'ae-section-avatar',
           style: { backgroundColor: color },
@@ -824,12 +933,12 @@ function render({ model, el: rootEl }) {
     return modeBar;
   }
 
-  function buildNetworkTab(sorted) {
+  function buildNetworkTab(sorted, highlightSet) {
     const n = sorted.length;
     // Dispatch to mode-specific builder
-    if (networkMode === 'institutions') return buildInstitutionChord(sorted);
-    if (networkMode === 'force') return buildForceGraph(sorted);
-    if (networkMode === 'sections') return buildSectionCircles(sorted);
+    if (networkMode === 'institutions') return buildInstitutionChord(sorted, highlightSet);
+    if (networkMode === 'force') return buildForceGraph(sorted, highlightSet);
+    if (networkMode === 'sections') return buildSectionCircles(sorted, highlightSet);
 
     const wrap = el('div', { className: 'ae-network' });
     const ns = 'http://www.w3.org/2000/svg';
@@ -954,7 +1063,7 @@ function render({ model, el: rootEl }) {
       bgCircle.setAttribute('r', String(ORBIT + 60)); bgCircle.setAttribute('fill', 'url(#ae-bg-glow)');
       svg.appendChild(bgCircle);
 
-      // Draw edges — parallel colored strands per shared role
+      // Draw edges — parallel colored strands per shared role, clipped to node edges
       for (const link of links) {
         const s = nodeData[link.i], t = nodeData[link.j];
         const isHL = hoveredIdx === link.i || hoveredIdx === link.j;
@@ -963,10 +1072,15 @@ function render({ model, el: rootEl }) {
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
-        const nx = -dy / len, ny = dx / len;
+        const ux = dx / len, uy = dy / len;
+        const nx = -uy, ny = ux;
 
-        const midX = (s.x + t.x) / 2 + (CX - (s.x + t.x) / 2) * 0.4;
-        const midY = (s.y + t.y) / 2 + (CY - (s.y + t.y) / 2) * 0.4;
+        // Start/end at edge of node circles
+        const sx = s.x + ux * (s.radius + 6), sy = s.y + uy * (s.radius + 6);
+        const tx = t.x - ux * (t.radius + 6), ty = t.y - uy * (t.radius + 6);
+
+        const midX = (sx + tx) / 2 + (CX - (sx + tx) / 2) * 0.4;
+        const midY = (sy + ty) / 2 + (CY - (sy + ty) / 2) * 0.4;
 
         const strandW = 2.0, gap = strandW + 0.8;
         const strands = link.sharedRoles;
@@ -976,7 +1090,7 @@ function render({ model, el: rootEl }) {
         for (const sr of strands) {
           const ox = nx * offset, oy = ny * offset;
           const path = document.createElementNS(ns, 'path');
-          path.setAttribute('d', `M${s.x + ox},${s.y + oy} Q${midX + ox},${midY + oy} ${t.x + ox},${t.y + oy}`);
+          path.setAttribute('d', `M${sx + ox},${sy + oy} Q${midX + ox},${midY + oy} ${tx + ox},${ty + oy}`);
           path.setAttribute('fill', 'none');
           path.setAttribute('stroke', sr.color);
           path.setAttribute('stroke-width', String(strandW));
@@ -996,7 +1110,9 @@ function render({ model, el: rootEl }) {
         const nd = nodeData[idx];
         const isHovered = hoveredIdx === idx;
         const isDim = hoveredIdx !== null && !isHovered;
-        const groupOpacity = isDim ? 0.3 : 1;
+        // Search highlight: dim non-matching authors
+        const isSearchDim = highlightSet && !highlightSet.has(idx);
+        const groupOpacity = isDim ? 0.3 : isSearchDim ? 0.25 : 1;
 
         const g = document.createElementNS(ns, 'g');
         g.style.cursor = 'pointer';
@@ -1068,13 +1184,14 @@ function render({ model, el: rootEl }) {
         g.appendChild(init);
 
         // Name label below
+        const isSearchMatch = highlightSet && highlightSet.has(idx);
         const labelFontSize = isLarge ? '8' : '11';
         const label = document.createElementNS(ns, 'text');
         label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
         label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('fill', isHovered ? '#1e3a5f' : '#64748b');
+        label.setAttribute('fill', isHovered ? '#1e3a5f' : isSearchMatch ? '#4338ca' : '#64748b');
         label.setAttribute('font-size', labelFontSize);
-        label.setAttribute('font-weight', isHovered ? '600' : '400');
+        label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
         label.textContent = isLarge ? nd.lastName : `${nd.firstName} ${nd.lastName}`;
@@ -1095,6 +1212,20 @@ function render({ model, el: rootEl }) {
         // Hover events
         g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderNetwork(); });
         g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderNetwork(); });
+
+        // Keyboard: focusable nodes
+        g.setAttribute('tabindex', '0');
+        g.setAttribute('role', 'button');
+        g.setAttribute('aria-label', nd.name);
+        g.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            hoveredIdx = hoveredIdx === idx ? null : idx;
+            rerenderNetwork();
+          }
+        });
+        g.addEventListener('focus', () => { hoveredIdx = idx; rerenderNetwork(); });
+        g.addEventListener('blur', () => { hoveredIdx = null; rerenderNetwork(); });
 
         svg.appendChild(g);
       }
@@ -1284,7 +1415,7 @@ function render({ model, el: rootEl }) {
   }
 
   // ──── Shared circle-of-circles builder ────
-  function buildCircleOfCircles(sorted, groups, opts) {
+  function buildCircleOfCircles(sorted, groups, opts, highlightSet) {
     const wrap = el('div', { className: 'ae-network' });
     const n = sorted.length;
     const ns = 'http://www.w3.org/2000/svg';
@@ -1334,7 +1465,7 @@ function render({ model, el: rootEl }) {
     const totalMembers = groups.reduce((s, g) => s + g.members.length, 0);
     const maxGroupSize = Math.max(1, ...groups.map(g => g.members.length));
     const MEMBER_R = totalMembers > 50 ? 14 : totalMembers > 30 ? 17 : totalMembers > 15 ? 20 : 24;
-    const GAP = 4; // minimum gap between member circles
+    const GAP = 16; // minimum gap between member circles — room for name labels
 
     // Compute concentric ring layout for N circles of radius r with gap, returns { rings, outerR }
     function planRings(n, r) {
@@ -1456,17 +1587,22 @@ function render({ model, el: rootEl }) {
       if (expandedGroup === null) {
         // ── Overview: group circles with member dots inside ──
 
-        // Inter-group chords
+        // Inter-group chords — clipped to group circle edges
         for (const link of groupLinks) {
           const s = groupData[link.i], t = groupData[link.j];
           const isHL = hoveredGroup === link.i || hoveredGroup === link.j;
           const isDim = hoveredGroup !== null && !isHL;
           const baseOpacity = isDim ? 0.03 : isHL ? 0.35 : 0.1;
-          const midX = (s.x + t.x) / 2 + (CX - (s.x + t.x) / 2) * 0.3;
-          const midY = (s.y + t.y) / 2 + (CY - (s.y + t.y) / 2) * 0.3;
+          const dx = t.x - s.x, dy = t.y - s.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const ux = dx / dist, uy = dy / dist;
+          const sx = s.x + ux * s.radius, sy = s.y + uy * s.radius;
+          const tx = t.x - ux * t.radius, ty = t.y - uy * t.radius;
+          const midX = (sx + tx) / 2 + (CX - (sx + tx) / 2) * 0.3;
+          const midY = (sy + ty) / 2 + (CY - (sy + ty) / 2) * 0.3;
           const thickness = Math.min(8, 1.5 + link.weight * 0.2);
           const path = document.createElementNS(ns, 'path');
-          path.setAttribute('d', `M${s.x},${s.y} Q${midX},${midY} ${t.x},${t.y}`);
+          path.setAttribute('d', `M${sx},${sy} Q${midX},${midY} ${tx},${ty}`);
           path.setAttribute('fill', 'none'); path.setAttribute('stroke', s.color);
           path.setAttribute('stroke-width', String(thickness));
           path.setAttribute('stroke-opacity', String(baseOpacity));
@@ -1502,10 +1638,12 @@ function render({ model, el: rootEl }) {
             const author = sorted[authorIdx];
             const isMemberHovered = hoveredOverviewMember &&
               hoveredOverviewMember.groupIdx === idx && hoveredOverviewMember.memberIdx === mi;
+            const isSearchDimmed = highlightSet && !highlightSet.has(authorIdx);
 
             const mg = document.createElementNS(ns, 'g');
             mg.style.cursor = 'pointer';
-            mg.style.transition = 'transform 0.15s';
+            mg.style.transition = 'transform 0.15s, opacity 0.2s';
+            if (isSearchDimmed) mg.style.opacity = '0.15';
 
             // Shadow
             const shadow = document.createElementNS(ns, 'circle');
@@ -1547,17 +1685,17 @@ function render({ model, el: rootEl }) {
             init.textContent = getInitials(author.name);
             mg.appendChild(init);
 
-            // Name label on hover
-            if (isMemberHovered) {
-              const nl = document.createElementNS(ns, 'text');
-              nl.setAttribute('x', String(mp.x)); nl.setAttribute('y', String(mp.y + mp.r + 12));
-              nl.setAttribute('text-anchor', 'middle'); nl.setAttribute('fill', '#1e3a5f');
-              nl.setAttribute('font-size', '9'); nl.setAttribute('font-weight', '600');
-              nl.setAttribute('font-family', 'Inter, system-ui, sans-serif');
-              nl.style.pointerEvents = 'none';
-              nl.textContent = author.name;
-              mg.appendChild(nl);
-            }
+            // Name label — always show last name, full name on hover
+            const nl = document.createElementNS(ns, 'text');
+            nl.setAttribute('x', String(mp.x)); nl.setAttribute('y', String(mp.y + mp.r + 12));
+            nl.setAttribute('text-anchor', 'middle');
+            nl.setAttribute('fill', isMemberHovered ? '#1e3a5f' : '#64748b');
+            nl.setAttribute('font-size', '8');
+            nl.setAttribute('font-weight', isMemberHovered ? '600' : '400');
+            nl.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+            nl.style.pointerEvents = 'none';
+            nl.textContent = isMemberHovered ? author.name : getLastName(author.name);
+            mg.appendChild(nl);
 
             // Member hover & click
             mg.addEventListener('mouseenter', (e) => {
@@ -1718,7 +1856,7 @@ function render({ model, el: rootEl }) {
           };
         });
 
-        // Intra-group edges
+        // Intra-group edges — clipped to node edges
         for (let a = 0; a < mLen; a++) {
           for (let b = a + 1; b < mLen; b++) {
             const ai = members[a], bi = members[b];
@@ -1734,16 +1872,19 @@ function render({ model, el: rootEl }) {
             const baseOpacity = isDim ? 0.03 : isHL ? 0.5 : 0.12;
             const dx = t.x - s.x, dy = t.y - s.y;
             const len = Math.sqrt(dx * dx + dy * dy) || 1;
-            const nx = -dy / len, ny = dx / len;
-            const midX = (s.x + t.x) / 2 + (CX - (s.x + t.x) / 2) * 0.25;
-            const midY = (s.y + t.y) / 2 + (CY - (s.y + t.y) / 2) * 0.25;
+            const ux = dx / len, uy = dy / len;
+            const nx = -uy, ny = ux;
+            const sx = s.x + ux * (s.radius + 5), sy = s.y + uy * (s.radius + 5);
+            const tx = t.x - ux * (t.radius + 5), ty = t.y - uy * (t.radius + 5);
+            const midX = (sx + tx) / 2 + (CX - (sx + tx) / 2) * 0.25;
+            const midY = (sy + ty) / 2 + (CY - (sy + ty) / 2) * 0.25;
             const strandW = 2, gap = strandW + 0.8;
             const bandW = sharedRoles.length * gap;
             let offset = -bandW / 2 + gap / 2;
             for (const sr of sharedRoles) {
               const ox = nx * offset, oy = ny * offset;
               const path = document.createElementNS(ns, 'path');
-              path.setAttribute('d', `M${s.x + ox},${s.y + oy} Q${midX + ox},${midY + oy} ${t.x + ox},${t.y + oy}`);
+              path.setAttribute('d', `M${sx + ox},${sy + oy} Q${midX + ox},${midY + oy} ${tx + ox},${ty + oy}`);
               path.setAttribute('fill', 'none'); path.setAttribute('stroke', sr.color);
               path.setAttribute('stroke-width', String(strandW));
               path.setAttribute('stroke-opacity', String(baseOpacity));
@@ -1759,8 +1900,9 @@ function render({ model, el: rootEl }) {
           const nd = memberNodes[idx];
           const isHovered = hoveredMember === idx;
           const isDim = hoveredMember !== null && !isHovered;
+          const isSearchDimmed = highlightSet && !highlightSet.has(nd.mi);
           const g = document.createElementNS(ns, 'g');
-          g.style.cursor = 'pointer'; g.style.opacity = String(isDim ? 0.3 : 1);
+          g.style.cursor = 'pointer'; g.style.opacity = String(isSearchDimmed ? 0.15 : isDim ? 0.3 : 1);
           g.style.transition = 'opacity 0.2s';
 
           // Group-color halo
@@ -1997,7 +2139,7 @@ function render({ model, el: rootEl }) {
   }
 
   // ──── Institution circle-of-circles ────
-  function buildInstitutionChord(sorted) {
+  function buildInstitutionChord(sorted, highlightSet) {
     const n = sorted.length;
     // Group by institution name
     function iKey(aff) { return typeof aff === 'string' ? aff : (aff.name || aff.id || JSON.stringify(aff)); }
@@ -2032,11 +2174,11 @@ function render({ model, el: rootEl }) {
         members: [...g.members],
       }));
 
-    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Institutions', linkLabel: 'Cross-inst links' });
+    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Institutions', linkLabel: 'Cross-inst links' }, highlightSet);
   }
 
   // ──── By Role circle-of-circles ────
-  function buildForceGraph(sorted) {
+  function buildForceGraph(sorted, highlightSet) {
     const n = sorted.length;
 
     const groups = ALL_CREDIT_ROLES.map(role => {
@@ -2048,11 +2190,11 @@ function render({ model, el: rootEl }) {
       return { label: role, color: rc.color, members };
     }).filter(g => g.members.length > 0);
 
-    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Roles', linkLabel: 'Shared contributors' });
+    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Roles', linkLabel: 'Shared contributors' }, highlightSet);
   }
 
   // ──── By Section & Figure circle-of-circles ────
-  function buildSectionCircles(sorted) {
+  function buildSectionCircles(sorted, highlightSet) {
     const n = sorted.length;
 
     const SECTION_COLORS = [
@@ -2104,7 +2246,7 @@ function render({ model, el: rootEl }) {
 
     const groups = [...sectionGroups, ...figureGroups];
 
-    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Sections & Figures', linkLabel: 'Shared contributors' });
+    return buildCircleOfCircles(sorted, groups, { groupLabel: 'Sections & Figures', linkLabel: 'Shared contributors' }, highlightSet);
   }
 
   // ──── Timeline tab ────
@@ -2145,7 +2287,9 @@ function render({ model, el: rootEl }) {
     // Rows
     for (const d of authorDates) {
       const color = getColor(d.author.name);
+      const isDimmed = searchQuery && !matchesSearch(d.author, searchQuery);
       const row = el('div', { className: 'ae-timeline-row' });
+      if (isDimmed) row.style.opacity = '0.3';
 
       row.appendChild(el('div', { className: 'ae-timeline-name' }, d.author.name));
 
