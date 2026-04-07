@@ -694,6 +694,7 @@ function render({ model, el: rootEl }) {
       const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
       const color = getColor(author.name);
       const card = el('div', { className: 'ae-profile-card' });
+      card.style.setProperty('--i', String(ai));
       if (isDimmed) card.style.opacity = '0.3';
 
       // Avatar
@@ -852,10 +853,12 @@ function render({ model, el: rootEl }) {
 
     const effortRank = { lead: 3, equal: 2, supporting: 1 };
 
+    let sectionIdx = 0;
     for (const [sectionId, contribs] of sectionMap) {
       contribs.sort((a, b) => (effortRank[b.effort] || 0) - (effortRank[a.effort] || 0));
 
       const section = el('div', { className: 'ae-section-block' });
+      section.style.setProperty('--i', String(sectionIdx++));
       section.appendChild(el('div', { className: 'ae-section-id' }, sectionLabel(sectionId)));
 
       const contributors = el('div', { className: 'ae-section-contributors' });
@@ -2285,10 +2288,12 @@ function render({ model, el: rootEl }) {
     wrap.appendChild(axis);
 
     // Rows
-    for (const d of authorDates) {
+    for (let ri = 0; ri < authorDates.length; ri++) {
+      const d = authorDates[ri];
       const color = getColor(d.author.name);
       const isDimmed = searchQuery && !matchesSearch(d.author, searchQuery);
       const row = el('div', { className: 'ae-timeline-row' });
+      row.style.setProperty('--i', String(ri));
       if (isDimmed) row.style.opacity = '0.3';
 
       row.appendChild(el('div', { className: 'ae-timeline-name' }, d.author.name));
