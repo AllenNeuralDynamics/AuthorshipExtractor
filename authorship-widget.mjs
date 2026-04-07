@@ -85,6 +85,143 @@ function el(tag, attrs, ...children) {
   return e;
 }
 
+// ─── Author hover popover ───────────────────────────────────────
+
+let _popoverEl = null;
+let _popoverTimeout = null;
+let _popoverStyleInjected = false;
+
+function ensurePopoverStyles() {
+  if (_popoverStyleInjected) return;
+  _popoverStyleInjected = true;
+  const style = document.createElement('style');
+  style.id = 'ae-popover-styles';
+  style.textContent = `
+    .ae-popover {
+      position: fixed; z-index: 10000; width: 260px;
+      background: rgba(255,255,255,0.97); backdrop-filter: blur(12px);
+      border: 1px solid #e5e7eb; border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+      padding: 12px; font-family: 'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      font-size: 12px; color: #111827; pointer-events: auto;
+      animation: ae-pop-in 0.15s ease-out;
+    }
+    @keyframes ae-pop-in { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+    .ae-popover-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+    .ae-popover-avatar { width:32px; height:32px; border-radius:50%; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ae-popover-info { min-width:0; }
+    .ae-popover-name { font-size:13px; font-weight:600; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .ae-popover-stage { font-size:11px; color:#6b7280; }
+    .ae-popover-aff { font-size:11px; color:#6b7280; line-height:1.3; margin-bottom:8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .ae-popover-roles { display:flex; flex-wrap:wrap; gap:3px; margin-bottom:6px; }
+    .ae-popover-role { padding:2px 6px; border-radius:8px; font-size:10px; font-weight:500; color:#fff; white-space:nowrap; }
+    .ae-popover-role-lead { background:#4338ca; }
+    .ae-popover-role-equal { background:#a5b4fc; color:#312e81; }
+    .ae-popover-role-supporting { background:#e5e7eb; color:#4b5563; }
+    .ae-popover-role-more { background:#f3f4f6; color:#6b7280; }
+    .ae-popover-stats { display:flex; gap:12px; font-size:10px; color:#9ca3af; border-top:1px solid #f3f4f6; padding-top:6px; }
+    @media (prefers-reduced-motion:reduce) { .ae-popover { animation:none; } }
+  `;
+  document.head.appendChild(style);
+}
+
+function attachAuthorPopover(element, author) {
+  element.style.cursor = 'pointer';
+  element.addEventListener('mouseenter', () => {
+    clearTimeout(_popoverTimeout);
+    _popoverTimeout = setTimeout(() => {
+      if (element.isConnected) showPopover(element, author);
+    }, 250);
+  });
+  element.addEventListener('mouseleave', () => {
+    clearTimeout(_popoverTimeout);
+    _popoverTimeout = setTimeout(hidePopover, 200);
+  });
+}
+
+function showPopover(anchor, author) {
+  hidePopover();
+  ensurePopoverStyles();
+  const color = getColor(author.name);
+  const pop = el('div', { className: 'ae-popover' });
+  pop.addEventListener('mouseenter', () => clearTimeout(_popoverTimeout));
+  pop.addEventListener('mouseleave', () => {
+    clearTimeout(_popoverTimeout);
+    _popoverTimeout = setTimeout(hidePopover, 150);
+  });
+
+  // Header: avatar + name + career stage
+  const header = el('div', { className: 'ae-popover-header' });
+  header.appendChild(el('div', {
+    className: 'ae-popover-avatar',
+    style: { backgroundColor: color },
+  }, getInitials(author.name)));
+  const info = el('div', { className: 'ae-popover-info' });
+  info.appendChild(el('div', { className: 'ae-popover-name' }, author.name));
+  if (author.career_stage) {
+    info.appendChild(el('div', { className: 'ae-popover-stage' }, author.career_stage));
+  }
+  header.appendChild(info);
+  pop.appendChild(header);
+
+  // Affiliations
+  if (author.affiliations?.length) {
+    const affText = author.affiliations
+      .map(a => typeof a === 'string' ? a : (a.name || a))
+      .join(' · ');
+    pop.appendChild(el('div', { className: 'ae-popover-aff' }, affText));
+  }
+
+  // CRediT roles
+  const credits = author.credit_levels || [];
+  if (credits.length) {
+    const badges = el('div', { className: 'ae-popover-roles' });
+    for (const cr of credits) {
+      badges.appendChild(el('span', {
+        className: `ae-popover-role ae-popover-role-${cr.level}`,
+      }, cr.role.replace('Writing – ', 'W: ').replace('Formal ', 'F. ')));
+    }
+    pop.appendChild(badges);
+  }
+
+  // Stats row
+  const secs = (author.section_contributions || []).length;
+  const figs = (author.figure_contributions || []).length;
+  if (credits.length || secs || figs) {
+    const stats = el('div', { className: 'ae-popover-stats' });
+    if (credits.length) stats.appendChild(el('span', {}, `${credits.length} roles`));
+    if (secs) stats.appendChild(el('span', {}, `${secs} sections`));
+    if (figs) stats.appendChild(el('span', {}, `${figs} figures`));
+    pop.appendChild(stats);
+  }
+
+  document.body.appendChild(pop);
+  _popoverEl = pop;
+
+  // Position relative to anchor
+  const rect = anchor.getBoundingClientRect();
+  const popRect = pop.getBoundingClientRect();
+  let top = rect.bottom + 6;
+  let left = rect.left + rect.width / 2 - popRect.width / 2;
+
+  // Keep within viewport
+  if (left < 8) left = 8;
+  if (left + popRect.width > window.innerWidth - 8) left = window.innerWidth - 8 - popRect.width;
+  if (top + popRect.height > window.innerHeight - 8) {
+    top = rect.top - popRect.height - 6;
+  }
+
+  pop.style.top = top + 'px';
+  pop.style.left = left + 'px';
+}
+
+function hidePopover() {
+  if (_popoverEl) {
+    _popoverEl.remove();
+    _popoverEl = null;
+  }
+}
+
 // ─── Sort logic ─────────────────────────────────────────────────
 
 function sortAuthors(authors, sortKey) {
@@ -588,7 +725,9 @@ function render({ model, el: rootEl }) {
         const span = el('span', { className: 'ae-name-wrap' });
         if (isDimmed) span.style.opacity = '0.3';
         span.appendChild(el('sup', { className: 'ae-aff-sup' }, String(i + 1)));
-        span.appendChild(el('button', { className: 'ae-name' }, author.name));
+        const nameEl = el('button', { className: 'ae-name' }, author.name);
+        attachAuthorPopover(nameEl, author);
+        span.appendChild(nameEl);
         if (author.corresponding) {
           span.appendChild(el('span', { className: 'ae-corresponding', title: 'Corresponding author' }, '✉'));
         }
@@ -630,6 +769,7 @@ function render({ model, el: rootEl }) {
         if (isDimmed) span.style.opacity = '0.3';
 
         const nameBtn = el('button', { className: 'ae-name' }, author.name);
+        attachAuthorPopover(nameBtn, author);
         span.appendChild(nameBtn);
 
         // Superscript affiliation numbers
@@ -790,7 +930,9 @@ function render({ model, el: rootEl }) {
         className: 'ae-matrix-avatar',
         style: { backgroundColor: color },
       }, getInitials(author.name)));
-      th.appendChild(el('div', { className: 'ae-matrix-author-name' }, author.name));
+      const matrixName = el('div', { className: 'ae-matrix-author-name' }, author.name);
+      attachAuthorPopover(matrixName, author);
+      th.appendChild(matrixName);
       headerRow.appendChild(th);
     }
     thead.appendChild(headerRow);
@@ -806,9 +948,12 @@ function render({ model, el: rootEl }) {
         el('span', {}, role),
       ));
 
-      for (const author of sorted) {
+      for (let ai = 0; ai < sorted.length; ai++) {
+        const author = sorted[ai];
         const level = findCreditLevel(author, role);
+        const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
         const td = el('td', { className: 'ae-matrix-cell' });
+        if (isDimmed) td.style.opacity = '0.3';
         if (level) {
           const dot = el('div', {
             className: `ae-dot ae-dot-${level}`,
@@ -872,7 +1017,9 @@ function render({ model, el: rootEl }) {
           style: { backgroundColor: color },
         }, getInitials(c.author.name)));
         const info = el('div', { className: 'ae-section-chip-info' });
-        info.appendChild(el('span', { className: 'ae-section-chip-name' }, c.author.name));
+        const chipName = el('span', { className: 'ae-section-chip-name' }, c.author.name);
+        attachAuthorPopover(chipName, c.author);
+        info.appendChild(chipName);
         if (c.effort) {
           info.appendChild(el('span', { className: `ae-effort ae-effort-${c.effort}` }, c.effort));
         }
@@ -2296,7 +2443,9 @@ function render({ model, el: rootEl }) {
       row.style.setProperty('--i', String(ri));
       if (isDimmed) row.style.opacity = '0.3';
 
-      row.appendChild(el('div', { className: 'ae-timeline-name' }, d.author.name));
+      const timelineName = el('div', { className: 'ae-timeline-name' }, d.author.name);
+      attachAuthorPopover(timelineName, d.author);
+      row.appendChild(timelineName);
 
       const barWrap = el('div', { className: 'ae-timeline-bar-wrap' });
       const startPct = ((new Date(d.start + '-01').getTime() - minTime) / range * 100);
