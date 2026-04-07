@@ -895,14 +895,10 @@ function render({ model, el: rootEl }) {
       // Roles
       const roles = el('div', { className: 'ae-profile-roles' });
       const creditLevels = author.credit_levels || [];
-      const topRoles = creditLevels.slice(0, 4);
-      for (const cr of topRoles) {
+      for (const cr of creditLevels) {
         roles.appendChild(el('span', {
           className: `ae-role-badge ae-role-${cr.level}`,
         }, cr.role.replace('Writing – ', 'W: ').replace('Formal ', 'F. ')));
-      }
-      if (creditLevels.length > 4) {
-        roles.appendChild(el('span', { className: 'ae-role-badge ae-role-more' }, `+${creditLevels.length - 4}`));
       }
       card.appendChild(roles);
 
