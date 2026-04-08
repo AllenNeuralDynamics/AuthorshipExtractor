@@ -121,6 +121,14 @@ function ensurePopoverStyles() {
     .ae-popover-role-more { background:#f3f4f6; color:#6b7280; }
     .ae-popover-stats { display:flex; gap:12px; font-size:10px; color:#9ca3af; border-top:1px solid #f3f4f6; padding-top:6px; }
     @media (prefers-reduced-motion:reduce) { .ae-popover { animation:none; } }
+    html[data-theme="dark"] .ae-popover { background:rgba(31,41,55,0.97); border-color:#4b5563; box-shadow:0 8px 24px rgba(0,0,0,0.3),0 2px 8px rgba(0,0,0,0.2); color:#e5e7eb; }
+    html[data-theme="dark"] .ae-popover-name { color:#f3f4f6; }
+    html[data-theme="dark"] .ae-popover-stage { color:#9ca3af; }
+    html[data-theme="dark"] .ae-popover-aff { color:#9ca3af; }
+    html[data-theme="dark"] .ae-popover-role-equal { background:#4338ca; color:#c7d2fe; }
+    html[data-theme="dark"] .ae-popover-role-supporting { background:#4b5563; color:#d1d5db; }
+    html[data-theme="dark"] .ae-popover-role-more { background:#374151; color:#9ca3af; }
+    html[data-theme="dark"] .ae-popover-stats { color:#9ca3af; border-top-color:#374151; }
   `;
   document.head.appendChild(style);
 }
@@ -313,6 +321,32 @@ function render({ model, el: rootEl }) {
     }
   }
 
+  // ── Dark mode detection ──
+  function detectDarkMode() {
+    const html = hostDoc.documentElement;
+    if (html.getAttribute('data-theme') === 'dark') return true;
+    if (html.classList.contains('dark')) return true;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  let isDark = detectDarkMode();
+
+  // Watch for dark mode changes (MyST toggle sets data-theme on <html>)
+  const _darkObserver = new MutationObserver(() => {
+    const wasDark = isDark;
+    isDark = detectDarkMode();
+    if (wasDark !== isDark) rerender();
+  });
+  _darkObserver.observe(hostDoc.documentElement, { attributes: true, attributeFilter: ['data-theme', 'class'] });
+
+  const _darkMql = window.matchMedia('(prefers-color-scheme: dark)');
+  const _darkMqlHandler = () => {
+    const wasDark = isDark;
+    isDark = detectDarkMode();
+    if (wasDark !== isDark) rerender();
+  };
+  _darkMql.addEventListener('change', _darkMqlHandler);
+
   // State
   let sortKey = 'alpha';
   let expanded = false;
@@ -380,7 +414,7 @@ function render({ model, el: rootEl }) {
     const sorted = sortAuthors(activeAuthors, sortKey);
     const highlightSet = getHighlightedSet(sorted); // null if no search
 
-    const container = el('div', { className: `ae-widget ${expanded ? '' : 'ae-collapsed'}` });
+    const container = el('div', { className: `ae-widget ${expanded ? '' : 'ae-collapsed'} ${isDark ? 'ae-dark' : ''}` });
 
     // ──── Collapsed state: compact header ────
     if (!expanded) {
@@ -1199,9 +1233,9 @@ function render({ model, el: rootEl }) {
       grad.setAttribute('id', 'ae-bg-glow');
       grad.setAttribute('cx', '50%'); grad.setAttribute('cy', '45%'); grad.setAttribute('r', '50%');
       const s1 = document.createElementNS(ns, 'stop');
-      s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', '#dbe4ff'); s1.setAttribute('stop-opacity', '0.3');
+      s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', isDark ? '#312e81' : '#dbe4ff'); s1.setAttribute('stop-opacity', '0.3');
       const s2 = document.createElementNS(ns, 'stop');
-      s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', 'white'); s2.setAttribute('stop-opacity', '0');
+      s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', isDark ? '#1f2937' : 'white'); s2.setAttribute('stop-opacity', '0');
       grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
 
       const bgCircle = document.createElementNS(ns, 'circle');
@@ -1303,7 +1337,7 @@ function render({ model, el: rootEl }) {
         circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
         circle.setAttribute('r', String(nd.radius));
         circle.setAttribute('fill', nd.color);
-        circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '3');
+        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '3');
         g.appendChild(circle);
 
         // Hover ring
@@ -1335,7 +1369,7 @@ function render({ model, el: rootEl }) {
         const label = document.createElementNS(ns, 'text');
         label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
         label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('fill', isHovered ? '#1e3a5f' : isSearchMatch ? '#4338ca' : '#64748b');
+        label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
         label.setAttribute('font-size', labelFontSize);
         label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
@@ -1720,9 +1754,9 @@ function render({ model, el: rootEl }) {
       grad.setAttribute('id', 'ae-bg-glow-cc');
       grad.setAttribute('cx', '50%'); grad.setAttribute('cy', '45%'); grad.setAttribute('r', '55%');
       const s1 = document.createElementNS(ns, 'stop');
-      s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', '#dbe4ff'); s1.setAttribute('stop-opacity', '0.2');
+      s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', isDark ? '#312e81' : '#dbe4ff'); s1.setAttribute('stop-opacity', '0.2');
       const s2 = document.createElementNS(ns, 'stop');
-      s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', 'white'); s2.setAttribute('stop-opacity', '0');
+      s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', isDark ? '#1f2937' : 'white'); s2.setAttribute('stop-opacity', '0');
       grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
       const bgRect = document.createElementNS(ns, 'rect');
       bgRect.setAttribute('x', '0'); bgRect.setAttribute('y', '0');
@@ -1803,7 +1837,7 @@ function render({ model, el: rootEl }) {
             dot.setAttribute('cx', String(mp.x)); dot.setAttribute('cy', String(mp.y));
             dot.setAttribute('r', String(mp.r));
             dot.setAttribute('fill', getColor(author.name));
-            dot.setAttribute('stroke', isMemberHovered ? getColor(author.name) : 'white');
+            dot.setAttribute('stroke', isMemberHovered ? getColor(author.name) : (isDark ? '#374151' : 'white'));
             dot.setAttribute('stroke-width', isMemberHovered ? '3' : '2');
             if (isMemberHovered) dot.setAttribute('stroke-opacity', '0.5');
             mg.appendChild(dot);
@@ -1835,7 +1869,7 @@ function render({ model, el: rootEl }) {
             const nl = document.createElementNS(ns, 'text');
             nl.setAttribute('x', String(mp.x)); nl.setAttribute('y', String(mp.y + mp.r + 12));
             nl.setAttribute('text-anchor', 'middle');
-            nl.setAttribute('fill', isMemberHovered ? '#1e3a5f' : '#64748b');
+            nl.setAttribute('fill', isMemberHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : (isDark ? '#c4cad4' : '#64748b'));
             nl.setAttribute('font-size', '8');
             nl.setAttribute('font-weight', isMemberHovered ? '600' : '400');
             nl.setAttribute('font-family', 'Inter, system-ui, sans-serif');
@@ -1870,7 +1904,7 @@ function render({ model, el: rootEl }) {
           const label = document.createElementNS(ns, 'text');
           label.setAttribute('x', String(gd.x)); label.setAttribute('y', String(gd.y + gd.radius + 14));
           label.setAttribute('text-anchor', 'middle');
-          label.setAttribute('fill', isHovered ? '#1e3a5f' : '#475569');
+          label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : (isDark ? '#cbd5e1' : '#475569'));
           const labelFontSize = nGroups > 10 ? '8' : '10';
           label.setAttribute('font-size', labelFontSize); label.setAttribute('font-weight', isHovered ? '600' : '500');
           label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
@@ -1927,7 +1961,7 @@ function render({ model, el: rootEl }) {
           const circle = document.createElementNS(ns, 'circle');
           circle.setAttribute('cx', String(od.x)); circle.setAttribute('cy', String(od.y));
           circle.setAttribute('r', String(sR)); circle.setAttribute('fill', od.color);
-          circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+          circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '2');
           g.appendChild(circle);
           const cnt = document.createElementNS(ns, 'text');
           cnt.setAttribute('x', String(od.x)); cnt.setAttribute('y', String(od.y + 1));
@@ -1965,12 +1999,12 @@ function render({ model, el: rootEl }) {
         const backBg = document.createElementNS(ns, 'rect');
         backBg.setAttribute('x', '10'); backBg.setAttribute('y', '10');
         backBg.setAttribute('width', '75'); backBg.setAttribute('height', '24');
-        backBg.setAttribute('rx', '12'); backBg.setAttribute('fill', '#f1f5f9');
-        backBg.setAttribute('stroke', '#e2e8f0'); backBg.setAttribute('stroke-width', '1');
+        backBg.setAttribute('rx', '12'); backBg.setAttribute('fill', isDark ? '#334155' : '#f1f5f9');
+        backBg.setAttribute('stroke', isDark ? '#475569' : '#e2e8f0'); backBg.setAttribute('stroke-width', '1');
         backG.appendChild(backBg);
         const backTxt = document.createElementNS(ns, 'text');
         backTxt.setAttribute('x', '47'); backTxt.setAttribute('y', '26');
-        backTxt.setAttribute('text-anchor', 'middle'); backTxt.setAttribute('fill', '#475569');
+        backTxt.setAttribute('text-anchor', 'middle'); backTxt.setAttribute('fill', isDark ? '#cbd5e1' : '#475569');
         backTxt.setAttribute('font-size', '11'); backTxt.setAttribute('font-weight', '500');
         backTxt.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         backTxt.textContent = '← All';
@@ -2089,7 +2123,7 @@ function render({ model, el: rootEl }) {
           const circle = document.createElementNS(ns, 'circle');
           circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
           circle.setAttribute('r', String(nd.radius)); circle.setAttribute('fill', nd.color);
-          circle.setAttribute('stroke', 'white'); circle.setAttribute('stroke-width', '2');
+          circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '2');
           g.appendChild(circle);
 
           // Initials
@@ -2105,7 +2139,7 @@ function render({ model, el: rootEl }) {
           const label = document.createElementNS(ns, 'text');
           label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + (isLargeGroup ? 12 : 16)));
           label.setAttribute('text-anchor', 'middle');
-          label.setAttribute('fill', isHovered ? '#1e3a5f' : '#64748b');
+          label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : (isDark ? '#c4cad4' : '#64748b'));
           label.setAttribute('font-size', isLargeGroup ? '8' : '10');
           label.setAttribute('font-weight', isHovered ? '600' : '400');
           label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
@@ -2176,7 +2210,7 @@ function render({ model, el: rootEl }) {
           el('p', { className: 'ae-info-stage' }, `${gd.members.length} contributor${gd.members.length > 1 ? 's' : ''}`),
         );
         card.appendChild(el('p', {
-          style: { fontSize: '10px', color: '#64748b', marginTop: '4px', lineHeight: '1.3' }
+          style: { fontSize: '10px', color: isDark ? '#94a3b8' : '#64748b', marginTop: '4px', lineHeight: '1.3' }
         }, memberNames));
         return card;
       }
@@ -2494,7 +2528,11 @@ function render({ model, el: rootEl }) {
   // Initial render
   rerender();
 
-  return () => { rootEl.innerHTML = ''; };
+  return () => {
+    _darkObserver.disconnect();
+    _darkMql.removeEventListener('change', _darkMqlHandler);
+    rootEl.innerHTML = '';
+  };
 }
 
 export default { render };

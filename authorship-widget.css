@@ -1381,3 +1381,255 @@
   border-top: 1px solid #f3f4f6;
   padding-top: 6px;
 }
+
+/* ─── Dark mode ─── */
+
+/* Widget root */
+.ae-widget.ae-dark {
+  color: #e5e7eb;
+  background: #1f2937;
+  border-color: #374151;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Collapsed state */
+.ae-dark .ae-collapsed-header:hover { background: #374151; }
+.ae-dark .ae-collapsed-title { color: #f3f4f6; }
+.ae-dark .ae-collapsed-subtitle { color: #9ca3af; }
+
+/* Expand / collapse buttons */
+.ae-dark .ae-expand-btn {
+  color: #c7d2fe;
+  background: #312e81;
+  border-color: #4338ca;
+}
+.ae-dark .ae-expand-btn:hover {
+  background: #3730a3;
+  border-color: #6366f1;
+}
+.ae-dark .ae-collapse-btn {
+  color: #d1d5db;
+  background: #374151;
+  border-color: #4b5563;
+}
+.ae-dark .ae-collapse-btn:hover {
+  background: #4b5563;
+  color: #f3f4f6;
+}
+
+/* Source links */
+.ae-dark .ae-source-links-expanded { border-top-color: #374151; }
+.ae-dark .ae-source-link {
+  color: #818cf8;
+  background: #312e81;
+}
+.ae-dark .ae-source-link:hover { background: #3730a3; }
+
+/* Title */
+.ae-dark .ae-title { color: #f3f4f6; }
+.ae-dark .ae-title-count { color: #9ca3af; }
+
+/* Dataset toggle */
+.ae-dark .ae-mode-toggle { background: linear-gradient(to right, #1f2937, #1f2937); }
+.ae-dark .ae-mode-btn {
+  border-color: #4b5563;
+  background: #1f2937;
+  color: #9ca3af;
+}
+.ae-dark .ae-mode-btn.ae-mode-active {
+  background: #6366f1;
+  color: #fff;
+  border-color: #6366f1;
+}
+.ae-dark .ae-mode-btn:not(.ae-mode-active):hover { background: #374151; }
+.ae-dark .ae-mode-note { color: #6b7280; }
+
+/* Sort bar */
+.ae-dark .ae-sort-bar {
+  border-bottom-color: #374151;
+  background: linear-gradient(to right, #1f2937, #1f2937);
+}
+.ae-dark .ae-label { color: #9ca3af; }
+.ae-dark .ae-count { background: #312e81; color: #a5b4fc; }
+.ae-dark .ae-sep { color: #4b5563; }
+.ae-dark .ae-sublabel { color: #9ca3af; }
+
+/* Chips */
+.ae-dark .ae-chip {
+  border-color: #4b5563;
+  background: #1f2937;
+  color: #d1d5db;
+}
+.ae-dark .ae-chip:hover {
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+.ae-dark .ae-chip-active {
+  background: #6366f1;
+  color: #fff;
+  border-color: #6366f1;
+}
+.ae-dark .ae-chip-active:hover {
+  background: #4f46e5;
+  border-color: #4f46e5;
+  color: #fff;
+}
+
+/* CRediT menu */
+.ae-dark .ae-credit-menu {
+  background: #1f2937;
+  border-color: #4b5563;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+.ae-dark .ae-credit-menu-title {
+  color: #9ca3af;
+  border-bottom-color: #374151;
+  background: #1f2937;
+}
+.ae-dark .ae-credit-item { color: #d1d5db; }
+.ae-dark .ae-credit-item:hover { background: #374151; }
+.ae-dark .ae-credit-item-active { background: #312e81; color: #a5b4fc; }
+.ae-dark .ae-check { color: #818cf8; }
+.ae-dark .ae-sort-desc { color: #6b7280; }
+
+/* Byline / author names */
+.ae-dark .ae-name { color: #818cf8; }
+.ae-dark .ae-name:hover { color: #a5b4fc; }
+.ae-dark .ae-level-lead { background: #6366f1; color: #fff; }
+.ae-dark .ae-level-equal { background: #4338ca; color: #c7d2fe; }
+.ae-dark .ae-level-supporting { background: #4b5563; color: #d1d5db; }
+.ae-dark .ae-corresponding { color: #fbbf24; }
+.ae-dark .ae-comma { color: #4b5563; }
+.ae-dark .ae-affiliations { color: #9ca3af; }
+.ae-dark .ae-aff-sup { color: #818cf8; }
+.ae-dark .ae-inst-name { color: #d1d5db; }
+
+/* Panel / tabs */
+.ae-dark .ae-panel { border-top-color: #374151; }
+.ae-dark .ae-tabs { border-bottom-color: #374151; }
+.ae-dark .ae-tab { color: #9ca3af; }
+.ae-dark .ae-tab:hover { color: #d1d5db; border-bottom-color: #6b7280; }
+.ae-dark .ae-tab-active { color: #818cf8; border-bottom-color: #6366f1; }
+
+/* Search */
+.ae-dark .ae-search-bar { border-bottom-color: #374151; }
+.ae-dark .ae-search-input {
+  border-color: #4b5563;
+  color: #f3f4f6;
+  background: #111827;
+}
+.ae-dark .ae-search-input::placeholder { color: #6b7280; }
+.ae-dark .ae-search-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+  background: #1f2937;
+}
+.ae-dark .ae-search-clear { background: #4b5563; color: #d1d5db; }
+.ae-dark .ae-search-clear:hover { background: #6b7280; color: #f3f4f6; }
+
+/* Profiles */
+.ae-dark .ae-profile-card:hover {
+  background: #374151;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+.ae-dark .ae-avatar-badge { border-color: #1f2937; }
+.ae-dark .ae-profile-name { color: #f3f4f6; }
+.ae-dark .ae-career-stage { color: #9ca3af; }
+.ae-dark .ae-profile-aff { color: #9ca3af; }
+.ae-dark .ae-role-lead { background: #6366f1; color: #fff; }
+.ae-dark .ae-role-equal { background: #4338ca; color: #c7d2fe; }
+.ae-dark .ae-role-supporting { background: #4b5563; color: #d1d5db; }
+.ae-dark .ae-role-more { background: #374151; color: #9ca3af; }
+
+/* CRediT Matrix */
+.ae-dark .ae-matrix-corner { background: #1f2937; }
+.ae-dark .ae-matrix-author-name { color: #d1d5db; }
+.ae-dark .ae-matrix-role {
+  background: #1f2937;
+  color: #d1d5db;
+  border-bottom-color: #374151;
+}
+.ae-dark .ae-matrix-cell { border-bottom-color: #374151; }
+.ae-dark .ae-dot-lead { background: #6366f1; }
+.ae-dark .ae-dot-equal { background: #818cf8; }
+.ae-dark .ae-dot-supporting { background: #6b7280; }
+.ae-dark .ae-matrix-legend { color: #9ca3af; }
+.ae-dark .ae-legend-label { color: #9ca3af; }
+
+/* Sections */
+.ae-dark .ae-section-block { border-color: #374151; }
+.ae-dark .ae-section-id {
+  color: #d1d5db;
+  background: #111827;
+  border-bottom-color: #374151;
+}
+.ae-dark .ae-section-chip-name { color: #f3f4f6; }
+.ae-dark .ae-effort-lead { background: #6366f1; color: #fff; }
+.ae-dark .ae-effort-equal { background: #4338ca; color: #c7d2fe; }
+.ae-dark .ae-effort-supporting { background: #4b5563; color: #d1d5db; }
+.ae-dark .ae-section-chip-desc { color: #9ca3af; }
+
+/* Timeline */
+.ae-dark .ae-timeline-axis { color: #9ca3af; border-bottom-color: #4b5563; }
+.ae-dark .ae-timeline-name { color: #d1d5db; }
+.ae-dark .ae-timeline-bar-wrap { background: #111827; }
+.ae-dark .ae-milestone { background: #1f2937; border-color: rgba(31,41,55,0.8); }
+.ae-dark .ae-milestone-list { border-top-color: #374151; }
+.ae-dark .ae-milestone-date { color: #9ca3af; }
+.ae-dark .ae-milestone-name { color: #d1d5db; }
+.ae-dark .ae-milestone-event { color: #9ca3af; }
+
+/* Network / Chord */
+.ae-dark .ae-mode-chip {
+  border-color: #475569;
+  background: #1e293b;
+  color: #94a3b8;
+}
+.ae-dark .ae-mode-chip:hover { border-color: #64748b; background: #334155; }
+.ae-dark .ae-mode-chip.ae-active { background: #6366f1; color: #fff; border-color: #6366f1; }
+.ae-dark .ae-network-graph {
+  background: linear-gradient(135deg, #1e293b 0%, #1f2937 100%);
+  border-color: #334155;
+}
+.ae-dark .ae-zoom-btn {
+  border-color: #4b5563;
+  background: rgba(31,41,55,0.9);
+  color: #d1d5db;
+}
+.ae-dark .ae-zoom-btn:hover { background: #374151; }
+
+/* Info card */
+.ae-dark .ae-info-card {
+  background: rgba(31,41,55,0.95);
+  border-color: #334155;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.ae-dark .ae-info-name { color: #f3f4f6; }
+.ae-dark .ae-info-stage { color: #9ca3af; }
+.ae-dark .ae-info-stats { color: #d1d5db; }
+.ae-dark .ae-info-stats strong { color: #f3f4f6; }
+
+/* Network stats */
+.ae-dark .ae-network-stats { border-top-color: #374151; }
+.ae-dark .ae-stat-value { color: #f3f4f6; }
+.ae-dark .ae-stat-label { color: #9ca3af; }
+.ae-dark .ae-legend-dot { box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+.ae-dark .ae-network-legend .ae-legend-label { color: #d1d5db; }
+
+/* Empty state */
+.ae-dark .ae-empty { color: #6b7280; }
+
+/* Popover — uses html[data-theme] since it's outside shadow DOM */
+html[data-theme="dark"] .ae-popover {
+  background: rgba(31,41,55,0.97);
+  border-color: #4b5563;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
+  color: #e5e7eb;
+}
+html[data-theme="dark"] .ae-popover-name { color: #f3f4f6; }
+html[data-theme="dark"] .ae-popover-stage { color: #9ca3af; }
+html[data-theme="dark"] .ae-popover-aff { color: #9ca3af; }
+html[data-theme="dark"] .ae-popover-role-equal { background: #4338ca; color: #c7d2fe; }
+html[data-theme="dark"] .ae-popover-role-supporting { background: #4b5563; color: #d1d5db; }
+html[data-theme="dark"] .ae-popover-role-more { background: #374151; color: #9ca3af; }
+html[data-theme="dark"] .ae-popover-stats { color: #9ca3af; border-top-color: #374151; }
