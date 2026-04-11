@@ -424,15 +424,12 @@ function render({ model, el: rootEl }) {
       const info = el('div', { className: 'ae-collapsed-info' });
       info.appendChild(el('span', { className: 'ae-collapsed-title' }, `${sorted.length} Contributor${sorted.length === 1 ? '' : 's'}`));
 
-      const roleCount = new Set(sorted.flatMap(a => (a.credit_levels || []).map(r => r.role))).size;
       const instCount = new Set(sorted.flatMap(a => (a.affiliations || []).map(aff =>
         typeof aff === 'string' ? aff : (aff.id || aff.name || '')
       ))).size;
-      const parts = [];
-      if (instCount) parts.push(`${instCount} institution${instCount > 1 ? 's' : ''}`);
-      if (roleCount) parts.push(`${roleCount} CRediT role${roleCount > 1 ? 's' : ''}`);
-      parts.push('6 interactive views');
-      info.appendChild(el('span', { className: 'ae-collapsed-subtitle' }, parts.join(' · ')));
+      if (instCount) {
+        info.appendChild(el('span', { className: 'ae-collapsed-subtitle' }, `${instCount} institution${instCount > 1 ? 's' : ''}`));
+      }
       header.appendChild(info);
 
       // Expand button
