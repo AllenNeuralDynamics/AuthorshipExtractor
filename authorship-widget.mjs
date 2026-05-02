@@ -2585,6 +2585,26 @@ function render({ model, el: rootEl }) {
         nodes[i].x += nodes[i].vx;
         nodes[i].y += nodes[i].vy;
       }
+
+      // Collision resolution — hard separation so nodes never overlap
+      for (let pass = 0; pass < 3; pass++) {
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+            const minDist = nodes[i].radius + nodes[j].radius + 12;
+            if (dist < minDist) {
+              const overlap = (minDist - dist) / 2;
+              const ux = dx / dist, uy = dy / dist;
+              nodes[i].x -= ux * overlap;
+              nodes[i].y -= uy * overlap;
+              nodes[j].x += ux * overlap;
+              nodes[j].y += uy * overlap;
+            }
+          }
+        }
+      }
     }
 
     // Normalize positions to fit within the SVG with padding
