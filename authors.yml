@@ -30,6 +30,7 @@ project:
       # --- Extended fields (dropped by MyST, read by our plugin) ---
       first_name: Mei-Lin
       last_name: Chen
+      avatar_url: https://i.pravatar.cc/150?u=mei-lin-chen
       career_stage: Associate Professor
       credit_levels:
         - role: Conceptualization
@@ -103,6 +104,7 @@ project:
 
       first_name: Chukwuemeka
       last_name: Okafor
+      avatar_url: https://i.pravatar.cc/150?u=chukwuemeka-okafor
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -183,6 +185,7 @@ project:
 
       first_name: Yuki
       last_name: Nakamura
+      avatar_url: https://i.pravatar.cc/150?u=yuki-nakamura
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Software
@@ -246,6 +249,7 @@ project:
 
       first_name: Isabella
       last_name: Santos-Rivera
+      avatar_url: https://i.pravatar.cc/150?u=isabella-santos-rivera
       career_stage: Research Scientist
       credit_levels:
         - role: Investigation
@@ -297,6 +301,7 @@ project:
 
       first_name: Jihoon
       last_name: Kim
+      avatar_url: https://i.pravatar.cc/150?u=jihoon-kim
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -345,6 +350,7 @@ project:
 
       first_name: Alexei
       last_name: Petrov
+      avatar_url: https://i.pravatar.cc/150?u=alexei-petrov
       career_stage: Graduate Student
       credit_levels:
         - role: Resources
@@ -393,6 +399,7 @@ project:
 
       first_name: Diane
       last_name: Williams
+      avatar_url: https://i.pravatar.cc/150?u=diane-williams
       career_stage: Full Professor
       credit_levels:
         - role: Conceptualization

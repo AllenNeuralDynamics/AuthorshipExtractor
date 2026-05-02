@@ -29,6 +29,7 @@ project:
       # --- Extended fields (read by our plugin) ---
       first_name: Jérôme
       last_name: Lecoq
+      avatar_url: https://cdn.prod.website-files.com/69a0ca6ef8ecfacbc1d10e9b/69c594d77af2970519865a80_jerome_lecoq_web-new.jpeg
       career_stage: Research Scientist
       credit_levels:
         - role: Conceptualization

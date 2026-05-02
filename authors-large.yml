@@ -25,6 +25,7 @@ project:
 
       first_name: Amara
       last_name: Osei-Mensah
+      avatar_url: https://i.pravatar.cc/150?u=amara-osei-mensah
       career_stage: Professor
       credit_levels:
         - role: Conceptualization
@@ -87,6 +88,7 @@ project:
 
       first_name: Hiroshi
       last_name: Tanaka
+      avatar_url: https://i.pravatar.cc/150?u=hiroshi-tanaka
       career_stage: Professor
       credit_levels:
         - role: Conceptualization
@@ -142,6 +144,7 @@ project:
 
       first_name: Elena
       last_name: Vasquez-Moreno
+      avatar_url: https://i.pravatar.cc/150?u=elena-vasquez-moreno
       career_stage: Professor
       credit_levels:
         - role: Conceptualization
@@ -197,6 +200,7 @@ project:
 
       first_name: Lars
       last_name: Eriksson
+      avatar_url: https://i.pravatar.cc/150?u=lars-eriksson
       career_stage: Associate Professor
       credit_levels:
         - role: Methodology
@@ -246,6 +250,7 @@ project:
 
       first_name: Priya
       last_name: Chakraborty
+      avatar_url: https://i.pravatar.cc/150?u=priya-chakraborty
       career_stage: Associate Professor
       credit_levels:
         - role: Conceptualization
@@ -297,6 +302,7 @@ project:
 
       first_name: James
       last_name: Whitfield
+      avatar_url: https://i.pravatar.cc/150?u=james-whitfield
       career_stage: Associate Professor
       credit_levels:
         - role: Methodology
@@ -349,6 +355,7 @@ project:
 
       first_name: Fatima
       last_name: Al-Rashidi
+      avatar_url: https://i.pravatar.cc/150?u=fatima-al-rashidi
       career_stage: Senior Research Scientist
       credit_levels:
         - role: Investigation
@@ -402,6 +409,7 @@ project:
 
       first_name: Wei
       last_name: Zhang
+      avatar_url: https://i.pravatar.cc/150?u=wei-zhang
       career_stage: Associate Professor
       credit_levels:
         - role: Methodology
@@ -454,6 +462,7 @@ project:
 
       first_name: Kofi
       last_name: Asante
+      avatar_url: https://i.pravatar.cc/150?u=kofi-asante
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Investigation
@@ -504,6 +513,7 @@ project:
 
       first_name: Yuki
       last_name: Morimoto
+      avatar_url: https://i.pravatar.cc/150?u=yuki-morimoto
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Software
@@ -553,6 +563,7 @@ project:
 
       first_name: Maria
       last_name: da Silva Gonzalez
+      avatar_url: https://i.pravatar.cc/150?u=maria-da-silva-gonzalez
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Investigation
@@ -603,6 +614,7 @@ project:
 
       first_name: Oluwaseun
       last_name: Adeyemi
+      avatar_url: https://i.pravatar.cc/150?u=oluwaseun-adeyemi
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Software
@@ -650,6 +662,7 @@ project:
 
       first_name: Sanjay
       last_name: Krishnamurthy
+      avatar_url: https://i.pravatar.cc/150?u=sanjay-krishnamurthy
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Formal analysis
@@ -699,6 +712,7 @@ project:
 
       first_name: Anastasia
       last_name: Volkov
+      avatar_url: https://i.pravatar.cc/150?u=anastasia-volkov
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Investigation
@@ -749,6 +763,7 @@ project:
 
       first_name: Wei-Lin
       last_name: Chen
+      avatar_url: https://i.pravatar.cc/150?u=chen-wei-lin
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Software
@@ -796,6 +811,7 @@ project:
 
       first_name: Tomoko
       last_name: Hashimoto
+      avatar_url: https://i.pravatar.cc/150?u=tomoko-hashimoto
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Investigation
@@ -848,6 +864,7 @@ project:
 
       first_name: Rodrigo
       last_name: Ferreira
+      avatar_url: https://i.pravatar.cc/150?u=rodrigo-ferreira
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Software
@@ -895,6 +912,7 @@ project:
 
       first_name: Nadia
       last_name: El-Amin
+      avatar_url: https://i.pravatar.cc/150?u=nadia-el-amin
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Methodology
@@ -941,6 +959,7 @@ project:
 
       first_name: Hyunjin
       last_name: Park
+      avatar_url: https://i.pravatar.cc/150?u=hyunjin-park
       career_stage: PhD Candidate
       credit_levels:
         - role: Software
@@ -984,6 +1003,7 @@ project:
 
       first_name: Adesola
       last_name: Ogunlade
+      avatar_url: https://i.pravatar.cc/150?u=adesola-ogunlade
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -1032,6 +1052,7 @@ project:
 
       first_name: Luisa
       last_name: Moretti
+      avatar_url: https://i.pravatar.cc/150?u=luisa-moretti
       career_stage: PhD Candidate
       credit_levels:
         - role: Software
@@ -1078,6 +1099,7 @@ project:
 
       first_name: Ravi
       last_name: Sharma
+      avatar_url: https://i.pravatar.cc/150?u=ravi-sharma
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -1128,6 +1150,7 @@ project:
 
       first_name: Ekaterina
       last_name: Sokolova
+      avatar_url: https://i.pravatar.cc/150?u=ekaterina-sokolova
       career_stage: PhD Candidate
       credit_levels:
         - role: Formal analysis
@@ -1174,6 +1197,7 @@ project:
 
       first_name: Diego
       last_name: Ramirez
+      avatar_url: https://i.pravatar.cc/150?u=diego-ramirez
       career_stage: PhD Candidate
       credit_levels:
         - role: Software
@@ -1219,6 +1243,7 @@ project:
 
       first_name: Mei
       last_name: Huang
+      avatar_url: https://i.pravatar.cc/150?u=mei-huang
       career_stage: PhD Candidate
       credit_levels:
         - role: Formal analysis
@@ -1267,6 +1292,7 @@ project:
 
       first_name: Benjamin
       last_name: Nkrumah
+      avatar_url: https://i.pravatar.cc/150?u=benjamin-nkrumah
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -1314,6 +1340,7 @@ project:
 
       first_name: Aiko
       last_name: Watanabe
+      avatar_url: https://i.pravatar.cc/150?u=aiko-watanabe
       career_stage: PhD Candidate
       credit_levels:
         - role: Software
@@ -1358,6 +1385,7 @@ project:
 
       first_name: Thiago
       last_name: Costa
+      avatar_url: https://i.pravatar.cc/150?u=thiago-costa
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -1408,6 +1436,7 @@ project:
 
       first_name: Sarah
       last_name: O'Brien
+      avatar_url: https://i.pravatar.cc/150?u=sarah-o'brien
       career_stage: PhD Candidate
       credit_levels:
         - role: Methodology
@@ -1457,6 +1486,7 @@ project:
 
       first_name: Kenji
       last_name: Yamamoto
+      avatar_url: https://i.pravatar.cc/150?u=kenji-yamamoto
       career_stage: PhD Candidate
       credit_levels:
         - role: Software
@@ -1501,6 +1531,7 @@ project:
 
       first_name: Deepa
       last_name: Venkatesh
+      avatar_url: https://i.pravatar.cc/150?u=deepa-venkatesh
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -1550,6 +1581,7 @@ project:
 
       first_name: Ahmed
       last_name: Hassan
+      avatar_url: https://i.pravatar.cc/150?u=ahmed-hassan
       career_stage: PhD Candidate
       credit_levels:
         - role: Software
@@ -1595,6 +1627,7 @@ project:
 
       first_name: Ji-Yeon
       last_name: Choi
+      avatar_url: https://i.pravatar.cc/150?u=ji-yeon-choi
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -1644,6 +1677,7 @@ project:
 
       first_name: Marcus
       last_name: Jensen
+      avatar_url: https://i.pravatar.cc/150?u=marcus-jensen
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -1690,6 +1724,7 @@ project:
 
       first_name: Yuto
       last_name: Nakagawa
+      avatar_url: https://i.pravatar.cc/150?u=yuto-nakagawa
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -1737,6 +1772,7 @@ project:
 
       first_name: Olga
       last_name: Petersen
+      avatar_url: https://i.pravatar.cc/150?u=olga-petersen
       career_stage: Research Scientist
       credit_levels:
         - role: Formal analysis
@@ -1783,6 +1819,7 @@ project:
 
       first_name: Tariq
       last_name: Mansoor
+      avatar_url: https://i.pravatar.cc/150?u=tariq-mansoor
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -1827,6 +1864,7 @@ project:
 
       first_name: Camila
       last_name: Reyes
+      avatar_url: https://i.pravatar.cc/150?u=camila-reyes
       career_stage: Research Scientist
       credit_levels:
         - role: Investigation
@@ -1876,6 +1914,7 @@ project:
 
       first_name: David
       last_name: Chang
+      avatar_url: https://i.pravatar.cc/150?u=david-chang
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -1923,6 +1962,7 @@ project:
 
       first_name: Nneka
       last_name: Igwe
+      avatar_url: https://i.pravatar.cc/150?u=nneka-igwe
       career_stage: Research Scientist
       credit_levels:
         - role: Investigation
@@ -1975,6 +2015,7 @@ project:
 
       first_name: Sofia
       last_name: Lindqvist
+      avatar_url: https://i.pravatar.cc/150?u=sofia-lindqvist
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -2021,6 +2062,7 @@ project:
 
       first_name: Hannah
       last_name: Becker
+      avatar_url: https://i.pravatar.cc/150?u=hannah-becker
       career_stage: Data Curator
       credit_levels:
         - role: Data curation
@@ -2065,6 +2107,7 @@ project:
 
       first_name: Raj
       last_name: Patel
+      avatar_url: https://i.pravatar.cc/150?u=raj-patel
       career_stage: Lab Manager
       credit_levels:
         - role: Resources
@@ -2111,6 +2154,7 @@ project:
 
       first_name: Mitsuki
       last_name: Endo
+      avatar_url: https://i.pravatar.cc/150?u=mitsuki-endo
       career_stage: Research Coordinator
       credit_levels:
         - role: Project administration
@@ -2155,6 +2199,7 @@ project:
 
       first_name: Grace
       last_name: Mensah
+      avatar_url: https://i.pravatar.cc/150?u=grace-mensah
       career_stage: Data Curator
       credit_levels:
         - role: Data curation
@@ -2202,6 +2247,7 @@ project:
 
       first_name: Carlos
       last_name: Rivera
+      avatar_url: https://i.pravatar.cc/150?u=carlos-rivera
       career_stage: Lab Manager
       credit_levels:
         - role: Resources
@@ -2247,6 +2293,7 @@ project:
 
       first_name: Emma
       last_name: Thompson
+      avatar_url: https://i.pravatar.cc/150?u=emma-thompson
       career_stage: Undergraduate Researcher
       credit_levels:
         - role: Investigation
@@ -2283,6 +2330,7 @@ project:
 
       first_name: Takeshi
       last_name: Mori
+      avatar_url: https://i.pravatar.cc/150?u=takeshi-mori
       career_stage: Undergraduate Researcher
       credit_levels:
         - role: Software
@@ -2319,6 +2367,7 @@ project:
 
       first_name: Zara
       last_name: Khan
+      avatar_url: https://i.pravatar.cc/150?u=zara-khan
       career_stage: Undergraduate Researcher
       credit_levels:
         - role: Investigation
@@ -2360,6 +2409,7 @@ project:
 
       first_name: Lucas
       last_name: Almeida
+      avatar_url: https://i.pravatar.cc/150?u=lucas-almeida
       career_stage: Undergraduate Researcher
       credit_levels:
         - role: Investigation

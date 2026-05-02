@@ -57,6 +57,88 @@ function normalizeRole(r) {
   return r.toLowerCase().replace(/\s+/g, ' ').replace(/—/g, '–').trim();
 }
 
+// ─── Avatar helpers (photo or initials fallback) ────────────────
+
+let _avatarClipCounter = 0;
+
+/**
+ * Append a circular avatar image (or initials fallback) inside an SVG <g>.
+ * If the author has an avatar_url, draws a clipped <image> on top of the
+ * existing colored circle so initials show through if the image fails.
+ * Otherwise draws initials text.
+ */
+function appendSvgAvatar(svg, g, ns, x, y, radius, author, fontSize) {
+  if (author.avatar_url) {
+    let defs = svg.querySelector('defs');
+    if (!defs) {
+      defs = document.createElementNS(ns, 'defs');
+      svg.insertBefore(defs, svg.firstChild);
+    }
+    const clipId = `ae-av-${_avatarClipCounter++}`;
+    const clipPath = document.createElementNS(ns, 'clipPath');
+    clipPath.setAttribute('id', clipId);
+    const clipCircle = document.createElementNS(ns, 'circle');
+    clipCircle.setAttribute('cx', String(x));
+    clipCircle.setAttribute('cy', String(y));
+    clipCircle.setAttribute('r', String(radius));
+    clipPath.appendChild(clipCircle);
+    defs.appendChild(clipPath);
+
+    const img = document.createElementNS(ns, 'image');
+    img.setAttribute('href', author.avatar_url);
+    img.setAttribute('x', String(x - radius));
+    img.setAttribute('y', String(y - radius));
+    img.setAttribute('width', String(radius * 2));
+    img.setAttribute('height', String(radius * 2));
+    img.setAttribute('clip-path', `url(#${clipId})`);
+    img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    img.style.pointerEvents = 'none';
+    g.appendChild(img);
+  } else {
+    const init = document.createElementNS(ns, 'text');
+    init.setAttribute('x', String(x));
+    init.setAttribute('y', String(y + 1));
+    init.setAttribute('text-anchor', 'middle');
+    init.setAttribute('dominant-baseline', 'central');
+    init.setAttribute('fill', '#fff');
+    init.setAttribute('font-size', String(fontSize || (radius * 0.55)));
+    init.setAttribute('font-weight', '700');
+    init.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+    init.style.pointerEvents = 'none';
+    init.textContent = getInitials(author.name);
+    g.appendChild(init);
+  }
+}
+
+/**
+ * Build an HTML avatar element — circular <img> or colored div with initials.
+ */
+function buildHtmlAvatar(author, className, extraStyle) {
+  const color = getColor(author.name);
+  if (author.avatar_url) {
+    const wrapper = el('div', {
+      className: className,
+      style: { ...extraStyle, padding: '0', overflow: 'hidden' },
+    });
+    const img = el('img', {
+      src: author.avatar_url,
+      alt: author.name,
+      style: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' },
+    });
+    img.onerror = () => {
+      wrapper.textContent = getInitials(author.name);
+      wrapper.style.backgroundColor = color;
+      wrapper.style.overflow = '';
+    };
+    wrapper.appendChild(img);
+    return wrapper;
+  }
+  return el('div', {
+    className: className,
+    style: { backgroundColor: color, ...extraStyle },
+  }, getInitials(author.name));
+}
+
 function rolesMatch(a, b) {
   return normalizeRole(a) === normalizeRole(b);
 }
@@ -160,10 +242,7 @@ function showPopover(anchor, author) {
 
   // Header: avatar + name + career stage
   const header = el('div', { className: 'ae-popover-header' });
-  header.appendChild(el('div', {
-    className: 'ae-popover-avatar',
-    style: { backgroundColor: color },
-  }, getInitials(author.name)));
+  header.appendChild(buildHtmlAvatar(author, 'ae-popover-avatar'));
   const info = el('div', { className: 'ae-popover-info' });
   info.appendChild(el('div', { className: 'ae-popover-name' }, author.name));
   if (author.career_stage) {
@@ -869,10 +948,7 @@ function render({ model, el: rootEl }) {
       if (isDimmed) card.style.opacity = '0.3';
 
       // Avatar
-      const avatar = el('div', {
-        className: 'ae-avatar',
-        style: { backgroundColor: color },
-      }, getInitials(author.name));
+      const avatar = buildHtmlAvatar(author, 'ae-avatar');
       if (author.corresponding) {
         avatar.appendChild(el('span', { className: 'ae-avatar-badge' }, '✉'));
       }
@@ -953,10 +1029,7 @@ function render({ model, el: rootEl }) {
       const color = getColor(author.name);
       const th = el('th', { className: 'ae-matrix-author-th' });
       if (isDimmed) th.style.opacity = '0.3';
-      th.appendChild(el('div', {
-        className: 'ae-matrix-avatar',
-        style: { backgroundColor: color },
-      }, getInitials(author.name)));
+      th.appendChild(buildHtmlAvatar(author, 'ae-matrix-avatar'));
       const matrixName = el('div', { className: 'ae-matrix-author-name' }, author.name);
       attachAuthorPopover(matrixName, author);
       th.appendChild(matrixName);
@@ -1039,10 +1112,7 @@ function render({ model, el: rootEl }) {
         const isDimmed = searchQuery && !matchesSearch(c.author, searchQuery);
         const chip = el('div', { className: 'ae-section-chip' });
         if (isDimmed) chip.style.opacity = '0.3';
-        chip.appendChild(el('div', {
-          className: 'ae-section-avatar',
-          style: { backgroundColor: color },
-        }, getInitials(c.author.name)));
+        chip.appendChild(buildHtmlAvatar(c.author, 'ae-section-avatar'));
         const info = el('div', { className: 'ae-section-chip-info' });
         const chipName = el('span', { className: 'ae-section-chip-name' }, c.author.name);
         attachAuthorPopover(chipName, c.author);
@@ -1348,17 +1418,8 @@ function render({ model, el: rootEl }) {
           g.appendChild(hRing);
         }
 
-        // Initials
-        const init = document.createElementNS(ns, 'text');
-        init.setAttribute('x', String(nd.x)); init.setAttribute('y', String(nd.y + 1));
-        init.setAttribute('text-anchor', 'middle'); init.setAttribute('dominant-baseline', 'central');
-        init.setAttribute('fill', '#fff');
-        init.setAttribute('font-size', String(nd.radius * 0.55));
-        init.setAttribute('font-weight', '700');
-        init.setAttribute('font-family', 'Inter, system-ui, sans-serif');
-        init.style.pointerEvents = 'none';
-        init.textContent = getInitials(nd.name);
-        g.appendChild(init);
+        // Avatar image or initials fallback
+        appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
 
         // Name label below
         const isSearchMatch = highlightSet && highlightSet.has(idx);
@@ -1850,17 +1911,8 @@ function render({ model, el: rootEl }) {
               mg.appendChild(hRing);
             }
 
-            // Initials
-            const init = document.createElementNS(ns, 'text');
-            init.setAttribute('x', String(mp.x)); init.setAttribute('y', String(mp.y + 1));
-            init.setAttribute('text-anchor', 'middle'); init.setAttribute('dominant-baseline', 'central');
-            init.setAttribute('fill', '#fff');
-            init.setAttribute('font-size', String(Math.max(8, mp.r * 0.6)));
-            init.setAttribute('font-weight', '700');
-            init.setAttribute('font-family', 'Inter, system-ui, sans-serif');
-            init.style.pointerEvents = 'none';
-            init.textContent = getInitials(author.name);
-            mg.appendChild(init);
+            // Avatar image or initials fallback
+            appendSvgAvatar(svg, mg, ns, mp.x, mp.y, mp.r, author, Math.max(8, mp.r * 0.6));
 
             // Name label — always show last name, full name on hover
             const nl = document.createElementNS(ns, 'text');
@@ -2123,14 +2175,8 @@ function render({ model, el: rootEl }) {
           circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '2');
           g.appendChild(circle);
 
-          // Initials
-          const init = document.createElementNS(ns, 'text');
-          init.setAttribute('x', String(nd.x)); init.setAttribute('y', String(nd.y + 1));
-          init.setAttribute('text-anchor', 'middle'); init.setAttribute('dominant-baseline', 'central');
-          init.setAttribute('fill', '#fff'); init.setAttribute('font-size', String(nd.radius * 0.55));
-          init.setAttribute('font-weight', '700'); init.setAttribute('font-family', 'Inter, system-ui, sans-serif');
-          init.style.pointerEvents = 'none'; init.textContent = getInitials(nd.name);
-          g.appendChild(init);
+          // Avatar image or initials fallback
+          appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[nd.mi], nd.radius * 0.55);
 
           // Name
           const label = document.createElementNS(ns, 'text');
