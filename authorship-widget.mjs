@@ -1250,43 +1250,75 @@ function render({ model, el: rootEl }) {
     }
     const maxWeight = Math.max(1, ...links.map(l => l.weight));
 
-    // ── Greedy nearest-neighbor ring ordering ──
-    // Reorder authors around the ring so heavily-connected pairs sit adjacent,
-    // minimizing long crossing chords and producing shorter, cleaner arcs.
-    const weightMatrix = Array.from({ length: n }, () => new Float32Array(n));
+    // ── Spectral ring ordering (Fiedler vector) ──
+    // Compute the second smallest eigenvector of the graph Laplacian to find
+    // the ordering that minimizes total weighted edge length on the ring.
+    // This places heavily-connected authors adjacent, producing shorter arcs.
+    const weightMatrix = Array.from({ length: n }, () => new Float64Array(n));
     for (const link of links) {
       weightMatrix[link.i][link.j] = link.weight;
       weightMatrix[link.j][link.i] = link.weight;
     }
-    const ringOrder = []; // indices into sorted[]
-    const placed = new Set();
-    // Start with the most-connected author
-    let startIdx = 0;
-    let maxConn = -1;
-    for (let i = 0; i < n; i++) {
-      let conn = 0;
-      for (let j = 0; j < n; j++) conn += weightMatrix[i][j];
-      if (conn > maxConn) { maxConn = conn; startIdx = i; }
-    }
-    ringOrder.push(startIdx);
-    placed.add(startIdx);
-    while (ringOrder.length < n) {
-      const last = ringOrder[ringOrder.length - 1];
-      let bestIdx = -1, bestW = -1;
+
+    let ringPos;
+    if (n <= 2) {
+      // Trivial cases — no reordering needed
+      ringPos = Array.from({ length: n }, (_, i) => i);
+    } else {
+      // Build graph Laplacian L = D - W
+      const L = Array.from({ length: n }, () => new Float64Array(n));
       for (let i = 0; i < n; i++) {
-        if (placed.has(i)) continue;
-        if (weightMatrix[last][i] > bestW) { bestW = weightMatrix[last][i]; bestIdx = i; }
+        let deg = 0;
+        for (let j = 0; j < n; j++) {
+          if (i !== j) { L[i][j] = -weightMatrix[i][j]; deg += weightMatrix[i][j]; }
+        }
+        L[i][i] = deg;
       }
-      if (bestIdx === -1) {
-        // Disconnected author — just pick the first unplaced
-        for (let i = 0; i < n; i++) { if (!placed.has(i)) { bestIdx = i; break; } }
+
+      // Shift: M = αI - L (α = upper bound on max eigenvalue of L)
+      // The largest eigenvector of M = smallest of L = constant vector
+      // The 2nd largest of M = Fiedler vector (2nd smallest of L)
+      let alpha = 0;
+      for (let i = 0; i < n; i++) alpha = Math.max(alpha, L[i][i]);
+      alpha *= 2; // safe upper bound
+      if (alpha === 0) alpha = 1; // fully disconnected graph
+
+      // Power iteration with deflation against the constant vector
+      // to find the Fiedler vector directly
+      const invSqrtN = 1 / Math.sqrt(n);
+      let v = new Float64Array(n);
+      // Initialize with a non-constant vector
+      for (let i = 0; i < n; i++) v[i] = Math.sin(2 * Math.PI * i / n + 0.1 * i);
+      // Normalize
+      let norm = Math.sqrt(v.reduce((s, x) => s + x * x, 0));
+      for (let i = 0; i < n; i++) v[i] /= norm;
+
+      for (let iter = 0; iter < 200; iter++) {
+        // Multiply: v' = M * v = α*v - L*v
+        const vNew = new Float64Array(n);
+        for (let i = 0; i < n; i++) {
+          let sum = alpha * v[i];
+          for (let j = 0; j < n; j++) sum -= L[i][j] * v[j];
+          vNew[i] = sum;
+        }
+        // Deflate: remove projection onto constant vector (1/√n, ..., 1/√n)
+        let proj = 0;
+        for (let i = 0; i < n; i++) proj += vNew[i] * invSqrtN;
+        for (let i = 0; i < n; i++) vNew[i] -= proj * invSqrtN;
+        // Normalize
+        norm = Math.sqrt(vNew.reduce((s, x) => s + x * x, 0));
+        if (norm < 1e-12) break; // degenerate
+        for (let i = 0; i < n; i++) vNew[i] /= norm;
+        v = vNew;
       }
-      ringOrder.push(bestIdx);
-      placed.add(bestIdx);
+
+      // Sort authors by Fiedler vector values → optimal ring ordering
+      const indices = Array.from({ length: n }, (_, i) => i);
+      indices.sort((a, b) => v[a] - v[b]);
+      // indices[pos] = sortedIdx; build ringPos[sortedIdx] = pos
+      ringPos = new Array(n);
+      for (let pos = 0; pos < n; pos++) ringPos[indices[pos]] = pos;
     }
-    // ringOrder[pos] = index into sorted[]; we need ringPos[sortedIdx] = position
-    const ringPos = new Array(n);
-    for (let pos = 0; pos < n; pos++) ringPos[ringOrder[pos]] = pos;
 
     // SVG dimensions — scale up for large teams
     const isLarge = n > 20;
