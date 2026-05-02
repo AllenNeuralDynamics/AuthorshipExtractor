@@ -1167,6 +1167,7 @@ function render({ model, el: rootEl }) {
     const modeBar = el('div', { className: 'ae-mode-bar' });
     const modes = [
       { key: 'chord', label: '👤 Authors' },
+      { key: 'collab', label: '🧲 Collaboration' },
       { key: 'institutions', label: '🏛️ By Institutions' },
       { key: 'force', label: '🎯 By Role' },
       { key: 'sections', label: '📄 By Section & Figure' },
@@ -1186,6 +1187,7 @@ function render({ model, el: rootEl }) {
     if (networkMode === 'institutions') return buildInstitutionChord(sorted, highlightSet);
     if (networkMode === 'force') return buildForceGraph(sorted, highlightSet);
     if (networkMode === 'sections') return buildSectionCircles(sorted, highlightSet);
+    if (networkMode === 'collab') return buildCollabLayout(sorted, highlightSet);
 
     const wrap = el('div', { className: 'ae-network' });
     const ns = 'http://www.w3.org/2000/svg';
@@ -2427,6 +2429,449 @@ function render({ model, el: rootEl }) {
       el('span', { className: 'ae-stat-value' }, String(groupLinks.length)),
       el('span', { className: 'ae-stat-label' }, opts.linkLabel || 'Links')
     ));
+    wrap.appendChild(stats);
+
+    return wrap;
+  }
+
+  // ──── Force-directed collaboration layout ────
+  function buildCollabLayout(sorted, highlightSet) {
+    const n = sorted.length;
+    const wrap = el('div', { className: 'ae-network' });
+    const ns = 'http://www.w3.org/2000/svg';
+    if (n === 0) {
+      wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
+      return wrap;
+    }
+    wrap.appendChild(buildNetworkModeToggle(n));
+
+    // Compute per-author roles with colors
+    const authorRoles = sorted.map(a => {
+      const levels = a.credit_levels || [];
+      return levels.map(cl => ({
+        role: cl.role, level: cl.level,
+        color: getRoleCat(cl.role).color,
+        opacity: LEVEL_OPACITY[cl.level] || 0.4,
+      }));
+    });
+
+    // Build edges (shared CRediT roles + shared sections)
+    const sectionAuthors = new Map();
+    for (let i = 0; i < n; i++) {
+      for (const sc of (sorted[i].section_contributions || [])) {
+        const arr = sectionAuthors.get(sc.section) || [];
+        arr.push(i);
+        sectionAuthors.set(sc.section, arr);
+      }
+    }
+    const edgeMap = new Map();
+    for (const [, authIdxs] of sectionAuthors) {
+      for (let i = 0; i < authIdxs.length; i++) {
+        for (let j = i + 1; j < authIdxs.length; j++) {
+          const key = [authIdxs[i], authIdxs[j]].sort().join('::');
+          const set = edgeMap.get(key) || new Set();
+          set.add(1);
+          edgeMap.set(key, set);
+        }
+      }
+    }
+    const links = [];
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const sharedRoles = [];
+        for (const role of ALL_CREDIT_ROLES) {
+          if (findCreditLevel(sorted[i], role) && findCreditLevel(sorted[j], role))
+            sharedRoles.push({ role, color: getRoleCat(role).color });
+        }
+        const key = [i, j].sort().join('::');
+        const sharedSections = edgeMap.get(key) ? edgeMap.get(key).size : 0;
+        if (sharedRoles.length > 0 || sharedSections > 0) {
+          links.push({ i, j, sharedRoles, weight: sharedRoles.length + sharedSections });
+        }
+      }
+    }
+    const maxWeight = Math.max(1, ...links.map(l => l.weight));
+
+    // SVG dimensions
+    const isLarge = n > 20;
+    const W = isLarge ? 900 : 600;
+    const H = isLarge ? 900 : 500;
+    const CX = W / 2, CY = H / 2;
+
+    // Node sizes
+    const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
+    const minR = isLarge ? 10 : 18;
+    const maxR = isLarge ? 20 : 38;
+
+    // ── Force simulation ──
+    // Initialize positions on a circle to avoid overlap at start
+    const nodes = sorted.map((a, i) => {
+      const angle = (2 * Math.PI * i) / n;
+      const roles = authorRoles[i];
+      const secCount = (a.section_contributions || []).length;
+      const weight = roles.length + secCount;
+      const radius = minR + ((weight / (maxRoles + 10)) * (maxR - minR));
+      return {
+        x: CX + (W * 0.25) * Math.cos(angle),
+        y: CY + (H * 0.25) * Math.sin(angle),
+        vx: 0, vy: 0,
+        radius, roles,
+        name: a.name,
+        firstName: getFirstName(a.name),
+        lastName: getLastName(a.name),
+        careerStage: a.career_stage || '',
+        roleCount: roles.length,
+        secCount,
+        color: getColor(a.name),
+      };
+    });
+
+    // Build adjacency weight for attraction
+    const adjW = Array.from({ length: n }, () => new Float64Array(n));
+    for (const link of links) {
+      adjW[link.i][link.j] = link.weight;
+      adjW[link.j][link.i] = link.weight;
+    }
+
+    // Run simulation steps
+    const ITERS = 300;
+    const repulsion = isLarge ? 8000 : 15000;
+    const attraction = 0.008;
+    const damping = 0.92;
+    const centerPull = 0.002;
+
+    for (let iter = 0; iter < ITERS; iter++) {
+      const alpha = 1 - iter / ITERS; // cooling
+
+      // Repulsion (all pairs)
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          let dx = nodes[i].x - nodes[j].x;
+          let dy = nodes[i].y - nodes[j].y;
+          let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          // Minimum distance = sum of radii + gap
+          const minDist = nodes[i].radius + nodes[j].radius + 8;
+          if (dist < minDist) dist = minDist;
+          const force = (repulsion * alpha) / (dist * dist);
+          const fx = (dx / dist) * force;
+          const fy = (dy / dist) * force;
+          nodes[i].vx += fx; nodes[i].vy += fy;
+          nodes[j].vx -= fx; nodes[j].vy -= fy;
+        }
+      }
+
+      // Attraction (connected pairs)
+      for (const link of links) {
+        const a = nodes[link.i], b = nodes[link.j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const force = attraction * link.weight * alpha * dist;
+        const fx = (dx / dist) * force;
+        const fy = (dy / dist) * force;
+        a.vx += fx; a.vy += fy;
+        b.vx -= fx; b.vy -= fy;
+      }
+
+      // Center gravity
+      for (let i = 0; i < n; i++) {
+        nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
+        nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
+      }
+
+      // Integrate + damp
+      for (let i = 0; i < n; i++) {
+        nodes[i].vx *= damping;
+        nodes[i].vy *= damping;
+        nodes[i].x += nodes[i].vx;
+        nodes[i].y += nodes[i].vy;
+      }
+    }
+
+    // Normalize positions to fit within the SVG with padding
+    const pad = maxR + 30;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const nd of nodes) {
+      minX = Math.min(minX, nd.x - nd.radius);
+      minY = Math.min(minY, nd.y - nd.radius);
+      maxX = Math.max(maxX, nd.x + nd.radius);
+      maxY = Math.max(maxY, nd.y + nd.radius);
+    }
+    const dataW = (maxX - minX) || 1, dataH = (maxY - minY) || 1;
+    const scaleX = (W - 2 * pad) / dataW, scaleY = (H - 2 * pad) / dataH;
+    const scale = Math.min(scaleX, scaleY);
+    const offsetX = pad + ((W - 2 * pad) - dataW * scale) / 2 - minX * scale;
+    const offsetY = pad + ((H - 2 * pad) - dataH * scale) / 2 - minY * scale;
+    for (const nd of nodes) {
+      nd.x = nd.x * scale + offsetX;
+      nd.y = nd.y * scale + offsetY;
+    }
+
+    // Hover state
+    let hoveredIdx = null;
+
+    function renderSVG() {
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.setAttribute('class', 'ae-network-svg');
+      svg.style.width = '100%'; svg.style.maxWidth = W + 'px';
+      svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
+
+      // Edges — only show on hover, dimmed otherwise
+      for (const link of links) {
+        const s = nodes[link.i], t = nodes[link.j];
+        const isHL = hoveredIdx === link.i || hoveredIdx === link.j;
+        const isDim = hoveredIdx !== null && !isHL;
+        if (isDim) continue; // hide non-connected edges entirely when hovering
+        const baseOpacity = hoveredIdx === null
+          ? Math.min(0.25, 0.05 + (link.weight / maxWeight) * 0.2)
+          : 0.6;
+
+        const dx = t.x - s.x, dy = t.y - s.y;
+        const len = Math.sqrt(dx * dx + dy * dy) || 1;
+        const ux = dx / len, uy = dy / len;
+        const sx = s.x + ux * (s.radius + 4), sy = s.y + uy * (s.radius + 4);
+        const tx = t.x - ux * (t.radius + 4), ty = t.y - uy * (t.radius + 4);
+
+        // Single line colored by strongest shared role
+        const mainColor = link.sharedRoles.length > 0 ? link.sharedRoles[0].color : '#94a3b8';
+        const strokeW = 1 + (link.weight / maxWeight) * 3;
+
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M${sx},${sy} L${tx},${ty}`);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', mainColor);
+        path.setAttribute('stroke-width', String(strokeW));
+        path.setAttribute('stroke-opacity', String(baseOpacity));
+        path.setAttribute('stroke-linecap', 'round');
+        const title = document.createElementNS(ns, 'title');
+        title.textContent = `${sorted[link.i].name} ↔ ${sorted[link.j].name}\n${link.sharedRoles.map(r => r.role).join(', ')}`;
+        path.appendChild(title);
+        svg.appendChild(path);
+      }
+
+      // Nodes
+      for (let idx = 0; idx < n; idx++) {
+        const nd = nodes[idx];
+        const isHovered = hoveredIdx === idx;
+        const isConnected = hoveredIdx !== null && links.some(l =>
+          (l.i === hoveredIdx && l.j === idx) || (l.j === hoveredIdx && l.i === idx));
+        const isDim = hoveredIdx !== null && !isHovered && !isConnected;
+        const isSearchDim = highlightSet && !highlightSet.has(idx);
+        const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : 1;
+
+        const g = document.createElementNS(ns, 'g');
+        g.style.cursor = 'pointer';
+        g.style.opacity = String(groupOpacity);
+        g.style.transition = 'opacity 0.2s';
+
+        // Role ring arcs
+        const ringR = nd.radius + 5;
+        const roles = nd.roles;
+        const arcGap = 0.06;
+        const totalAngle = 2 * Math.PI - roles.length * arcGap;
+        const segAngle = roles.length > 0 ? totalAngle / roles.length : 0;
+        for (let ri = 0; ri < roles.length; ri++) {
+          const startA = -Math.PI / 2 + ri * (segAngle + arcGap);
+          const endA = startA + segAngle;
+          const arcS = { x: nd.x + ringR * Math.cos(startA), y: nd.y + ringR * Math.sin(startA) };
+          const arcE = { x: nd.x + ringR * Math.cos(endA), y: nd.y + ringR * Math.sin(endA) };
+          const largeArc = (endA - startA) > Math.PI ? 1 : 0;
+          const arc = document.createElementNS(ns, 'path');
+          arc.setAttribute('d', `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`);
+          arc.setAttribute('stroke', roles[ri].color);
+          arc.setAttribute('stroke-width', '4'); arc.setAttribute('stroke-linecap', 'round');
+          arc.setAttribute('fill', 'none'); arc.setAttribute('opacity', String(roles[ri].opacity));
+          g.appendChild(arc);
+        }
+
+        // Shadow + main circle
+        const shadow = document.createElementNS(ns, 'circle');
+        shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2));
+        shadow.setAttribute('r', String(nd.radius));
+        shadow.setAttribute('fill', 'black'); shadow.setAttribute('opacity', '0.08');
+        g.appendChild(shadow);
+
+        const circle = document.createElementNS(ns, 'circle');
+        circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
+        circle.setAttribute('r', String(nd.radius));
+        circle.setAttribute('fill', nd.color);
+        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '3');
+        g.appendChild(circle);
+
+        if (isHovered) {
+          const hRing = document.createElementNS(ns, 'circle');
+          hRing.setAttribute('cx', String(nd.x)); hRing.setAttribute('cy', String(nd.y));
+          hRing.setAttribute('r', String(nd.radius + 2));
+          hRing.setAttribute('fill', 'none');
+          hRing.setAttribute('stroke', nd.color); hRing.setAttribute('stroke-width', '2');
+          hRing.setAttribute('opacity', '0.4');
+          g.appendChild(hRing);
+        }
+
+        // Avatar or initials
+        appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
+
+        // Name label
+        const isSearchMatch = highlightSet && highlightSet.has(idx);
+        const label = document.createElementNS(ns, 'text');
+        label.setAttribute('x', String(nd.x));
+        label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
+        label.setAttribute('font-size', isLarge ? '8' : '11');
+        label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
+        label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+        label.style.pointerEvents = 'none';
+        label.textContent = isLarge ? nd.lastName : `${nd.firstName} ${nd.lastName}`;
+        g.appendChild(label);
+
+        if (isHovered && nd.careerStage) {
+          const cs = document.createElementNS(ns, 'text');
+          cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + nd.radius + 31));
+          cs.setAttribute('text-anchor', 'middle');
+          cs.setAttribute('fill', '#94a3b8'); cs.setAttribute('font-size', '9.5');
+          cs.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+          cs.style.pointerEvents = 'none';
+          cs.textContent = nd.careerStage;
+          g.appendChild(cs);
+        }
+
+        // Hover + keyboard
+        g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderCollab(); });
+        g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderCollab(); });
+        g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
+        g.setAttribute('aria-label', nd.name);
+        g.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); hoveredIdx = hoveredIdx === idx ? null : idx; rerenderCollab();
+          }
+        });
+        g.addEventListener('focus', () => { hoveredIdx = idx; rerenderCollab(); });
+        g.addEventListener('blur', () => { hoveredIdx = null; rerenderCollab(); });
+
+        svg.appendChild(g);
+      }
+
+      return svg;
+    }
+
+    // Info card
+    function renderInfoCard() {
+      if (hoveredIdx === null) return null;
+      const nd = nodes[hoveredIdx];
+      const authorEdges = links.filter(l => l.i === hoveredIdx || l.j === hoveredIdx);
+      const totalShared = authorEdges.reduce((s, l) => s + l.sharedRoles.length, 0);
+      const onRight = nd.x > W / 2;
+      const onBottom = nd.y > H / 2;
+      const cardStyle = {};
+      if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
+      else { cardStyle.right = '12px'; cardStyle.left = 'auto'; }
+      if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
+      else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
+      const card = el('div', { className: 'ae-info-card', style: cardStyle },
+        el('p', { className: 'ae-info-name' }, nd.name),
+        el('p', { className: 'ae-info-stage' }, nd.careerStage),
+        el('div', { className: 'ae-info-stats' },
+          el('p', {}, el('strong', {}, String(nd.roleCount)), ' CRediT roles'),
+          el('p', {}, el('strong', {}, String(nd.secCount)), ' sections'),
+          el('p', {}, el('strong', {}, String(totalShared)), ' shared role links'),
+        ),
+      );
+      const badges = el('div', { className: 'ae-info-badges' });
+      for (const r of nd.roles) {
+        badges.appendChild(el('span', {
+          className: 'ae-info-badge',
+          style: { backgroundColor: r.color, opacity: r.opacity },
+        }, r.role.replace('Writing – ', '').replace('Formal ', '').slice(0, 14)));
+      }
+      card.appendChild(badges);
+      return card;
+    }
+
+    // Container
+    const graphWrap = el('div', { className: 'ae-network-graph' });
+
+    // Zoom/pan
+    let vbX = 0, vbY = 0, vbW = W, vbH = H;
+    let isPanning = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
+    function applyViewBox() {
+      const svg = graphWrap.querySelector('.ae-network-svg');
+      if (svg) svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+    }
+    graphWrap.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 1.1 : 0.9;
+      const newW = Math.max(W * 0.2, Math.min(W * 2, vbW * factor));
+      const newH = Math.max(H * 0.2, Math.min(H * 2, vbH * factor));
+      const rect = graphWrap.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) / rect.width;
+      const my = (e.clientY - rect.top) / rect.height;
+      vbX += (vbW - newW) * mx; vbY += (vbH - newH) * my;
+      vbW = newW; vbH = newH; applyViewBox();
+    }, { passive: false });
+    graphWrap.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isPanning = true; panStartX = e.clientX; panStartY = e.clientY;
+      panStartVbX = vbX; panStartVbY = vbY; graphWrap.style.cursor = 'grabbing';
+    });
+    graphWrap.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      const rect = graphWrap.getBoundingClientRect();
+      vbX = panStartVbX - (e.clientX - panStartX) * (vbW / rect.width);
+      vbY = panStartVbY - (e.clientY - panStartY) * (vbH / rect.height);
+      applyViewBox();
+    });
+    const stopPan = () => { isPanning = false; graphWrap.style.cursor = 'grab'; };
+    graphWrap.addEventListener('mouseup', stopPan);
+    graphWrap.addEventListener('mouseleave', stopPan);
+
+    // Zoom controls
+    const zoomControls = el('div', { className: 'ae-zoom-controls' });
+    zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
+      onClick: () => { const nW = Math.max(W*0.2,vbW*0.7), nH = Math.max(H*0.2,vbH*0.7); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom in' }, '+'));
+    zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
+      onClick: () => { const nW = Math.min(W*2,vbW*1.4), nH = Math.min(H*2,vbH*1.4); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom out' }, '−'));
+    zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
+      onClick: () => { vbX=0; vbY=0; vbW=W; vbH=H; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
+    graphWrap.appendChild(zoomControls);
+
+    function rerenderCollab() {
+      const oldSvg = graphWrap.querySelector('.ae-network-svg');
+      const newSvg = renderSVG();
+      newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+      if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
+      const oldCard = graphWrap.querySelector('.ae-info-card');
+      const newCard = renderInfoCard();
+      if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
+      else if (newCard) graphWrap.appendChild(newCard);
+    }
+
+    rerenderCollab();
+    wrap.appendChild(graphWrap);
+
+    // Legend
+    const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
+    for (const role of ALL_CREDIT_ROLES) {
+      const rc = getRoleCat(role);
+      legend.appendChild(el('div', { className: 'ae-legend-item' },
+        el('span', { className: 'ae-legend-dot', style: { backgroundColor: rc.color } }),
+        el('span', { className: 'ae-legend-label' }, role.replace('Writing – ', 'W: ').replace('Formal a', 'A')),
+      ));
+    }
+    wrap.appendChild(legend);
+
+    // Stats
+    const stats = el('div', { className: 'ae-network-stats' });
+    const totalRoles = sorted.reduce((s, a) => s + (a.credit_levels?.length || 0), 0);
+    stats.appendChild(el('div', { className: 'ae-stat' },
+      el('span', { className: 'ae-stat-value' }, String(n)),
+      el('span', { className: 'ae-stat-label' }, 'Authors')));
+    stats.appendChild(el('div', { className: 'ae-stat' },
+      el('span', { className: 'ae-stat-value' }, (totalRoles / n).toFixed(1)),
+      el('span', { className: 'ae-stat-label' }, 'Avg roles')));
+    stats.appendChild(el('div', { className: 'ae-stat' },
+      el('span', { className: 'ae-stat-value' }, String(links.length)),
+      el('span', { className: 'ae-stat-label' }, 'Connections')));
     wrap.appendChild(stats);
 
     return wrap;
