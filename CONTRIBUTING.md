@@ -38,6 +38,7 @@ by the widget plugin and power the interactive visualizations.
       # --- Extended fields (read by our plugin) ---
       first_name: Jane
       last_name: Doe
+      avatar_url: https://example.com/photo.jpg  # Optional — URL to a profile photo
       career_stage: Postdoctoral Researcher
       # Career stage options:
       #   Undergraduate, Graduate Student, PhD Candidate,
