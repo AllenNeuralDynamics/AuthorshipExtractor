@@ -95,7 +95,7 @@ The second layer is figure-level contributions, documenting who generated data, 
 
 The third layer is a project timeline: when each contributor joined the project, key milestones in their participation, and optionally when their active contribution ended. This temporal dimension makes visible the trajectory of a project and the different phases of contribution that characterize modern collaborative research.
 
-Each author profile includes structured metadata: institutional affiliations (linked to ROR IDs where available), persistent identifiers such as ORCID, and an optional profile photo (`avatar_url`). When a photo is provided, it replaces the default colored-initials avatar across all views, giving readers a more immediate, human connection to each contributor. Critically, we focus on permanent, publication-relevant data: the facts about contributions that form part of the scholarly record.
+Each author profile includes structured metadata: institutional affiliations (linked to ROR IDs where available) and persistent identifiers such as ORCID. The core data model focuses on permanent, publication-relevant data: the facts about contributions that form part of the scholarly record. Beyond this archival layer, the display supports optional presentational metadata such as a profile photo (`avatar_url`). When a photo is provided, it replaces the default colored-initials avatar across all views, giving readers a more immediate, human connection to each contributor.
 
 ## Interactive display
 
