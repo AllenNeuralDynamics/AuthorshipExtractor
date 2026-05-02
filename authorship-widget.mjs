@@ -1096,11 +1096,9 @@ function render({ model, el: rootEl }) {
       }
     }
 
-    const effortRank = { lead: 3, equal: 2, supporting: 1 };
-
     let sectionIdx = 0;
     for (const [sectionId, contribs] of sectionMap) {
-      contribs.sort((a, b) => (effortRank[b.effort] || 0) - (effortRank[a.effort] || 0));
+      contribs.sort((a, b) => (LEVEL_RANK[b.effort] || 0) - (LEVEL_RANK[a.effort] || 0));
 
       const section = el('div', { className: 'ae-section-block' });
       section.style.setProperty('--i', String(sectionIdx++));
@@ -1163,7 +1161,7 @@ function render({ model, el: rootEl }) {
   }
 
   // ── Network mode toggle helper ──
-  function buildNetworkModeToggle(n) {
+  function buildNetworkModeToggle() {
     const modeBar = el('div', { className: 'ae-mode-bar' });
     const modes = [
       { key: 'chord', label: '👤 Authors' },
@@ -1734,7 +1732,7 @@ function render({ model, el: rootEl }) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
       return wrap;
     }
-    wrap.appendChild(buildNetworkModeToggle(n));
+    wrap.appendChild(buildNetworkModeToggle());
 
     const nGroups = groups.length;
 
@@ -2443,7 +2441,7 @@ function render({ model, el: rootEl }) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
       return wrap;
     }
-    wrap.appendChild(buildNetworkModeToggle(n));
+    wrap.appendChild(buildNetworkModeToggle());
 
     // Compute per-author roles with colors
     const authorRoles = sorted.map(a => {
@@ -2525,13 +2523,6 @@ function render({ model, el: rootEl }) {
         color: getColor(a.name),
       };
     });
-
-    // Build adjacency weight for attraction
-    const adjW = Array.from({ length: n }, () => new Float64Array(n));
-    for (const link of links) {
-      adjW[link.i][link.j] = link.weight;
-      adjW[link.j][link.i] = link.weight;
-    }
 
     // Run simulation steps
     const ITERS = 300;
