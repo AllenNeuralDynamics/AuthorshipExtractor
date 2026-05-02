@@ -1250,6 +1250,44 @@ function render({ model, el: rootEl }) {
     }
     const maxWeight = Math.max(1, ...links.map(l => l.weight));
 
+    // ── Greedy nearest-neighbor ring ordering ──
+    // Reorder authors around the ring so heavily-connected pairs sit adjacent,
+    // minimizing long crossing chords and producing shorter, cleaner arcs.
+    const weightMatrix = Array.from({ length: n }, () => new Float32Array(n));
+    for (const link of links) {
+      weightMatrix[link.i][link.j] = link.weight;
+      weightMatrix[link.j][link.i] = link.weight;
+    }
+    const ringOrder = []; // indices into sorted[]
+    const placed = new Set();
+    // Start with the most-connected author
+    let startIdx = 0;
+    let maxConn = -1;
+    for (let i = 0; i < n; i++) {
+      let conn = 0;
+      for (let j = 0; j < n; j++) conn += weightMatrix[i][j];
+      if (conn > maxConn) { maxConn = conn; startIdx = i; }
+    }
+    ringOrder.push(startIdx);
+    placed.add(startIdx);
+    while (ringOrder.length < n) {
+      const last = ringOrder[ringOrder.length - 1];
+      let bestIdx = -1, bestW = -1;
+      for (let i = 0; i < n; i++) {
+        if (placed.has(i)) continue;
+        if (weightMatrix[last][i] > bestW) { bestW = weightMatrix[last][i]; bestIdx = i; }
+      }
+      if (bestIdx === -1) {
+        // Disconnected author — just pick the first unplaced
+        for (let i = 0; i < n; i++) { if (!placed.has(i)) { bestIdx = i; break; } }
+      }
+      ringOrder.push(bestIdx);
+      placed.add(bestIdx);
+    }
+    // ringOrder[pos] = index into sorted[]; we need ringPos[sortedIdx] = position
+    const ringPos = new Array(n);
+    for (let pos = 0; pos < n; pos++) ringPos[ringOrder[pos]] = pos;
+
     // SVG dimensions — scale up for large teams
     const isLarge = n > 20;
     const W = isLarge ? 900 : 600;
@@ -1260,7 +1298,8 @@ function render({ model, el: rootEl }) {
     // Compute node sizes — smaller for large teams
     const maxRoles = Math.max(1, ...sorted.map((a, i) => authorRoles[i].length));
     const nodeData = sorted.map((a, i) => {
-      const angle = (2 * Math.PI * i) / n - Math.PI / 2;
+      const pos = ringPos[i];
+      const angle = (2 * Math.PI * pos) / n - Math.PI / 2;
       const roles = authorRoles[i];
       const secCount = (a.section_contributions || []).length;
       const weight = roles.length + secCount;
