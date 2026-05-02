@@ -2504,31 +2504,16 @@ function render({ model, el: rootEl }) {
     const maxR = isLarge ? 20 : 38;
 
     // ── Force simulation ──
-    // Group by institution for initial placement
-    const initGroups = new Map();
-    for (let i = 0; i < n; i++) {
-      const aff = ((sorted[i].affiliations || [])[0]) || 'unknown';
-      if (!initGroups.has(aff)) initGroups.set(aff, []);
-      initGroups.get(aff).push(i);
-    }
-    const groupKeys = [...initGroups.keys()];
+    // Initialize positions on a circle to avoid overlap at start
     const nodes = sorted.map((a, i) => {
-      const aff = ((a.affiliations || [])[0]) || 'unknown';
-      const gi = groupKeys.indexOf(aff);
-      const members = initGroups.get(aff);
-      const mi = members.indexOf(i);
-      // Place each institution group at a distinct angle, members clustered nearby
-      const groupAngle = (2 * Math.PI * gi) / groupKeys.length;
-      const spread = 0.15 + 0.1 * (members.length / n);
-      const memberAngle = groupAngle + (mi - members.length / 2) * 0.15;
-      const memberR = W * (spread + mi * 0.01);
+      const angle = (2 * Math.PI * i) / n;
       const roles = authorRoles[i];
       const secCount = (a.section_contributions || []).length;
       const weight = roles.length + secCount;
       const radius = minR + ((weight / (maxRoles + 10)) * (maxR - minR));
       return {
-        x: CX + memberR * Math.cos(memberAngle),
-        y: CY + memberR * Math.sin(memberAngle),
+        x: CX + (W * 0.25) * Math.cos(angle),
+        y: CY + (H * 0.25) * Math.sin(angle),
         vx: 0, vy: 0,
         radius, roles,
         name: a.name,
@@ -2548,21 +2533,12 @@ function render({ model, el: rootEl }) {
       adjW[link.j][link.i] = link.weight;
     }
 
-    // Build institution groups for cluster cohesion
-    const instGroups = new Map();
-    for (let i = 0; i < n; i++) {
-      const aff = ((sorted[i].affiliations || [])[0]) || 'unknown';
-      if (!instGroups.has(aff)) instGroups.set(aff, []);
-      instGroups.get(aff).push(i);
-    }
-
     // Run simulation steps
     const ITERS = 300;
     const repulsion = isLarge ? 8000 : 15000;
     const attraction = 0.008;
     const damping = 0.92;
     const centerPull = 0.002;
-    const clusterPull = isLarge ? 0.06 : 0.04; // pull toward institution centroid
 
     for (let iter = 0; iter < ITERS; iter++) {
       const alpha = 1 - iter / ITERS; // cooling
@@ -2600,18 +2576,6 @@ function render({ model, el: rootEl }) {
       for (let i = 0; i < n; i++) {
         nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
         nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
-      }
-
-      // Institution cluster cohesion — pull members toward group centroid
-      for (const [, members] of instGroups) {
-        if (members.length < 2) continue;
-        let cx = 0, cy = 0;
-        for (const mi of members) { cx += nodes[mi].x; cy += nodes[mi].y; }
-        cx /= members.length; cy /= members.length;
-        for (const mi of members) {
-          nodes[mi].vx += (cx - nodes[mi].x) * clusterPull * alpha;
-          nodes[mi].vy += (cy - nodes[mi].y) * clusterPull * alpha;
-        }
       }
 
       // Integrate + damp
