@@ -1844,6 +1844,7 @@ function render({ model, el: rootEl }) {
           }
         }
       }
+      } // end for-iter
 
       // Normalize positions
       const pad = maxR + 30;
