@@ -1247,7 +1247,6 @@
   gap: 16px;
   margin-top: 2px;
   padding: 2px 0;
-  border-top: 1px solid #f3f4f6;
 }
 
 .ae-stat {
@@ -1622,7 +1621,6 @@
 .ae-dark .ae-info-stats strong { color: #f3f4f6; }
 
 /* Network stats */
-.ae-dark .ae-network-stats { border-top-color: #374151; }
 .ae-dark .ae-stat-value { color: #f3f4f6; }
 .ae-dark .ae-stat-label { color: #9ca3af; }
 .ae-dark .ae-legend-dot { box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
