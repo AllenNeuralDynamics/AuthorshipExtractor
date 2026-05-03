@@ -2555,15 +2555,13 @@ function render({ model, el: rootEl }) {
       svg.style.width = '100%'; svg.style.maxWidth = W + 'px';
       svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
 
-      // Edges — only show on hover, dimmed otherwise
+      // Edges — only show when hovering a node
       for (const link of links) {
-        const s = nodes[link.i], t = nodes[link.j];
+        if (hoveredIdx === null) continue; // hide all edges at rest
         const isHL = hoveredIdx === link.i || hoveredIdx === link.j;
-        const isDim = hoveredIdx !== null && !isHL;
-        if (isDim) continue;
-        const baseOpacity = hoveredIdx === null
-          ? Math.min(0.25, 0.05 + (link.weight / maxWeight) * 0.2)
-          : 0.6;
+        if (!isHL) continue;
+        const s = nodes[link.i], t = nodes[link.j];
+        const baseOpacity = 0.6;
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
