@@ -2584,20 +2584,59 @@ function render({ model, el: rootEl }) {
         }
       }
 
+      // Build adjacency lists per role for tree traversal on hover
+      const roleAdj = new Map(); // role -> Map<nodeIdx, Set<edgeIdx>>
+      for (let ei = 0; ei < roleMSTEdges.length; ei++) {
+        const e = roleMSTEdges[ei];
+        if (!roleAdj.has(e.role)) roleAdj.set(e.role, new Map());
+        const adj = roleAdj.get(e.role);
+        if (!adj.has(e.i)) adj.set(e.i, []);
+        if (!adj.has(e.j)) adj.set(e.j, []);
+        adj.get(e.i).push(ei);
+        adj.get(e.j).push(ei);
+      }
+
+      // When hovering, find all edges in MST trees that include the hovered node
+      let highlightedEdges = null;
+      if (hoveredIdx !== null) {
+        highlightedEdges = new Set();
+        // For each role the hovered author has, BFS/DFS the MST tree
+        for (const [role, adj] of roleAdj) {
+          if (!adj.has(hoveredIdx)) continue;
+          // BFS from hoveredIdx in this role's tree
+          const visited = new Set([hoveredIdx]);
+          const queue = [hoveredIdx];
+          while (queue.length > 0) {
+            const cur = queue.shift();
+            for (const ei of (adj.get(cur) || [])) {
+              const e = roleMSTEdges[ei];
+              const other = e.i === cur ? e.j : e.i;
+              if (!visited.has(other)) {
+                visited.add(other);
+                queue.push(other);
+                highlightedEdges.add(ei);
+              }
+            }
+          }
+        }
+      }
+
       // Group MST edges by author pair to draw parallel strands
       const pairEdges = new Map();
-      for (const e of roleMSTEdges) {
+      for (let ei = 0; ei < roleMSTEdges.length; ei++) {
+        const e = roleMSTEdges[ei];
         const key = e.i < e.j ? `${e.i}::${e.j}` : `${e.j}::${e.i}`;
         const arr = pairEdges.get(key) || [];
-        arr.push(e);
+        arr.push({ ...e, edgeIdx: ei });
         pairEdges.set(key, arr);
       }
 
       for (const [, edges] of pairEdges) {
         const { i, j } = edges[0];
         const s = nodes[i], t = nodes[j];
-        const isHL = hoveredIdx === i || hoveredIdx === j;
-        const isDim = hoveredIdx !== null && !isHL;
+        // Check if any strand in this pair is part of the highlighted trees
+        const anyHL = highlightedEdges && edges.some(e => highlightedEdges.has(e.edgeIdx));
+        const isDim = hoveredIdx !== null && !anyHL;
         if (isDim) continue;
         const baseOpacity = hoveredIdx === null ? 0.25 : 0.6;
 
