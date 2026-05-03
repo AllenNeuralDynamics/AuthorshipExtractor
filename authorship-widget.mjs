@@ -1311,18 +1311,38 @@ function render({ model, el: rootEl }) {
       svg.style.width = '100%'; svg.style.maxWidth = W + 'px';
       svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
 
-      // Edges — per-role MST: for each CRediT role, connect contributors
-      // via minimum spanning tree (nearest-neighbor chains) in that role's color
+      // Edges — per-role, differentiated by contribution level:
+      //   lead: full connectivity to all others in that role
+      //   equal: MST edges, thick stroke
+      //   supporting: MST edges, thin stroke
       const roleMSTEdges = [];
       for (const role of ALL_CREDIT_ROLES) {
         const rc = getRoleCat(role);
-        // Find all author indices who have this role
+        // Find all author indices who have this role, with their levels
         const members = [];
+        const memberLevel = new Map(); // idx -> level string
         for (let i = 0; i < n; i++) {
-          if (findCreditLevel(sorted[i], role)) members.push(i);
+          const lvl = findCreditLevel(sorted[i], role);
+          if (lvl) { members.push(i); memberLevel.set(i, lvl); }
         }
         if (members.length < 2) continue;
-        // Prim's MST on Euclidean distances
+
+        // Identify lead members for full connectivity
+        const leadMembers = members.filter(i => memberLevel.get(i) === 'lead');
+        const leadPairs = new Set(); // track lead-connected pairs to avoid MST duplicates
+
+        // Lead → connect to every other member of this role
+        for (const a of leadMembers) {
+          for (const b of members) {
+            if (a === b) continue;
+            const key = a < b ? `${a}::${b}` : `${b}::${a}`;
+            if (leadPairs.has(key)) continue;
+            leadPairs.add(key);
+            roleMSTEdges.push({ i: a < b ? a : b, j: a < b ? b : a, role, color: rc.color, level: 'lead' });
+          }
+        }
+
+        // Prim's MST for non-lead connections
         const inTree = new Set([members[0]]);
         const remaining = new Set(members.slice(1));
         while (remaining.size > 0) {
@@ -1336,7 +1356,14 @@ function render({ model, el: rootEl }) {
           }
           inTree.add(bestB);
           remaining.delete(bestB);
-          roleMSTEdges.push({ i: bestA, j: bestB, role, color: rc.color });
+          const pairKey = bestA < bestB ? `${bestA}::${bestB}` : `${bestB}::${bestA}`;
+          if (!leadPairs.has(pairKey)) {
+            // Use the higher level of the two endpoints
+            const lvlA = LEVEL_RANK[memberLevel.get(bestA)] || 0;
+            const lvlB = LEVEL_RANK[memberLevel.get(bestB)] || 0;
+            const edgeLevel = lvlA >= lvlB ? memberLevel.get(bestA) : memberLevel.get(bestB);
+            roleMSTEdges.push({ i: bestA, j: bestB, role, color: rc.color, level: edgeLevel });
+          }
         }
       }
 
@@ -1416,11 +1443,13 @@ function render({ model, el: rootEl }) {
         const sx = s.x + ux * (s.radius + gap), sy = s.y + uy * (s.radius + gap);
         const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
 
-        const strandW = 2.0, strandGap = strandW + 0.8;
+        const strandGap = 2.8;
         const bandW = visibleEdges.length * strandGap;
         let offset = -bandW / 2 + strandGap / 2;
 
         for (const e of visibleEdges) {
+          // Stroke width by contribution level: lead=2, equal=3, supporting=1
+          const strandW = e.level === 'equal' ? 3.0 : e.level === 'supporting' ? 1.0 : 2.0;
           const ox = nx * offset, oy = ny * offset;
           const path = document.createElementNS(ns, 'path');
           path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
@@ -1431,7 +1460,7 @@ function render({ model, el: rootEl }) {
           path.setAttribute('stroke-linecap', 'round');
           path.setAttribute('vector-effect', 'non-scaling-stroke');
           const title = document.createElementNS(ns, 'title');
-          title.textContent = `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role}`;
+          title.textContent = `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role} (${e.level})`;
           path.appendChild(title);
           svg.appendChild(path);
           offset += strandGap;
