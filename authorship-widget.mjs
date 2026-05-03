@@ -2030,19 +2030,22 @@ function render({ model, el: rootEl }) {
     const PARTICLE_COUNT = 3; // particles per edge
     const particleEls = [];
     for (const ep of edgePaths) {
-      const speed = ep.fromLevel === 'lead' ? 0.6 : ep.fromLevel === 'equal' ? 0.45 : 0.3; // units/sec normalized
+      const speed = ep.fromLevel === 'lead' ? 0.6 : ep.fromLevel === 'equal' ? 0.45 : 0.3;
       for (let p = 0; p < PARTICLE_COUNT; p++) {
         const dot = document.createElementNS(ns, 'circle');
         const r = ep.fromLevel === 'lead' ? 5 : ep.fromLevel === 'equal' ? 3.5 : 2.5;
+        const t0 = p / PARTICLE_COUNT;
+        // Set initial position
+        dot.setAttribute('cx', String(ep.x1 + (ep.x2 - ep.x1) * t0));
+        dot.setAttribute('cy', String(ep.y1 + (ep.y2 - ep.y1) * t0));
         dot.setAttribute('r', String(r));
         dot.setAttribute('fill', ep.color);
         dot.setAttribute('opacity', '0.85');
-        dot.setAttribute('vector-effect', 'non-scaling-stroke');
         svg.appendChild(dot);
         particleEls.push({
           el: dot,
           x1: ep.x1, y1: ep.y1, x2: ep.x2, y2: ep.y2,
-          t: p / PARTICLE_COUNT, // stagger start
+          t: t0,
           speed,
         });
       }
@@ -2120,28 +2123,8 @@ function render({ model, el: rootEl }) {
     graphOuter.appendChild(resetBtn);
     wrap.appendChild(graphOuter);
 
-    // Start animation when the SVG is in the DOM
-    const observer = new MutationObserver(() => {
-      if (document.contains(svg)) {
-        observer.disconnect();
-        animId = requestAnimationFrame(animateParticles);
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    // Also try immediately in case already mounted
-    requestAnimationFrame(() => {
-      if (document.contains(svg) && !animId) {
-        animId = requestAnimationFrame(animateParticles);
-      }
-    });
-    // Clean up when SVG is removed from DOM
-    const cleanupObserver = new MutationObserver(() => {
-      if (!document.contains(svg)) {
-        cleanupObserver.disconnect();
-        if (animId) cancelAnimationFrame(animId);
-      }
-    });
-    cleanupObserver.observe(document.body, { childList: true, subtree: true });
+    // Start animation immediately
+    animId = requestAnimationFrame(animateParticles);
 
     // Legend
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
