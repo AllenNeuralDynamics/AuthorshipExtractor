@@ -17,7 +17,7 @@ project:
     - ucl-neuro
     first_name: Amara
     last_name: Osei-Mensah
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=amara-osei-mensah
+    avatar_url: https://i.pravatar.cc/150?img=8
     career_stage: Professor
     credit_levels:
     - role: Conceptualization
@@ -73,7 +73,7 @@ project:
     - utokyo-neuro
     first_name: Hiroshi
     last_name: Tanaka
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=hiroshi-tanaka
+    avatar_url: https://i.pravatar.cc/150?img=9
     career_stage: Professor
     credit_levels:
     - role: Software
@@ -124,7 +124,7 @@ project:
     - unam-neuro
     first_name: Elena
     last_name: Vasquez-Moreno
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=elena-vasquez-moreno
+    avatar_url: https://i.pravatar.cc/150?img=10
     career_stage: Professor
     credit_levels:
     - role: Methodology
@@ -171,7 +171,7 @@ project:
     - karolinska-neuro
     first_name: Lars
     last_name: Eriksson
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=lars-eriksson
+    avatar_url: https://i.pravatar.cc/150?img=11
     career_stage: Associate Professor
     credit_levels:
     - role: Writing – original draft
@@ -220,7 +220,7 @@ project:
     - aiims-neuro
     first_name: Priya
     last_name: Chakraborty
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=priya-chakraborty
+    avatar_url: https://i.pravatar.cc/150?img=12
     career_stage: Associate Professor
     credit_levels:
     - role: Investigation
@@ -265,7 +265,7 @@ project:
     - mit-neuro
     first_name: James
     last_name: Whitfield
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=james-whitfield
+    avatar_url: https://i.pravatar.cc/150?img=13
     career_stage: Associate Professor
     credit_levels:
     - role: Formal analysis
@@ -315,7 +315,7 @@ project:
     - mpibr
     first_name: Fatima
     last_name: Al-Rashidi
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=fatima-al-rashidi
+    avatar_url: https://i.pravatar.cc/150?img=14
     career_stage: Senior Research Scientist
     credit_levels:
     - role: Investigation
@@ -366,7 +366,7 @@ project:
     - ethz-neuro
     first_name: Wei
     last_name: Zhang
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=wei-zhang
+    avatar_url: https://i.pravatar.cc/150?img=15
     career_stage: Associate Professor
     credit_levels:
     - role: Software
@@ -411,7 +411,7 @@ project:
     - ucl-neuro
     first_name: Kofi
     last_name: Asante
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=kofi-asante
+    avatar_url: https://i.pravatar.cc/150?img=16
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Conceptualization
@@ -460,7 +460,7 @@ project:
     - utokyo-neuro
     first_name: Yuki
     last_name: Morimoto
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=yuki-morimoto
+    avatar_url: https://i.pravatar.cc/150?img=17
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
@@ -510,7 +510,7 @@ project:
     - usp-neuro
     first_name: Maria
     last_name: da Silva Gonzalez
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=maria-da-silva-gonzalez
+    avatar_url: https://i.pravatar.cc/150?img=18
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
@@ -556,7 +556,7 @@ project:
     - uct-neuro
     first_name: Oluwaseun
     last_name: Adeyemi
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=oluwaseun-adeyemi
+    avatar_url: https://i.pravatar.cc/150?img=19
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Resources
@@ -600,7 +600,7 @@ project:
     - mit-neuro
     first_name: Sanjay
     last_name: Krishnamurthy
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=sanjay-krishnamurthy
+    avatar_url: https://i.pravatar.cc/150?img=20
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Formal analysis
@@ -649,7 +649,7 @@ project:
     - mpibr
     first_name: Anastasia
     last_name: Volkov
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=anastasia-volkov
+    avatar_url: https://i.pravatar.cc/150?img=21
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Investigation
@@ -695,7 +695,7 @@ project:
     - ethz-neuro
     first_name: Wei-Lin
     last_name: Chen
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=chen-wei-lin
+    avatar_url: https://i.pravatar.cc/150?img=22
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
@@ -736,7 +736,7 @@ project:
     - utokyo-neuro
     first_name: Tomoko
     last_name: Hashimoto
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=tomoko-hashimoto
+    avatar_url: https://i.pravatar.cc/150?img=23
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
@@ -780,7 +780,7 @@ project:
     - usp-neuro
     first_name: Rodrigo
     last_name: Ferreira
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=rodrigo-ferreira
+    avatar_url: https://i.pravatar.cc/150?img=24
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
@@ -824,7 +824,7 @@ project:
     - karolinska-neuro
     first_name: Nadia
     last_name: El-Amin
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=nadia-el-amin
+    avatar_url: https://i.pravatar.cc/150?img=25
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Writing – original draft
@@ -870,7 +870,7 @@ project:
     - snu-neuro
     first_name: Hyunjin
     last_name: Park
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=hyunjin-park
+    avatar_url: https://i.pravatar.cc/150?img=26
     career_stage: PhD Candidate
     credit_levels:
     - role: Visualization
@@ -913,7 +913,7 @@ project:
     - ucl-neuro
     first_name: Adesola
     last_name: Ogunlade
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=adesola-ogunlade
+    avatar_url: https://i.pravatar.cc/150?img=27
     career_stage: PhD Candidate
     credit_levels:
     - role: Conceptualization
@@ -956,7 +956,7 @@ project:
     - ethz-neuro
     first_name: Luisa
     last_name: Moretti
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=luisa-moretti
+    avatar_url: https://i.pravatar.cc/150?img=28
     career_stage: PhD Candidate
     credit_levels:
     - role: Software
@@ -998,7 +998,7 @@ project:
     - aiims-neuro
     first_name: Ravi
     last_name: Sharma
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=ravi-sharma
+    avatar_url: https://i.pravatar.cc/150?img=29
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
@@ -1043,7 +1043,7 @@ project:
     - mpibr
     first_name: Ekaterina
     last_name: Sokolova
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=ekaterina-sokolova
+    avatar_url: https://i.pravatar.cc/150?img=30
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
@@ -1084,7 +1084,7 @@ project:
     - unam-neuro
     first_name: Diego
     last_name: Ramirez
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=diego-ramirez
+    avatar_url: https://i.pravatar.cc/150?img=31
     career_stage: PhD Candidate
     credit_levels:
     - role: Methodology
@@ -1128,7 +1128,7 @@ project:
     - mit-neuro
     first_name: Mei
     last_name: Huang
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=mei-huang
+    avatar_url: https://i.pravatar.cc/150?img=32
     career_stage: PhD Candidate
     credit_levels:
     - role: Formal analysis
@@ -1172,7 +1172,7 @@ project:
     - uct-neuro
     first_name: Benjamin
     last_name: Nkrumah
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=benjamin-nkrumah
+    avatar_url: https://i.pravatar.cc/150?img=33
     career_stage: PhD Candidate
     credit_levels:
     - role: Resources
@@ -1215,7 +1215,7 @@ project:
     - utokyo-neuro
     first_name: Aiko
     last_name: Watanabe
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=aiko-watanabe
+    avatar_url: https://i.pravatar.cc/150?img=34
     career_stage: PhD Candidate
     credit_levels:
     - role: Software
@@ -1256,7 +1256,7 @@ project:
     - usp-neuro
     first_name: Thiago
     last_name: Costa
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=thiago-costa
+    avatar_url: https://i.pravatar.cc/150?img=35
     career_stage: PhD Candidate
     credit_levels:
     - role: Software
@@ -1300,7 +1300,7 @@ project:
     - ucl-neuro
     first_name: Sarah
     last_name: O'Brien
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=sarah-o'brien
+    avatar_url: https://i.pravatar.cc/150?img=36
     career_stage: PhD Candidate
     credit_levels:
     - role: Conceptualization
@@ -1343,7 +1343,7 @@ project:
     - karolinska-neuro
     first_name: Kenji
     last_name: Yamamoto
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=kenji-yamamoto
+    avatar_url: https://i.pravatar.cc/150?img=37
     career_stage: PhD Candidate
     credit_levels:
     - role: Writing – original draft
@@ -1387,7 +1387,7 @@ project:
     - aiims-neuro
     first_name: Deepa
     last_name: Venkatesh
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=deepa-venkatesh
+    avatar_url: https://i.pravatar.cc/150?img=38
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
@@ -1430,7 +1430,7 @@ project:
     - mpibr
     first_name: Ahmed
     last_name: Hassan
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=ahmed-hassan
+    avatar_url: https://i.pravatar.cc/150?img=39
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
@@ -1470,7 +1470,7 @@ project:
     - snu-neuro
     first_name: Ji-Yeon
     last_name: Choi
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=ji-yeon-choi
+    avatar_url: https://i.pravatar.cc/150?img=40
     career_stage: PhD Candidate
     credit_levels:
     - role: Visualization
@@ -1509,7 +1509,7 @@ project:
     - mit-neuro
     first_name: Marcus
     last_name: Jensen
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=marcus-jensen
+    avatar_url: https://i.pravatar.cc/150?img=41
     career_stage: Research Engineer
     credit_levels:
     - role: Formal analysis
@@ -1554,7 +1554,7 @@ project:
     - utokyo-neuro
     first_name: Yuto
     last_name: Nakagawa
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=yuto-nakagawa
+    avatar_url: https://i.pravatar.cc/150?img=42
     career_stage: Research Engineer
     credit_levels:
     - role: Software
@@ -1595,7 +1595,7 @@ project:
     - mpibr
     first_name: Olga
     last_name: Petersen
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=olga-petersen
+    avatar_url: https://i.pravatar.cc/150?img=43
     career_stage: Research Scientist
     credit_levels:
     - role: Investigation
@@ -1637,7 +1637,7 @@ project:
     - ucl-neuro
     first_name: Tariq
     last_name: Mansoor
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=tariq-mansoor
+    avatar_url: https://i.pravatar.cc/150?img=44
     career_stage: Research Engineer
     credit_levels:
     - role: Conceptualization
@@ -1682,7 +1682,7 @@ project:
     - usp-neuro
     first_name: Camila
     last_name: Reyes
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=camila-reyes
+    avatar_url: https://i.pravatar.cc/150?img=45
     career_stage: Research Scientist
     credit_levels:
     - role: Software
@@ -1723,7 +1723,7 @@ project:
     - mit-neuro
     first_name: David
     last_name: Chang
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=david-chang
+    avatar_url: https://i.pravatar.cc/150?img=46
     career_stage: Research Engineer
     credit_levels:
     - role: Formal analysis
@@ -1765,7 +1765,7 @@ project:
     - uct-neuro
     first_name: Nneka
     last_name: Igwe
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=nneka-igwe
+    avatar_url: https://i.pravatar.cc/150?img=47
     career_stage: Research Scientist
     credit_levels:
     - role: Resources
@@ -1808,7 +1808,7 @@ project:
     - karolinska-neuro
     first_name: Sofia
     last_name: Lindqvist
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=sofia-lindqvist
+    avatar_url: https://i.pravatar.cc/150?img=48
     career_stage: Research Engineer
     credit_levels:
     - role: Writing – original draft
@@ -1852,7 +1852,7 @@ project:
     - mpibr
     first_name: Hannah
     last_name: Becker
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=hannah-becker
+    avatar_url: https://i.pravatar.cc/150?img=49
     career_stage: Data Curator
     credit_levels:
     - role: Investigation
@@ -1893,7 +1893,7 @@ project:
     - aiims-neuro
     first_name: Raj
     last_name: Patel
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=raj-patel
+    avatar_url: https://i.pravatar.cc/150?img=50
     career_stage: Lab Manager
     credit_levels:
     - role: Investigation
@@ -1936,7 +1936,7 @@ project:
     - utokyo-neuro
     first_name: Mitsuki
     last_name: Endo
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=mitsuki-endo
+    avatar_url: https://i.pravatar.cc/150?img=51
     career_stage: Research Coordinator
     credit_levels:
     - role: Software
@@ -1977,7 +1977,7 @@ project:
     - uct-neuro
     first_name: Grace
     last_name: Mensah
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=grace-mensah
+    avatar_url: https://i.pravatar.cc/150?img=52
     career_stage: Data Curator
     credit_levels:
     - role: Resources
@@ -2018,7 +2018,7 @@ project:
     - unam-neuro
     first_name: Carlos
     last_name: Rivera
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=carlos-rivera
+    avatar_url: https://i.pravatar.cc/150?img=53
     career_stage: Lab Manager
     credit_levels:
     - role: Methodology
@@ -2062,7 +2062,7 @@ project:
     - ucl-neuro
     first_name: Emma
     last_name: Thompson
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=emma-thompson
+    avatar_url: https://i.pravatar.cc/150?img=54
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Conceptualization
@@ -2102,7 +2102,7 @@ project:
     - utokyo-neuro
     first_name: Takeshi
     last_name: Mori
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=takeshi-mori
+    avatar_url: https://i.pravatar.cc/150?img=55
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Software
@@ -2140,7 +2140,7 @@ project:
     - mit-neuro
     first_name: Zara
     last_name: Khan
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=zara-khan
+    avatar_url: https://i.pravatar.cc/150?img=56
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Formal analysis
@@ -2181,7 +2181,7 @@ project:
     - usp-neuro
     first_name: Lucas
     last_name: Almeida
-    avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=lucas-almeida
+    avatar_url: https://i.pravatar.cc/150?img=57
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Software

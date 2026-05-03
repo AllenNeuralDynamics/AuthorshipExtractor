@@ -30,7 +30,7 @@ project:
       # --- Extended fields (dropped by MyST, read by our plugin) ---
       first_name: Mei-Lin
       last_name: Chen
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=mei-lin-chen
+      avatar_url: https://i.pravatar.cc/150?img=1
       career_stage: Associate Professor
       credit_levels:
         - role: Conceptualization
@@ -104,7 +104,7 @@ project:
 
       first_name: Chukwuemeka
       last_name: Okafor
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=chukwuemeka-okafor
+      avatar_url: https://i.pravatar.cc/150?img=2
       career_stage: PhD Candidate
       credit_levels:
         - role: Investigation
@@ -185,7 +185,7 @@ project:
 
       first_name: Yuki
       last_name: Nakamura
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=yuki-nakamura
+      avatar_url: https://i.pravatar.cc/150?img=3
       career_stage: Postdoctoral Researcher
       credit_levels:
         - role: Software
@@ -249,7 +249,7 @@ project:
 
       first_name: Isabella
       last_name: Santos-Rivera
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=isabella-santos-rivera
+      avatar_url: https://i.pravatar.cc/150?img=4
       career_stage: Research Scientist
       credit_levels:
         - role: Investigation
@@ -301,7 +301,7 @@ project:
 
       first_name: Jihoon
       last_name: Kim
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=jihoon-kim
+      avatar_url: https://i.pravatar.cc/150?img=5
       career_stage: Research Engineer
       credit_levels:
         - role: Software
@@ -350,7 +350,7 @@ project:
 
       first_name: Alexei
       last_name: Petrov
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=alexei-petrov
+      avatar_url: https://i.pravatar.cc/150?img=6
       career_stage: Graduate Student
       credit_levels:
         - role: Resources
@@ -399,7 +399,7 @@ project:
 
       first_name: Diane
       last_name: Williams
-      avatar_url: https://api.dicebear.com/9.x/lorelei/png?seed=diane-williams
+      avatar_url: https://i.pravatar.cc/150?img=7
       career_stage: Full Professor
       credit_levels:
         - role: Conceptualization
