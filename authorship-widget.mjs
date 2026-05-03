@@ -1553,12 +1553,12 @@ function render({ model, el: rootEl }) {
       const authorEdges = links.filter(l => l.i === hoveredIdx || l.j === hoveredIdx);
       const totalShared = authorEdges.reduce((s, l) => s + l.sharedRoles.length, 0);
 
-      // Position card on opposite side from hovered author
+      // Position card on opposite side from hovered author, avoiding zoom controls
       const onRight = nd.x > CX;
       const onBottom = nd.y > CY;
       const cardStyle = {};
       if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
-      else { cardStyle.right = '12px'; cardStyle.left = 'auto'; }
+      else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
       if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
       else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
 
@@ -2292,7 +2292,7 @@ function render({ model, el: rootEl }) {
         const onRight = gd.x > CX; const onBottom = gd.y > CY;
         const cardStyle = {};
         if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
-        else { cardStyle.right = '12px'; cardStyle.left = 'auto'; }
+        else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
         if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
         else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
         const card = el('div', { className: 'ae-info-card', style: cardStyle },
@@ -2319,7 +2319,7 @@ function render({ model, el: rootEl }) {
         const onRight = gd.x > CX; const onBottom = gd.y > CY;
         const cardStyle = {};
         if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
-        else { cardStyle.right = '12px'; cardStyle.left = 'auto'; }
+        else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
         if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
         else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
         const memberNames = gd.members.map(mi => sorted[mi].name).join(', ');
@@ -2705,7 +2705,7 @@ function render({ model, el: rootEl }) {
       const onBottom = nd.y > H / 2;
       const cardStyle = {};
       if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
-      else { cardStyle.right = '12px'; cardStyle.left = 'auto'; }
+      else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
       if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
       else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
       const card = el('div', { className: 'ae-info-card', style: cardStyle },
