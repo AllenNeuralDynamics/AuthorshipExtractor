@@ -2613,23 +2613,11 @@ function render({ model, el: rootEl }) {
       let highlightedEdges = null;
       if (hoveredIdx !== null) {
         highlightedEdges = new Set();
-        // For each role the hovered author has, BFS/DFS the MST tree
+        // Only highlight edges directly connected to the hovered node
         for (const [role, adj] of roleAdj) {
           if (!adj.has(hoveredIdx)) continue;
-          // BFS from hoveredIdx in this role's tree
-          const visited = new Set([hoveredIdx]);
-          const queue = [hoveredIdx];
-          while (queue.length > 0) {
-            const cur = queue.shift();
-            for (const ei of (adj.get(cur) || [])) {
-              const e = roleMSTEdges[ei];
-              const other = e.i === cur ? e.j : e.i;
-              if (!visited.has(other)) {
-                visited.add(other);
-                queue.push(other);
-                highlightedEdges.add(ei);
-              }
-            }
+          for (const ei of (adj.get(hoveredIdx) || [])) {
+            highlightedEdges.add(ei);
           }
         }
       }
