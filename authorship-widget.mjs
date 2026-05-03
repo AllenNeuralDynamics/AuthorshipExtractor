@@ -2030,12 +2030,14 @@ function render({ model, el: rootEl }) {
     const PARTICLE_COUNT = 3; // particles per edge
     const particleEls = [];
     for (const ep of edgePaths) {
-      const speed = ep.fromLevel === 'lead' ? 0.6 : ep.fromLevel === 'equal' ? 0.45 : 0.3;
+      // Constant visual speed in SVG units/sec (independent of edge length)
+      const pxPerSec = ep.fromLevel === 'lead' ? 120 : ep.fromLevel === 'equal' ? 90 : 60;
+      const edgeLen = Math.sqrt((ep.x2 - ep.x1) ** 2 + (ep.y2 - ep.y1) ** 2) || 1;
+      const speed = pxPerSec / edgeLen; // normalized speed for this edge
       for (let p = 0; p < PARTICLE_COUNT; p++) {
         const dot = document.createElementNS(ns, 'circle');
         const r = ep.fromLevel === 'lead' ? 5 : ep.fromLevel === 'equal' ? 3.5 : 2.5;
         const t0 = p / PARTICLE_COUNT;
-        // Set initial position
         dot.setAttribute('cx', String(ep.x1 + (ep.x2 - ep.x1) * t0));
         dot.setAttribute('cy', String(ep.y1 + (ep.y2 - ep.y1) * t0));
         dot.setAttribute('r', String(r));
