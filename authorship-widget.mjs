@@ -645,11 +645,13 @@ function render({ model, el: rootEl }) {
         title: 'Clear',
       }, '×'));
     }
-    panel.appendChild(searchBar);
+    const searchRow = el('div', { className: 'ae-search-row' });
+    searchRow.appendChild(searchBar);
 
     // Hover card slot — external container for info cards (avoids overlaying the graph)
     const hoverCardSlot = el('div', { className: 'ae-hover-card-slot' });
-    panel.appendChild(hoverCardSlot);
+    searchRow.appendChild(hoverCardSlot);
+    panel.appendChild(searchRow);
 
     // Tab content
     const content = el('div', { className: 'ae-tab-content', role: 'tabpanel' });
