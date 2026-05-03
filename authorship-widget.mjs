@@ -1944,13 +1944,14 @@ function render({ model, el: rootEl }) {
         const px2 = fDistSq <= tDistSq ? x2 : x1;
         const py2 = fDistSq <= tDistSq ? y2 : y1;
 
-        // Faint static path
+        // Static path — level-based thickness
+        const strandW = e.fromLevel === 'lead' ? 4 : e.fromLevel === 'equal' ? 2.5 : 1.2;
         const path = document.createElementNS(ns, 'path');
         path.setAttribute('d', `M${px1},${py1} L${px2},${py2}`);
         path.setAttribute('fill', 'none');
         path.setAttribute('stroke', e.color);
-        path.setAttribute('stroke-width', '1.5');
-        path.setAttribute('stroke-opacity', '0.15');
+        path.setAttribute('stroke-width', String(strandW));
+        path.setAttribute('stroke-opacity', '0.25');
         path.setAttribute('stroke-linecap', 'round');
         path.setAttribute('vector-effect', 'non-scaling-stroke');
         svg.appendChild(path);
@@ -2027,7 +2028,7 @@ function render({ model, el: rootEl }) {
     }
 
     // Animated particles
-    const PARTICLE_COUNT = 3; // particles per edge
+    const PARTICLE_COUNT = 4; // particles per edge
     const particleEls = [];
     for (const ep of edgePaths) {
       // Constant visual speed in SVG units/sec (independent of edge length)
