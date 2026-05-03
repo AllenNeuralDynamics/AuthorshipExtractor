@@ -1136,22 +1136,27 @@ function render({ model, el: rootEl }) {
   }
 
   // ──── Network / Chord diagram tab ────
-  // Per-role colors — each CRediT role gets a distinct color
+  // Per-role colors — grouped by purpose so related roles share a hue family
+  // Thinking/Planning: blues
+  // Technical/Execution: greens
+  // Infrastructure: teals
+  // Communication: ambers/oranges/reds
+  // Leadership: purples/pinks
   const ROLE_CAT = {
-    'conceptualization':          { color: '#4c6ef5' },
-    'methodology':                { color: '#3b82f6' },
-    'formal analysis':            { color: '#0ea5e9' },
-    'software':                   { color: '#10b981' },
-    'validation':                 { color: '#14b8a6' },
-    'investigation':              { color: '#059669' },
-    'data curation':              { color: '#22c55e' },
-    'resources':                  { color: '#84cc16' },
-    'writing – original draft':   { color: '#f59e0b' },
-    'writing – review & editing': { color: '#f97316' },
-    'visualization':              { color: '#ef4444' },
-    'supervision':                { color: '#8b5cf6' },
-    'project administration':     { color: '#a855f7' },
-    'funding acquisition':        { color: '#ec4899' },
+    'conceptualization':          { color: '#3b5bdb' },  // deep blue
+    'methodology':                { color: '#4c8bf5' },  // mid blue
+    'software':                   { color: '#15803d' },  // forest green
+    'validation':                 { color: '#16a34a' },  // green
+    'formal analysis':            { color: '#22c55e' },  // light green
+    'investigation':              { color: '#4ade80' },  // pale green
+    'resources':                  { color: '#0d9488' },  // teal
+    'data curation':              { color: '#06b6d4' },  // cyan
+    'writing – original draft':   { color: '#d97706' },  // amber
+    'writing – review & editing': { color: '#ea580c' },  // orange
+    'visualization':              { color: '#dc2626' },  // red
+    'supervision':                { color: '#7c3aed' },  // violet
+    'project administration':     { color: '#a855f7' },  // purple
+    'funding acquisition':        { color: '#ec4899' },  // pink
   };
   const LEVEL_OPACITY = { lead: 1.0, equal: 0.7, supporting: 0.4 };
 
@@ -1297,6 +1302,7 @@ function render({ model, el: rootEl }) {
 
     // Hover state
     let hoveredIdx = null;
+    let hoveredRole = null;
 
     function renderSVG() {
       const svg = document.createElementNS(ns, 'svg');
@@ -1347,23 +1353,35 @@ function render({ model, el: rootEl }) {
       }
 
       // When hovering, find all edges in MST trees for roles the hovered author has
+      // OR when hovering a role in the legend, highlight that role's entire MST tree
       let highlightedEdges = null;
-      if (hoveredIdx !== null) {
+      const isHovering = hoveredIdx !== null || hoveredRole !== null;
+      if (isHovering) {
         highlightedEdges = new Set();
-        for (const [role, adj] of roleAdj) {
-          if (!adj.has(hoveredIdx)) continue;
-          // BFS the full tree for this role
-          const visited = new Set([hoveredIdx]);
-          const queue = [hoveredIdx];
-          while (queue.length > 0) {
-            const cur = queue.shift();
-            for (const ei of (adj.get(cur) || [])) {
-              const e = roleMSTEdges[ei];
-              const other = e.i === cur ? e.j : e.i;
-              if (!visited.has(other)) {
-                visited.add(other);
-                queue.push(other);
-                highlightedEdges.add(ei);
+        if (hoveredRole !== null) {
+          // Legend hover: highlight the entire MST tree for this role
+          const normalHovered = normalizeRole(hoveredRole);
+          for (let ei = 0; ei < roleMSTEdges.length; ei++) {
+            if (normalizeRole(roleMSTEdges[ei].role) === normalHovered) {
+              highlightedEdges.add(ei);
+            }
+          }
+        } else {
+          // Node hover: BFS the MST trees for the hovered author's roles
+          for (const [role, adj] of roleAdj) {
+            if (!adj.has(hoveredIdx)) continue;
+            const visited = new Set([hoveredIdx]);
+            const queue = [hoveredIdx];
+            while (queue.length > 0) {
+              const cur = queue.shift();
+              for (const ei of (adj.get(cur) || [])) {
+                const e = roleMSTEdges[ei];
+                const other = e.i === cur ? e.j : e.i;
+                if (!visited.has(other)) {
+                  visited.add(other);
+                  queue.push(other);
+                  highlightedEdges.add(ei);
+                }
               }
             }
           }
@@ -1384,11 +1402,11 @@ function render({ model, el: rootEl }) {
         const { i, j } = edges[0];
         const s = nodes[i], t = nodes[j];
         // Filter to only highlighted strands when hovering
-        const visibleEdges = hoveredIdx !== null && highlightedEdges
+        const visibleEdges = isHovering && highlightedEdges
           ? edges.filter(e => highlightedEdges.has(e.edgeIdx))
           : edges;
         if (visibleEdges.length === 0) continue;
-        const baseOpacity = hoveredIdx === null ? 0.25 : 0.6;
+        const baseOpacity = !isHovering ? 0.25 : 0.6;
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -1422,8 +1440,18 @@ function render({ model, el: rootEl }) {
 
       // Collect nodes that are part of highlighted MST trees
       const highlightedNodes = new Set();
-      if (hoveredIdx !== null) {
-        highlightedNodes.add(hoveredIdx);
+      if (isHovering) {
+        if (hoveredIdx !== null) highlightedNodes.add(hoveredIdx);
+        if (hoveredRole !== null) {
+          // All authors who have this role
+          const normalHovered = normalizeRole(hoveredRole);
+          for (let idx = 0; idx < n; idx++) {
+            const levels = sorted[idx].credit_levels || [];
+            if (levels.some(cl => normalizeRole(cl.role) === normalHovered)) {
+              highlightedNodes.add(idx);
+            }
+          }
+        }
         if (highlightedEdges) {
           for (const ei of highlightedEdges) {
             highlightedNodes.add(roleMSTEdges[ei].i);
@@ -1436,8 +1464,8 @@ function render({ model, el: rootEl }) {
       for (let idx = 0; idx < n; idx++) {
         const nd = nodes[idx];
         const isHovered = hoveredIdx === idx;
-        const isConnected = hoveredIdx !== null && highlightedNodes.has(idx);
-        const isDim = hoveredIdx !== null && !isHovered && !isConnected;
+        const isConnected = isHovering && highlightedNodes.has(idx);
+        const isDim = isHovering && !isHovered && !isConnected;
         const isSearchDim = highlightSet && !highlightSet.has(idx);
         const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : 1;
 
@@ -1641,10 +1669,13 @@ function render({ model, el: rootEl }) {
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
     for (const role of ALL_CREDIT_ROLES) {
       const rc = getRoleCat(role);
-      legend.appendChild(el('div', { className: 'ae-legend-item' },
+      const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
         el('span', { className: 'ae-legend-dot', style: { backgroundColor: rc.color } }),
         el('span', { className: 'ae-legend-label' }, role.replace('Writing – ', 'W: ').replace('Formal a', 'A')),
-      ));
+      );
+      item.addEventListener('mouseenter', () => { hoveredRole = role; rerenderView(); });
+      item.addEventListener('mouseleave', () => { hoveredRole = null; rerenderView(); });
+      legend.appendChild(item);
     }
     wrap.appendChild(legend);
 
