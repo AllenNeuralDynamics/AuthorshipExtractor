@@ -1167,7 +1167,7 @@ function render({ model, el: rootEl }) {
       { key: 'collab', label: 'Network' },
       { key: 'institutions', label: 'By Institution' },
       { key: 'force', label: 'By Role' },
-      { key: 'sections', label: 'By Section' },
+      { key: 'sections', label: 'By Section & Figure' },
     ];
     for (const m of modes) {
       modeBar.appendChild(el('button', {
