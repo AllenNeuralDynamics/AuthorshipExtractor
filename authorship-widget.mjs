@@ -2609,15 +2609,26 @@ function render({ model, el: rootEl }) {
         adj.get(e.j).push(ei);
       }
 
-      // When hovering, find all edges in MST trees that include the hovered node
+      // When hovering, find all edges in MST trees for roles the hovered author has
       let highlightedEdges = null;
       if (hoveredIdx !== null) {
         highlightedEdges = new Set();
-        // Only highlight edges directly connected to the hovered node
         for (const [role, adj] of roleAdj) {
           if (!adj.has(hoveredIdx)) continue;
-          for (const ei of (adj.get(hoveredIdx) || [])) {
-            highlightedEdges.add(ei);
+          // BFS the full tree for this role
+          const visited = new Set([hoveredIdx]);
+          const queue = [hoveredIdx];
+          while (queue.length > 0) {
+            const cur = queue.shift();
+            for (const ei of (adj.get(cur) || [])) {
+              const e = roleMSTEdges[ei];
+              const other = e.i === cur ? e.j : e.i;
+              if (!visited.has(other)) {
+                visited.add(other);
+                queue.push(other);
+                highlightedEdges.add(ei);
+              }
+            }
           }
         }
       }
@@ -2635,10 +2646,11 @@ function render({ model, el: rootEl }) {
       for (const [, edges] of pairEdges) {
         const { i, j } = edges[0];
         const s = nodes[i], t = nodes[j];
-        // Check if any strand in this pair is part of the highlighted trees
-        const anyHL = highlightedEdges && edges.some(e => highlightedEdges.has(e.edgeIdx));
-        const isDim = hoveredIdx !== null && !anyHL;
-        if (isDim) continue;
+        // Filter to only highlighted strands when hovering
+        const visibleEdges = hoveredIdx !== null && highlightedEdges
+          ? edges.filter(e => highlightedEdges.has(e.edgeIdx))
+          : edges;
+        if (visibleEdges.length === 0) continue;
         const baseOpacity = hoveredIdx === null ? 0.25 : 0.6;
 
         const dx = t.x - s.x, dy = t.y - s.y;
@@ -2650,10 +2662,10 @@ function render({ model, el: rootEl }) {
         const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
 
         const strandW = 2.0, strandGap = strandW + 0.8;
-        const bandW = edges.length * strandGap;
+        const bandW = visibleEdges.length * strandGap;
         let offset = -bandW / 2 + strandGap / 2;
 
-        for (const e of edges) {
+        for (const e of visibleEdges) {
           const ox = nx * offset, oy = ny * offset;
           const path = document.createElementNS(ns, 'path');
           path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
