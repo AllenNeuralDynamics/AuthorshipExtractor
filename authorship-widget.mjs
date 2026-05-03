@@ -1342,23 +1342,22 @@ function render({ model, el: rootEl }) {
           }
         }
 
-        // Prim's MST for non-lead connections
-        const inTree = new Set([members[0]]);
-        const remaining = new Set(members.slice(1));
-        while (remaining.size > 0) {
-          let bestDist = Infinity, bestA = -1, bestB = -1;
-          for (const a of inTree) {
-            for (const b of remaining) {
-              const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
-              const d = dx * dx + dy * dy;
-              if (d < bestDist) { bestDist = d; bestA = a; bestB = b; }
+        // Prim's MST only among non-lead members (nearest-neighbor chains)
+        const nonLeadMembers = members.filter(i => memberLevel.get(i) !== 'lead');
+        if (nonLeadMembers.length >= 2) {
+          const inTree = new Set([nonLeadMembers[0]]);
+          const remaining = new Set(nonLeadMembers.slice(1));
+          while (remaining.size > 0) {
+            let bestDist = Infinity, bestA = -1, bestB = -1;
+            for (const a of inTree) {
+              for (const b of remaining) {
+                const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+                const d = dx * dx + dy * dy;
+                if (d < bestDist) { bestDist = d; bestA = a; bestB = b; }
+              }
             }
-          }
-          inTree.add(bestB);
-          remaining.delete(bestB);
-          const pairKey = bestA < bestB ? `${bestA}::${bestB}` : `${bestB}::${bestA}`;
-          if (!leadPairs.has(pairKey)) {
-            // Use the higher level of the two endpoints
+            inTree.add(bestB);
+            remaining.delete(bestB);
             const lvlA = LEVEL_RANK[memberLevel.get(bestA)] || 0;
             const lvlB = LEVEL_RANK[memberLevel.get(bestB)] || 0;
             const edgeLevel = lvlA >= lvlB ? memberLevel.get(bestA) : memberLevel.get(bestB);
