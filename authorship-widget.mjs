@@ -1547,17 +1547,6 @@ function render({ model, el: rootEl }) {
         label.textContent = `${nd.firstName} ${nd.lastName}`;
         g.appendChild(label);
 
-        if (isHovered && nd.careerStage) {
-          const cs = document.createElementNS(ns, 'text');
-          cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + nd.radius + 31));
-          cs.setAttribute('text-anchor', 'middle');
-          cs.setAttribute('fill', '#94a3b8'); cs.setAttribute('font-size', '9.5');
-          cs.setAttribute('font-family', 'Inter, system-ui, sans-serif');
-          cs.style.pointerEvents = 'none';
-          cs.textContent = nd.careerStage;
-          g.appendChild(cs);
-        }
-
         g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderView(); });
         g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderView(); });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
