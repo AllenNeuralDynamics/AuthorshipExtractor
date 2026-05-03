@@ -1308,8 +1308,8 @@ function render({ model, el: rootEl }) {
       const svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       svg.setAttribute('class', 'ae-network-svg');
-      svg.style.width = '100%'; svg.style.maxWidth = W + 'px';
-      svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svg.style.display = 'block';
 
       // Edges — per-role, differentiated by contribution level:
       //   lead: MST edges, thick stroke (4px)
@@ -1650,9 +1650,14 @@ function render({ model, el: rootEl }) {
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
-      // Info card floats in margin via graphOuter
+      // Info card floats in right margin using fixed positioning
       const oldCard = graphOuter.querySelector('.ae-info-card');
       const newCard = renderInfoCard();
+      if (newCard) {
+        const rect = graphWrap.getBoundingClientRect();
+        newCard.style.top = rect.top + 12 + 'px';
+        newCard.style.left = rect.right + 12 + 'px';
+      }
       if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
       else if (newCard) graphOuter.appendChild(newCard);
     }

@@ -1095,16 +1095,13 @@
 
 .ae-graph-outer {
   position: relative;
-  overflow: visible;
 }
 
 .ae-graph-outer > .ae-info-card {
-  position: absolute;
-  top: 12px;
-  left: calc(100% + 12px);
+  position: fixed;
   pointer-events: none;
   width: 210px;
-  z-index: 20;
+  z-index: 9999;
 }
 
 .ae-zoom-controls {
