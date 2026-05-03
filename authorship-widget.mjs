@@ -645,13 +645,7 @@ function render({ model, el: rootEl }) {
         title: 'Clear',
       }, '×'));
     }
-    const searchRow = el('div', { className: 'ae-search-row' });
-    searchRow.appendChild(searchBar);
-
-    // Hover card slot — external container for info cards (avoids overlaying the graph)
-    const hoverCardSlot = el('div', { className: 'ae-hover-card-slot' });
-    searchRow.appendChild(hoverCardSlot);
-    panel.appendChild(searchRow);
+    panel.appendChild(searchBar);
 
     // Tab content
     const content = el('div', { className: 'ae-tab-content', role: 'tabpanel' });
@@ -1549,7 +1543,14 @@ function render({ model, el: rootEl }) {
       const nd = nodes[hoveredIdx];
       const authorEdges = links.filter(l => l.i === hoveredIdx || l.j === hoveredIdx);
       const totalShared = authorEdges.reduce((s, l) => s + l.sharedRoles.length, 0);
-      const card = el('div', { className: 'ae-info-card' });
+      const onRight = nd.x > W / 2;
+      const onBottom = nd.y > H / 2;
+      const cardStyle = {};
+      if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
+      else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
+      if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
+      else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
+      const card = el('div', { className: 'ae-info-card', style: cardStyle });
       const avatarRow = el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' } });
       avatarRow.appendChild(buildHtmlAvatar(sorted[hoveredIdx], 'ae-info-avatar', { width: '40px', height: '40px', borderRadius: '50%', flexShrink: '0' }));
       const nameBlock = el('div', {},
@@ -1627,18 +1628,10 @@ function render({ model, el: rootEl }) {
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
-      // Render info card into the external slot (above the graph)
-      const slot = rootEl?.querySelector('.ae-hover-card-slot');
-      if (slot) {
-        const newCard = renderInfoCard();
-        slot.innerHTML = '';
-        if (newCard) {
-          newCard.style.position = 'static';
-          newCard.style.width = 'auto';
-          newCard.style.pointerEvents = 'auto';
-          slot.appendChild(newCard);
-        }
-      }
+      const oldCard = graphWrap.querySelector('.ae-info-card');
+      const newCard = renderInfoCard();
+      if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
+      else if (newCard) graphWrap.appendChild(newCard);
     }
 
     rerenderView();
