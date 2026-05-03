@@ -1394,7 +1394,7 @@ function render({ model, el: rootEl }) {
         const nx = -uy, ny = ux;
 
         // Start/end at edge of node circles
-        const nodeGap = 6;
+        const nodeGap = 9;
         const sx = s.x + ux * (s.radius + nodeGap), sy = s.y + uy * (s.radius + nodeGap);
         const tx = t.x - ux * (t.radius + nodeGap), ty = t.y - uy * (t.radius + nodeGap);
 
@@ -2568,7 +2568,7 @@ function render({ model, el: rootEl }) {
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
         const ux = dx / len, uy = dy / len;
-        const gap = 4;
+        const gap = 9;
         const sx = s.x + ux * (s.radius + gap), sy = s.y + uy * (s.radius + gap);
         const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
 
