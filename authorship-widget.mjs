@@ -1920,6 +1920,22 @@ function render({ model, el: rootEl }) {
     const initVbW = (vbMaxX - vbMinX) || W;
     const initVbH = (vbMaxY - vbMinY) || H;
 
+    // Build adjacency lists per role for tree traversal on hover
+    const roleAdj = new Map(); // role -> Map<nodeIdx, [edgeIdx]>
+    for (let ei = 0; ei < flowEdges.length; ei++) {
+      const e = flowEdges[ei];
+      if (!roleAdj.has(e.role)) roleAdj.set(e.role, new Map());
+      const adj = roleAdj.get(e.role);
+      if (!adj.has(e.fromIdx)) adj.set(e.fromIdx, []);
+      if (!adj.has(e.toIdx)) adj.set(e.toIdx, []);
+      adj.get(e.fromIdx).push(ei);
+      adj.get(e.toIdx).push(ei);
+    }
+
+    // Hover state
+    let flowHoveredIdx = null;
+    let flowHoveredRole = null;
+
     // SVG
     const isDark = document.documentElement.dataset.theme === 'dark';
     const svg = document.createElementNS(ns, 'svg');
@@ -1929,7 +1945,8 @@ function render({ model, el: rootEl }) {
 
     // Draw faint static edge paths
     const gap = 9;
-    const edgePaths = []; // store path data for particle animation
+    const edgePathEls = []; // { el, edgeIdx, role, fromIdx, toIdx }
+    const edgePathData = []; // store path coords for particle animation
     // Group by pair
     const pairEdges = new Map();
     for (let ei = 0; ei < flowEdges.length; ei++) {
@@ -1980,23 +1997,30 @@ function render({ model, el: rootEl }) {
         path.setAttribute('vector-effect', 'non-scaling-stroke');
         svg.appendChild(path);
 
-        // Store for particle animation
-        edgePaths.push({
+        // Store for hover + particle animation
+        const epData = {
           x1: px1, y1: py1, x2: px2, y2: py2,
           color: e.color, role: e.role,
           fromLevel: e.fromLevel, toLevel: e.toLevel,
-        });
+          edgeIdx: e.edgeIdx,
+          fromIdx: e.fromIdx, toIdx: e.toIdx,
+        };
+        edgePathEls.push({ el: path, ...epData });
+        edgePathData.push(epData);
         offset += strandGap;
       }
     }
 
     // Draw nodes
+    const nodeGroups = []; // store node <g> elements for hover updates
     for (let idx = 0; idx < n; idx++) {
       const nd = nodes[idx];
       const isSearchDim = highlightSet && !highlightSet.has(idx);
-      const groupOpacity = isSearchDim ? 0.25 : 1;
       const g = document.createElementNS(ns, 'g');
-      g.style.opacity = String(groupOpacity);
+      g.style.cursor = 'pointer';
+      g.style.transition = 'opacity 0.2s';
+      if (isSearchDim) g.style.opacity = '0.25';
+      nodeGroups.push(g);
 
       // Role ring arcs
       const ringR = nd.radius + 5;
@@ -2048,17 +2072,19 @@ function render({ model, el: rootEl }) {
       label.textContent = nd.lastName;
       g.appendChild(label);
 
+      g.addEventListener('mouseenter', () => { flowHoveredIdx = idx; updateFlowHover(); });
+      g.addEventListener('mouseleave', () => { flowHoveredIdx = null; updateFlowHover(); });
+
       svg.appendChild(g);
     }
 
     // Animated particles
     const PARTICLE_COUNT = 4; // particles per edge
     const particleEls = [];
-    for (const ep of edgePaths) {
-      // Constant visual speed in SVG units/sec (independent of edge length)
+    for (const ep of edgePathData) {
       const pxPerSec = ep.fromLevel === 'lead' ? 120 : ep.fromLevel === 'equal' ? 90 : 60;
       const edgeLen = Math.sqrt((ep.x2 - ep.x1) ** 2 + (ep.y2 - ep.y1) ** 2) || 1;
-      const speed = pxPerSec / edgeLen; // normalized speed for this edge
+      const speed = pxPerSec / edgeLen;
       for (let p = 0; p < PARTICLE_COUNT; p++) {
         const dot = document.createElementNS(ns, 'circle');
         const r = ep.fromLevel === 'lead' ? 5 : ep.fromLevel === 'equal' ? 3.5 : 2.5;
@@ -2072,9 +2098,88 @@ function render({ model, el: rootEl }) {
         particleEls.push({
           el: dot,
           x1: ep.x1, y1: ep.y1, x2: ep.x2, y2: ep.y2,
-          t: t0,
-          speed,
+          t: t0, speed,
+          edgeIdx: ep.edgeIdx, role: ep.role,
         });
+      }
+    }
+
+    // Hover update — dynamically set opacity on edges, particles, and nodes
+    function updateFlowHover() {
+      const isHovering = flowHoveredIdx !== null || flowHoveredRole !== null;
+      let highlightedEdges = null;
+      let highlightedNodes = null;
+
+      if (isHovering) {
+        highlightedEdges = new Set();
+        highlightedNodes = new Set();
+
+        if (flowHoveredRole !== null) {
+          // Legend hover: highlight entire MST tree for this role
+          const normalHovered = normalizeRole(flowHoveredRole);
+          for (let ei = 0; ei < flowEdges.length; ei++) {
+            if (normalizeRole(flowEdges[ei].role) === normalHovered) {
+              highlightedEdges.add(ei);
+              highlightedNodes.add(flowEdges[ei].fromIdx);
+              highlightedNodes.add(flowEdges[ei].toIdx);
+            }
+          }
+        } else {
+          // Node hover: BFS the MST trees for this author's roles
+          highlightedNodes.add(flowHoveredIdx);
+          for (const [role, adj] of roleAdj) {
+            if (!adj.has(flowHoveredIdx)) continue;
+            const visited = new Set([flowHoveredIdx]);
+            const queue = [flowHoveredIdx];
+            while (queue.length > 0) {
+              const cur = queue.shift();
+              for (const ei of (adj.get(cur) || [])) {
+                const e = flowEdges[ei];
+                const other = e.fromIdx === cur ? e.toIdx : e.fromIdx;
+                if (!visited.has(other)) {
+                  visited.add(other);
+                  queue.push(other);
+                  highlightedEdges.add(ei);
+                  highlightedNodes.add(other);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Update edge paths
+      for (const ep of edgePathEls) {
+        if (!isHovering) {
+          ep.el.setAttribute('stroke-opacity', '0.25');
+        } else if (highlightedEdges.has(ep.edgeIdx)) {
+          ep.el.setAttribute('stroke-opacity', '0.6');
+        } else {
+          ep.el.setAttribute('stroke-opacity', '0.05');
+        }
+      }
+
+      // Update particles — store highlight state for animation loop
+      for (const p of particleEls) {
+        if (!isHovering) {
+          p.highlighted = true; p.dimmed = false;
+        } else if (highlightedEdges.has(p.edgeIdx)) {
+          p.highlighted = true; p.dimmed = false;
+        } else {
+          p.highlighted = false; p.dimmed = true;
+        }
+      }
+
+      // Update nodes
+      for (let idx = 0; idx < n; idx++) {
+        const isSearchDim = highlightSet && !highlightSet.has(idx);
+        if (!isHovering) {
+          nodeGroups[idx].style.opacity = isSearchDim ? '0.25' : '1';
+        } else if (highlightedNodes.has(idx)) {
+          nodeGroups[idx].style.opacity = '1';
+        } else {
+          nodeGroups[idx].style.opacity = '0.15';
+        }
       }
     }
 
@@ -2083,18 +2188,18 @@ function render({ model, el: rootEl }) {
     let lastTime = null;
     function animateParticles(timestamp) {
       if (!lastTime) lastTime = timestamp;
-      const dt = (timestamp - lastTime) / 1000; // seconds
+      const dt = (timestamp - lastTime) / 1000;
       lastTime = timestamp;
       for (const p of particleEls) {
         p.t += p.speed * dt;
-        if (p.t > 1) p.t -= Math.floor(p.t); // wrap around
+        if (p.t > 1) p.t -= Math.floor(p.t);
         const x = p.x1 + (p.x2 - p.x1) * p.t;
         const y = p.y1 + (p.y2 - p.y1) * p.t;
         p.el.setAttribute('cx', String(x));
         p.el.setAttribute('cy', String(y));
-        // Fade in/out at edges
         const fade = Math.min(p.t * 4, (1 - p.t) * 4, 1);
-        p.el.setAttribute('opacity', String(0.85 * fade));
+        const baseOpacity = p.dimmed ? 0.08 : 0.85;
+        p.el.setAttribute('opacity', String(baseOpacity * fade));
       }
       animId = requestAnimationFrame(animateParticles);
     }
@@ -2157,10 +2262,13 @@ function render({ model, el: rootEl }) {
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
     for (const role of ALL_CREDIT_ROLES) {
       const rc = getRoleCat(role);
-      legend.appendChild(el('div', { className: 'ae-legend-item' },
+      const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
         el('span', { className: 'ae-legend-dot', style: { backgroundColor: rc.color } }),
         el('span', { className: 'ae-legend-label' }, role.replace('Writing – ', 'W: ').replace('Formal a', 'A')),
-      ));
+      );
+      item.addEventListener('mouseenter', () => { flowHoveredRole = role; updateFlowHover(); });
+      item.addEventListener('mouseleave', () => { flowHoveredRole = null; updateFlowHover(); });
+      legend.appendChild(item);
     }
     wrap.appendChild(legend);
 
