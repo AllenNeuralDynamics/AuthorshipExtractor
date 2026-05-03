@@ -21,17 +21,17 @@ project:
     career_stage: Professor
     credit_levels:
     - role: Conceptualization
-      level: lead
+      level: supporting
     - role: Supervision
-      level: lead
+      level: equal
     - role: Project administration
-      level: lead
+      level: supporting
     - role: Writing – review & editing
-      level: lead
+      level: supporting
     - role: Funding acquisition
       level: lead
     - role: Methodology
-      level: equal
+      level: supporting
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -77,15 +77,15 @@ project:
     career_stage: Professor
     credit_levels:
     - role: Software
-      level: lead
+      level: equal
     - role: Data curation
       level: lead
     - role: Methodology
-      level: equal
-    - role: Resources
-      level: equal
-    - role: Validation
       level: supporting
+    - role: Resources
+      level: supporting
+    - role: Validation
+      level: lead
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -128,11 +128,11 @@ project:
     career_stage: Professor
     credit_levels:
     - role: Methodology
-      level: lead
+      level: supporting
     - role: Conceptualization
-      level: equal
+      level: supporting
     - role: Writing – original draft
-      level: equal
+      level: supporting
     - role: Formal analysis
       level: supporting
     section_contributions:
@@ -175,13 +175,13 @@ project:
     career_stage: Associate Professor
     credit_levels:
     - role: Writing – original draft
-      level: lead
-    - role: Writing – review & editing
-      level: equal
-    - role: Visualization
-      level: lead
-    - role: Conceptualization
       level: supporting
+    - role: Writing – review & editing
+      level: lead
+    - role: Visualization
+      level: supporting
+    - role: Conceptualization
+      level: equal
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -224,11 +224,11 @@ project:
     career_stage: Associate Professor
     credit_levels:
     - role: Investigation
-      level: equal
+      level: lead
     - role: Formal analysis
-      level: equal
+      level: supporting
     - role: Validation
-      level: equal
+      level: supporting
     - role: Writing – original draft
       level: supporting
     section_contributions:
@@ -271,13 +271,13 @@ project:
     - role: Formal analysis
       level: lead
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Visualization
-      level: equal
+      level: supporting
     - role: Methodology
       level: supporting
     - role: Writing – original draft
-      level: supporting
+      level: equal
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -319,15 +319,15 @@ project:
     career_stage: Senior Research Scientist
     credit_levels:
     - role: Investigation
-      level: lead
+      level: equal
     - role: Methodology
-      level: lead
+      level: equal
     - role: Resources
-      level: lead
+      level: equal
     - role: Validation
       level: equal
     - role: Data curation
-      level: supporting
+      level: equal
     section_contributions:
     - section: the-credit-taxonomy
       description: Contributed to the credit taxonomy
@@ -370,11 +370,11 @@ project:
     career_stage: Associate Professor
     credit_levels:
     - role: Software
-      level: lead
+      level: supporting
     - role: Formal analysis
-      level: lead
+      level: supporting
     - role: Methodology
-      level: equal
+      level: lead
     - role: Visualization
       level: supporting
     section_contributions:
@@ -417,13 +417,13 @@ project:
     - role: Conceptualization
       level: lead
     - role: Supervision
-      level: lead
+      level: supporting
     - role: Project administration
-      level: lead
+      level: supporting
     - role: Writing – review & editing
-      level: lead
+      level: equal
     - role: Funding acquisition
-      level: lead
+      level: equal
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -464,13 +464,13 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
-      level: lead
+      level: supporting
     - role: Data curation
-      level: lead
+      level: supporting
     - role: Methodology
-      level: equal
+      level: supporting
     - role: Resources
-      level: equal
+      level: supporting
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -514,15 +514,15 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
-      level: equal
+      level: supporting
     - role: Validation
-      level: lead
-    - role: Data curation
       level: equal
+    - role: Data curation
+      level: supporting
     - role: Resources
       level: supporting
     - role: Investigation
-      level: supporting
+      level: equal
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -562,11 +562,11 @@ project:
     - role: Resources
       level: lead
     - role: Data curation
-      level: lead
-    - role: Investigation
-      level: equal
-    - role: Writing – original draft
       level: supporting
+    - role: Investigation
+      level: lead
+    - role: Writing – original draft
+      level: lead
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -604,11 +604,11 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Formal analysis
-      level: lead
+      level: supporting
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Visualization
-      level: equal
+      level: lead
     - role: Methodology
       level: supporting
     section_contributions:
@@ -653,13 +653,13 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Methodology
-      level: lead
+      level: supporting
     - role: Resources
-      level: lead
+      level: supporting
     - role: Validation
-      level: equal
+      level: supporting
     section_contributions:
     - section: the-credit-taxonomy
       description: Contributed to the credit taxonomy
@@ -699,11 +699,11 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
-      level: lead
+      level: supporting
     - role: Formal analysis
-      level: lead
-    - role: Methodology
       level: equal
+    - role: Methodology
+      level: supporting
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -740,7 +740,7 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
-      level: lead
+      level: supporting
     - role: Data curation
       level: lead
     - role: Methodology
@@ -784,9 +784,9 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
-      level: equal
+      level: supporting
     - role: Validation
-      level: lead
+      level: equal
     - role: Data curation
       level: equal
     - role: Resources
@@ -828,11 +828,11 @@ project:
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Writing – original draft
-      level: lead
+      level: equal
     - role: Writing – review & editing
       level: equal
     - role: Visualization
-      level: lead
+      level: supporting
     - role: Conceptualization
       level: supporting
     section_contributions:
@@ -874,11 +874,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Visualization
-      level: equal
+      level: supporting
     - role: Writing – review & editing
       level: supporting
     - role: Investigation
-      level: supporting
+      level: equal
     section_contributions:
     - section: interactive-display
       description: Contributed to interactive display
@@ -917,13 +917,13 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Conceptualization
-      level: lead
+      level: equal
     - role: Supervision
-      level: lead
+      level: supporting
     - role: Project administration
-      level: lead
+      level: equal
     - role: Writing – review & editing
-      level: lead
+      level: supporting
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -960,9 +960,9 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Software
-      level: lead
+      level: equal
     - role: Formal analysis
-      level: lead
+      level: supporting
     - role: Methodology
       level: equal
     section_contributions:
@@ -1002,11 +1002,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
-      level: equal
+      level: supporting
     - role: Formal analysis
       level: equal
     - role: Validation
-      level: equal
+      level: supporting
     - role: Writing – original draft
       level: supporting
     section_contributions:
@@ -1047,11 +1047,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Methodology
-      level: lead
+      level: equal
     - role: Resources
-      level: lead
+      level: equal
     section_contributions:
     - section: the-credit-taxonomy
       description: Contributed to the credit taxonomy
@@ -1088,11 +1088,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Methodology
-      level: lead
+      level: supporting
     - role: Conceptualization
-      level: equal
+      level: supporting
     - role: Writing – original draft
-      level: equal
+      level: lead
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -1134,9 +1134,9 @@ project:
     - role: Formal analysis
       level: lead
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Visualization
-      level: equal
+      level: supporting
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -1176,11 +1176,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Resources
-      level: lead
+      level: equal
     - role: Data curation
       level: lead
     - role: Investigation
-      level: equal
+      level: supporting
     - role: Writing – original draft
       level: supporting
     section_contributions:
@@ -1221,9 +1221,9 @@ project:
     - role: Software
       level: lead
     - role: Data curation
-      level: lead
+      level: supporting
     - role: Methodology
-      level: equal
+      level: supporting
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -1260,9 +1260,9 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Software
-      level: equal
+      level: supporting
     - role: Validation
-      level: lead
+      level: equal
     - role: Data curation
       level: equal
     section_contributions:
@@ -1306,11 +1306,11 @@ project:
     - role: Conceptualization
       level: lead
     - role: Supervision
-      level: lead
+      level: equal
     - role: Project administration
       level: lead
     - role: Writing – review & editing
-      level: lead
+      level: equal
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -1347,11 +1347,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Writing – original draft
-      level: lead
-    - role: Writing – review & editing
       level: equal
+    - role: Writing – review & editing
+      level: supporting
     - role: Visualization
-      level: lead
+      level: supporting
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -1395,7 +1395,7 @@ project:
     - role: Formal analysis
       level: equal
     - role: Validation
-      level: equal
+      level: supporting
     section_contributions:
     - section: limitations-of-current-approaches
       description: Contributed to limitations of current approaches
@@ -1434,11 +1434,11 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Methodology
-      level: lead
+      level: equal
     - role: Resources
-      level: lead
+      level: equal
     section_contributions:
     - section: the-credit-taxonomy
       description: Contributed to the credit taxonomy
@@ -1474,7 +1474,7 @@ project:
     career_stage: PhD Candidate
     credit_levels:
     - role: Visualization
-      level: equal
+      level: lead
     - role: Writing – review & editing
       level: supporting
     section_contributions:
@@ -1513,9 +1513,9 @@ project:
     career_stage: Research Engineer
     credit_levels:
     - role: Formal analysis
-      level: lead
+      level: supporting
     - role: Investigation
-      level: lead
+      level: equal
     - role: Visualization
       level: equal
     section_contributions:
@@ -1558,9 +1558,9 @@ project:
     career_stage: Research Engineer
     credit_levels:
     - role: Software
-      level: lead
+      level: equal
     - role: Data curation
-      level: lead
+      level: supporting
     - role: Methodology
       level: equal
     section_contributions:
@@ -1599,11 +1599,11 @@ project:
     career_stage: Research Scientist
     credit_levels:
     - role: Investigation
-      level: lead
+      level: equal
     - role: Methodology
-      level: lead
+      level: equal
     - role: Resources
-      level: lead
+      level: supporting
     section_contributions:
     - section: the-credit-taxonomy
       description: Contributed to the credit taxonomy
@@ -1641,13 +1641,13 @@ project:
     career_stage: Research Engineer
     credit_levels:
     - role: Conceptualization
-      level: lead
+      level: equal
     - role: Supervision
       level: lead
     - role: Project administration
-      level: lead
+      level: supporting
     - role: Writing – review & editing
-      level: lead
+      level: supporting
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -1686,9 +1686,9 @@ project:
     career_stage: Research Scientist
     credit_levels:
     - role: Software
-      level: equal
-    - role: Validation
       level: lead
+    - role: Validation
+      level: supporting
     - role: Data curation
       level: equal
     section_contributions:
@@ -1727,7 +1727,7 @@ project:
     career_stage: Research Engineer
     credit_levels:
     - role: Formal analysis
-      level: lead
+      level: supporting
     - role: Investigation
       level: lead
     - role: Visualization
@@ -1769,11 +1769,11 @@ project:
     career_stage: Research Scientist
     credit_levels:
     - role: Resources
-      level: lead
+      level: supporting
     - role: Data curation
-      level: lead
+      level: supporting
     - role: Investigation
-      level: equal
+      level: supporting
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -1812,11 +1812,11 @@ project:
     career_stage: Research Engineer
     credit_levels:
     - role: Writing – original draft
-      level: lead
+      level: equal
     - role: Writing – review & editing
       level: equal
     - role: Visualization
-      level: lead
+      level: equal
     section_contributions:
     - section: introduction
       description: Contributed to introduction
@@ -1856,11 +1856,11 @@ project:
     career_stage: Data Curator
     credit_levels:
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Methodology
-      level: lead
+      level: supporting
     - role: Resources
-      level: lead
+      level: supporting
     section_contributions:
     - section: the-credit-taxonomy
       description: Contributed to the credit taxonomy
@@ -1899,9 +1899,9 @@ project:
     - role: Investigation
       level: equal
     - role: Formal analysis
-      level: equal
+      level: supporting
     - role: Validation
-      level: equal
+      level: supporting
     section_contributions:
     - section: limitations-of-current-approaches
       description: Contributed to limitations of current approaches
@@ -1940,11 +1940,11 @@ project:
     career_stage: Research Coordinator
     credit_levels:
     - role: Software
-      level: lead
-    - role: Data curation
-      level: lead
-    - role: Methodology
       level: equal
+    - role: Data curation
+      level: supporting
+    - role: Methodology
+      level: lead
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -1983,9 +1983,9 @@ project:
     - role: Resources
       level: lead
     - role: Data curation
-      level: lead
+      level: supporting
     - role: Investigation
-      level: equal
+      level: supporting
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -2024,9 +2024,9 @@ project:
     - role: Methodology
       level: lead
     - role: Conceptualization
-      level: equal
+      level: supporting
     - role: Writing – original draft
-      level: equal
+      level: supporting
     section_contributions:
     - section: data-model
       description: Contributed to data model
@@ -2066,11 +2066,11 @@ project:
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Conceptualization
-      level: lead
+      level: supporting
     - role: Supervision
-      level: lead
+      level: supporting
     - role: Project administration
-      level: lead
+      level: equal
     - role: Writing – review & editing
       level: lead
     section_contributions:
@@ -2106,11 +2106,11 @@ project:
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Software
-      level: lead
-    - role: Data curation
-      level: lead
-    - role: Methodology
       level: equal
+    - role: Data curation
+      level: supporting
+    - role: Methodology
+      level: supporting
     section_contributions:
     - section: methods
       description: Contributed to methods
@@ -2144,9 +2144,9 @@ project:
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Formal analysis
-      level: lead
+      level: equal
     - role: Investigation
-      level: lead
+      level: supporting
     - role: Visualization
       level: equal
     section_contributions:
@@ -2185,7 +2185,7 @@ project:
     career_stage: Undergraduate Researcher
     credit_levels:
     - role: Software
-      level: equal
+      level: supporting
     - role: Validation
       level: lead
     - role: Data curation
