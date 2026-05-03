@@ -1251,8 +1251,8 @@ function render({ model, el: rootEl }) {
 
     // SVG dimensions — scale canvas with team size for readability
     const isLarge = n > 20;
-    const W = isLarge ? Math.min(2200, 800 + n * 22) : 700;
-    const H = isLarge ? Math.min(1000, 400 + n * 10) : 450;
+    const W = isLarge ? Math.min(3000, 1000 + n * 32) : 700;
+    const H = isLarge ? Math.min(1200, 500 + n * 12) : 450;
 
     // Node sizes — keep nodes legible even for large teams
     const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
