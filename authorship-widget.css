@@ -1136,6 +1136,38 @@
 }
 
 /* Info card (appears on hover, positioned dynamically) */
+.ae-hover-card-slot {
+  min-height: 0;
+  overflow: hidden;
+  transition: min-height 0.15s ease;
+}
+.ae-hover-card-slot:empty {
+  display: none;
+}
+.ae-hover-card-slot .ae-info-card {
+  position: static;
+  width: auto;
+  pointer-events: auto;
+  margin: 0 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.ae-hover-card-slot .ae-info-stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 0;
+}
+.ae-hover-card-slot .ae-info-stats p { margin: 0; white-space: nowrap; }
+.ae-hover-card-slot .ae-info-badges {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
 .ae-info-card {
   position: absolute;
   background: rgba(255,255,255,0.95);
