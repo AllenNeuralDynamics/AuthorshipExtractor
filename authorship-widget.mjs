@@ -2182,6 +2182,41 @@ function render({ model, el: rootEl }) {
           nodeGroups[idx].style.opacity = '0.15';
         }
       }
+
+      // Update info card
+      const oldCard = graphOuter.querySelector('.ae-info-card');
+      if (flowHoveredIdx !== null) {
+        const nd = nodes[flowHoveredIdx];
+        const a = sorted[flowHoveredIdx];
+        const authorEdges = flowEdges.filter(e => e.fromIdx === flowHoveredIdx || e.toIdx === flowHoveredIdx);
+        const card = el('div', { className: 'ae-info-card' });
+        const avatarRow = el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' } });
+        avatarRow.appendChild(buildHtmlAvatar(a, 'ae-info-avatar', { width: '40px', height: '40px', borderRadius: '50%', flexShrink: '0' }));
+        avatarRow.appendChild(el('div', {},
+          el('p', { className: 'ae-info-name' }, nd.name),
+          el('p', { className: 'ae-info-stage' }, a.career_stage || ''),
+        ));
+        card.appendChild(avatarRow);
+        card.appendChild(el('div', { className: 'ae-info-stats' },
+          el('p', {}, el('strong', {}, String(nd.roleCount)), ' CRediT roles'),
+          el('p', {}, el('strong', {}, String(authorEdges.length)), ' flow connections'),
+        ));
+        const badges = el('div', { className: 'ae-info-badges' });
+        for (const r of nd.roles) {
+          badges.appendChild(el('span', {
+            className: 'ae-info-badge',
+            style: { backgroundColor: r.color, opacity: r.opacity },
+          }, r.role.replace('Writing – ', '').replace('Formal ', '').slice(0, 14)));
+        }
+        card.appendChild(badges);
+        // Position card
+        const rect = graphWrap.getBoundingClientRect();
+        card.style.top = rect.top + 12 + 'px';
+        card.style.left = rect.right + 12 + 'px';
+        if (oldCard) oldCard.replaceWith(card); else graphOuter.appendChild(card);
+      } else if (oldCard) {
+        oldCard.remove();
+      }
     }
 
     // Animation loop
