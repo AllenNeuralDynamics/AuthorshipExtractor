@@ -1356,6 +1356,8 @@ function render({ model, el: rootEl }) {
     let hoveredIdx = null;
 
     function renderSVG() {
+      // Semantic zoom: scale visual sizes so they stay constant in screen pixels
+      const zs = vbW / W;
       const svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       svg.setAttribute('class', 'ae-network-svg');
@@ -1394,13 +1396,14 @@ function render({ model, el: rootEl }) {
         const nx = -uy, ny = ux;
 
         // Start/end at edge of node circles
-        const sx = s.x + ux * (s.radius + 6), sy = s.y + uy * (s.radius + 6);
-        const tx = t.x - ux * (t.radius + 6), ty = t.y - uy * (t.radius + 6);
+        const nodeGap = 6 * zs;
+        const sx = s.x + ux * (s.radius * zs + nodeGap), sy = s.y + uy * (s.radius * zs + nodeGap);
+        const tx = t.x - ux * (t.radius * zs + nodeGap), ty = t.y - uy * (t.radius * zs + nodeGap);
 
         const midX = (sx + tx) / 2 + (CX - (sx + tx) / 2) * 0.4;
         const midY = (sy + ty) / 2 + (CY - (sy + ty) / 2) * 0.4;
 
-        const strandW = 2.0, gap = strandW + 0.8;
+        const strandW = 2.0 * zs, gap = (2.0 + 0.8) * zs;
         const strands = link.sharedRoles;
         const bandW = strands.length * gap;
         let offset = -bandW / 2 + gap / 2;
@@ -1426,6 +1429,7 @@ function render({ model, el: rootEl }) {
       // Draw nodes with role ring arcs
       for (let idx = 0; idx < n; idx++) {
         const nd = nodeData[idx];
+        const r = nd.radius * zs; // scaled radius
         const isHovered = hoveredIdx === idx;
         const isDim = hoveredIdx !== null && !isHovered;
         // Search highlight: dim non-matching authors
@@ -1438,7 +1442,7 @@ function render({ model, el: rootEl }) {
         g.style.transition = 'opacity 0.2s';
 
         // Role ring: segmented arcs
-        const ringR = nd.radius + 5;
+        const ringR = r + 5 * zs;
         const arcGap = 0.06;
         const roles = nd.roles;
         const totalAngle = 2 * Math.PI - roles.length * arcGap;
@@ -1453,7 +1457,7 @@ function render({ model, el: rootEl }) {
           const arc = document.createElementNS(ns, 'path');
           arc.setAttribute('d', `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`);
           arc.setAttribute('stroke', roles[ri].color);
-          arc.setAttribute('stroke-width', '4');
+          arc.setAttribute('stroke-width', String(4 * zs));
           arc.setAttribute('stroke-linecap', 'round');
           arc.setAttribute('fill', 'none');
           arc.setAttribute('opacity', String(roles[ri].opacity));
@@ -1465,41 +1469,40 @@ function render({ model, el: rootEl }) {
 
         // Shadow
         const shadow = document.createElementNS(ns, 'circle');
-        shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2));
-        shadow.setAttribute('r', String(nd.radius));
+        shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2 * zs));
+        shadow.setAttribute('r', String(r));
         shadow.setAttribute('fill', 'black'); shadow.setAttribute('opacity', '0.08');
         g.appendChild(shadow);
 
         // Main circle
         const circle = document.createElementNS(ns, 'circle');
         circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
-        circle.setAttribute('r', String(nd.radius));
+        circle.setAttribute('r', String(r));
         circle.setAttribute('fill', nd.color);
-        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '3');
+        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', String(3 * zs));
         g.appendChild(circle);
 
         // Hover ring
         if (isHovered) {
           const hRing = document.createElementNS(ns, 'circle');
           hRing.setAttribute('cx', String(nd.x)); hRing.setAttribute('cy', String(nd.y));
-          hRing.setAttribute('r', String(nd.radius + 2));
+          hRing.setAttribute('r', String(r + 2 * zs));
           hRing.setAttribute('fill', 'none');
-          hRing.setAttribute('stroke', nd.color); hRing.setAttribute('stroke-width', '2');
+          hRing.setAttribute('stroke', nd.color); hRing.setAttribute('stroke-width', String(2 * zs));
           hRing.setAttribute('opacity', '0.4');
           g.appendChild(hRing);
         }
 
         // Avatar image or initials fallback
-        appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
+        appendSvgAvatar(svg, g, ns, nd.x, nd.y, r, sorted[idx], r * 0.55);
 
         // Name label below
         const isSearchMatch = highlightSet && highlightSet.has(idx);
-        const labelFontSize = isLarge ? '8' : '11';
         const label = document.createElementNS(ns, 'text');
-        label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
+        label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + r + (isLarge ? 12 : 18) * zs));
         label.setAttribute('text-anchor', 'middle');
         label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
-        label.setAttribute('font-size', labelFontSize);
+        label.setAttribute('font-size', String((isLarge ? 8 : 11) * zs));
         label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
@@ -1509,9 +1512,9 @@ function render({ model, el: rootEl }) {
         // Career stage on hover
         if (isHovered && nd.careerStage) {
           const cs = document.createElementNS(ns, 'text');
-          cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + nd.radius + 31));
+          cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + r + 31 * zs));
           cs.setAttribute('text-anchor', 'middle');
-          cs.setAttribute('fill', '#94a3b8'); cs.setAttribute('font-size', '9.5');
+          cs.setAttribute('fill', '#94a3b8'); cs.setAttribute('font-size', String(9.5 * zs));
           cs.setAttribute('font-family', 'Inter, system-ui, sans-serif');
           cs.style.pointerEvents = 'none';
           cs.textContent = nd.careerStage;
@@ -1606,7 +1609,7 @@ function render({ model, el: rootEl }) {
       vbY += (vbH - newH) * my;
       vbW = newW;
       vbH = newH;
-      applyViewBox();
+      rerenderNetwork();
     }, { passive: false });
 
     graphWrap.addEventListener('mousedown', (e) => {
@@ -1643,7 +1646,7 @@ function render({ model, el: rootEl }) {
         vbX += (vbW - newW) / 2;
         vbY += (vbH - newH) / 2;
         vbW = newW; vbH = newH;
-        applyViewBox();
+        rerenderNetwork();
       },
       title: 'Zoom in',
     }, '+'));
@@ -1655,13 +1658,13 @@ function render({ model, el: rootEl }) {
         vbX += (vbW - newW) / 2;
         vbY += (vbH - newH) / 2;
         vbW = newW; vbH = newH;
-        applyViewBox();
+        rerenderNetwork();
       },
       title: 'Zoom out',
     }, '−'));
     zoomControls.appendChild(el('button', {
       className: 'ae-zoom-btn',
-      onClick: () => { vbX = 0; vbY = 0; vbW = W; vbH = H; applyViewBox(); },
+      onClick: () => { vbX = 0; vbY = 0; vbW = W; vbH = H; rerenderNetwork(); },
       title: 'Reset zoom',
     }, '⟲'));
     graphWrap.appendChild(zoomControls);
@@ -2545,6 +2548,8 @@ function render({ model, el: rootEl }) {
     let hoveredIdx = null;
 
     function renderSVG() {
+      // Semantic zoom: scale visual sizes so they stay constant in screen pixels
+      const zs = vbW / W; // >1 zoomed out, <1 zoomed in, 1 at default
       const svg = document.createElementNS(ns, 'svg');
       svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
       svg.setAttribute('class', 'ae-network-svg');
@@ -2564,11 +2569,12 @@ function render({ model, el: rootEl }) {
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
         const ux = dx / len, uy = dy / len;
-        const sx = s.x + ux * (s.radius + 4), sy = s.y + uy * (s.radius + 4);
-        const tx = t.x - ux * (t.radius + 4), ty = t.y - uy * (t.radius + 4);
+        const gap = (4) * zs;
+        const sx = s.x + ux * (s.radius * zs + gap), sy = s.y + uy * (s.radius * zs + gap);
+        const tx = t.x - ux * (t.radius * zs + gap), ty = t.y - uy * (t.radius * zs + gap);
 
         const mainColor = link.sharedRoles.length > 0 ? link.sharedRoles[0].color : '#94a3b8';
-        const strokeW = 1 + (link.weight / maxWeight) * 3;
+        const strokeW = (1 + (link.weight / maxWeight) * 3) * zs;
 
         const path = document.createElementNS(ns, 'path');
         path.setAttribute('d', `M${sx},${sy} L${tx},${ty}`);
@@ -2586,6 +2592,7 @@ function render({ model, el: rootEl }) {
       // Nodes
       for (let idx = 0; idx < n; idx++) {
         const nd = nodes[idx];
+        const r = nd.radius * zs; // scaled radius
         const isHovered = hoveredIdx === idx;
         const isConnected = hoveredIdx !== null && links.some(l =>
           (l.i === hoveredIdx && l.j === idx) || (l.j === hoveredIdx && l.i === idx));
@@ -2599,7 +2606,7 @@ function render({ model, el: rootEl }) {
         g.style.transition = 'opacity 0.2s';
 
         // Role ring arcs
-        const ringR = nd.radius + 5;
+        const ringR = r + 5 * zs;
         const roles = nd.roles;
         const arcGap = 0.06;
         const totalAngle = 2 * Math.PI - roles.length * arcGap;
@@ -2613,44 +2620,44 @@ function render({ model, el: rootEl }) {
           const arc = document.createElementNS(ns, 'path');
           arc.setAttribute('d', `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`);
           arc.setAttribute('stroke', roles[ri].color);
-          arc.setAttribute('stroke-width', '4'); arc.setAttribute('stroke-linecap', 'round');
+          arc.setAttribute('stroke-width', String(4 * zs)); arc.setAttribute('stroke-linecap', 'round');
           arc.setAttribute('fill', 'none'); arc.setAttribute('opacity', String(roles[ri].opacity));
           g.appendChild(arc);
         }
 
         // Shadow + main circle
         const shadow = document.createElementNS(ns, 'circle');
-        shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2));
-        shadow.setAttribute('r', String(nd.radius));
+        shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2 * zs));
+        shadow.setAttribute('r', String(r));
         shadow.setAttribute('fill', 'black'); shadow.setAttribute('opacity', '0.08');
         g.appendChild(shadow);
 
         const circle = document.createElementNS(ns, 'circle');
         circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
-        circle.setAttribute('r', String(nd.radius));
+        circle.setAttribute('r', String(r));
         circle.setAttribute('fill', nd.color);
-        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '3');
+        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', String(3 * zs));
         g.appendChild(circle);
 
         if (isHovered) {
           const hRing = document.createElementNS(ns, 'circle');
           hRing.setAttribute('cx', String(nd.x)); hRing.setAttribute('cy', String(nd.y));
-          hRing.setAttribute('r', String(nd.radius + 2));
+          hRing.setAttribute('r', String(r + 2 * zs));
           hRing.setAttribute('fill', 'none');
-          hRing.setAttribute('stroke', nd.color); hRing.setAttribute('stroke-width', '2');
+          hRing.setAttribute('stroke', nd.color); hRing.setAttribute('stroke-width', String(2 * zs));
           hRing.setAttribute('opacity', '0.4');
           g.appendChild(hRing);
         }
 
-        appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
+        appendSvgAvatar(svg, g, ns, nd.x, nd.y, r, sorted[idx], r * 0.55);
 
         const isSearchMatch = highlightSet && highlightSet.has(idx);
         const label = document.createElementNS(ns, 'text');
         label.setAttribute('x', String(nd.x));
-        label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
+        label.setAttribute('y', String(nd.y + r + (isLarge ? 12 : 18) * zs));
         label.setAttribute('text-anchor', 'middle');
         label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
-        label.setAttribute('font-size', isLarge ? '8' : '11');
+        label.setAttribute('font-size', String((isLarge ? 8 : 11) * zs));
         label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
@@ -2659,9 +2666,9 @@ function render({ model, el: rootEl }) {
 
         if (isHovered && nd.careerStage) {
           const cs = document.createElementNS(ns, 'text');
-          cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + nd.radius + 31));
+          cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + r + 31 * zs));
           cs.setAttribute('text-anchor', 'middle');
-          cs.setAttribute('fill', '#94a3b8'); cs.setAttribute('font-size', '9.5');
+          cs.setAttribute('fill', '#94a3b8'); cs.setAttribute('font-size', String(9.5 * zs));
           cs.setAttribute('font-family', 'Inter, system-ui, sans-serif');
           cs.style.pointerEvents = 'none';
           cs.textContent = nd.careerStage;
@@ -2738,7 +2745,7 @@ function render({ model, el: rootEl }) {
       const mx = (e.clientX - rect.left) / rect.width;
       const my = (e.clientY - rect.top) / rect.height;
       vbX += (vbW - newW) * mx; vbY += (vbH - newH) * my;
-      vbW = newW; vbH = newH; applyViewBox();
+      vbW = newW; vbH = newH; rerenderView();
     }, { passive: false });
     graphWrap.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
@@ -2759,11 +2766,11 @@ function render({ model, el: rootEl }) {
     // Zoom controls
     const zoomControls = el('div', { className: 'ae-zoom-controls' });
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
-      onClick: () => { const nW = Math.max(W*0.2,vbW*0.7), nH = Math.max(H*0.2,vbH*0.7); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom in' }, '+'));
+      onClick: () => { const nW = Math.max(W*0.2,vbW*0.7), nH = Math.max(H*0.2,vbH*0.7); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; rerenderView(); }, title: 'Zoom in' }, '+'));
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
-      onClick: () => { const nW = Math.min(W*2,vbW*1.4), nH = Math.min(H*2,vbH*1.4); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom out' }, '−'));
+      onClick: () => { const nW = Math.min(W*2,vbW*1.4), nH = Math.min(H*2,vbH*1.4); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; rerenderView(); }, title: 'Zoom out' }, '−'));
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
-      onClick: () => { vbX=0; vbY=0; vbW=W; vbH=H; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
+      onClick: () => { vbX=0; vbY=0; vbW=W; vbH=H; rerenderView(); }, title: 'Reset zoom' }, '⟲'));
     graphWrap.appendChild(zoomControls);
 
     function rerenderView() {
