@@ -2568,25 +2568,32 @@ function render({ model, el: rootEl }) {
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
         const ux = dx / len, uy = dy / len;
+        const nx = -uy, ny = ux;
         const gap = 9;
         const sx = s.x + ux * (s.radius + gap), sy = s.y + uy * (s.radius + gap);
         const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
 
-        const mainColor = link.sharedRoles.length > 0 ? link.sharedRoles[0].color : '#94a3b8';
-        const strokeW = 1 + (link.weight / maxWeight) * 3;
+        const strandW = 2.0, strandGap = strandW + 0.8;
+        const strands = link.sharedRoles;
+        const bandW = strands.length * strandGap;
+        let offset = -bandW / 2 + strandGap / 2;
 
-        const path = document.createElementNS(ns, 'path');
-        path.setAttribute('d', `M${sx},${sy} L${tx},${ty}`);
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', mainColor);
-        path.setAttribute('stroke-width', String(strokeW));
-        path.setAttribute('stroke-opacity', String(baseOpacity));
-        path.setAttribute('stroke-linecap', 'round');
-        path.setAttribute('vector-effect', 'non-scaling-stroke');
-        const title = document.createElementNS(ns, 'title');
-        title.textContent = `${sorted[link.i].name} ↔ ${sorted[link.j].name}\n${link.sharedRoles.map(r => r.role).join(', ')}`;
-        path.appendChild(title);
-        svg.appendChild(path);
+        for (const sr of strands) {
+          const ox = nx * offset, oy = ny * offset;
+          const path = document.createElementNS(ns, 'path');
+          path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke', sr.color);
+          path.setAttribute('stroke-width', String(strandW));
+          path.setAttribute('stroke-opacity', String(baseOpacity));
+          path.setAttribute('stroke-linecap', 'round');
+          path.setAttribute('vector-effect', 'non-scaling-stroke');
+          const title = document.createElementNS(ns, 'title');
+          title.textContent = `${sorted[link.i].name} ↔ ${sorted[link.j].name}\n${sr.role}`;
+          path.appendChild(title);
+          svg.appendChild(path);
+          offset += strandGap;
+        }
       }
 
       // Nodes
