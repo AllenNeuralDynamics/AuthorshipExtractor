@@ -2670,12 +2670,23 @@ function render({ model, el: rootEl }) {
         }
       }
 
+      // Collect nodes that are part of highlighted MST trees
+      const highlightedNodes = new Set();
+      if (hoveredIdx !== null) {
+        highlightedNodes.add(hoveredIdx);
+        if (highlightedEdges) {
+          for (const ei of highlightedEdges) {
+            highlightedNodes.add(roleMSTEdges[ei].i);
+            highlightedNodes.add(roleMSTEdges[ei].j);
+          }
+        }
+      }
+
       // Nodes
       for (let idx = 0; idx < n; idx++) {
         const nd = nodes[idx];
         const isHovered = hoveredIdx === idx;
-        const isConnected = hoveredIdx !== null && links.some(l =>
-          (l.i === hoveredIdx && l.j === idx) || (l.j === hoveredIdx && l.i === idx));
+        const isConnected = hoveredIdx !== null && highlightedNodes.has(idx);
         const isDim = hoveredIdx !== null && !isHovered && !isConnected;
         const isSearchDim = highlightSet && !highlightSet.has(idx);
         const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : 1;
