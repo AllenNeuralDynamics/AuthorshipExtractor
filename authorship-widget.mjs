@@ -2078,17 +2078,18 @@ function render({ model, el: rootEl }) {
       svg.appendChild(g);
     }
 
-    // Animated particles
-    const PARTICLE_COUNT = 4; // particles per edge
+    // Animated particles — constant density and speed across all edges
+    const PARTICLE_SPACING = 60; // SVG units between particles
+    const FLOW_SPEED = 80; // SVG units per second (same for all)
     const particleEls = [];
     for (const ep of edgePathData) {
-      const pxPerSec = ep.fromLevel === 'lead' ? 120 : ep.fromLevel === 'equal' ? 90 : 60;
       const edgeLen = Math.sqrt((ep.x2 - ep.x1) ** 2 + (ep.y2 - ep.y1) ** 2) || 1;
-      const speed = pxPerSec / edgeLen;
-      for (let p = 0; p < PARTICLE_COUNT; p++) {
+      const count = Math.max(1, Math.round(edgeLen / PARTICLE_SPACING));
+      const speed = FLOW_SPEED / edgeLen; // normalized 0→1 per second
+      for (let p = 0; p < count; p++) {
         const dot = document.createElementNS(ns, 'circle');
         const r = ep.fromLevel === 'lead' ? 5 : ep.fromLevel === 'equal' ? 3.5 : 2.5;
-        const t0 = p / PARTICLE_COUNT;
+        const t0 = p / count;
         dot.setAttribute('cx', String(ep.x1 + (ep.x2 - ep.x1) * t0));
         dot.setAttribute('cy', String(ep.y1 + (ep.y2 - ep.y1) * t0));
         dot.setAttribute('r', String(r));
