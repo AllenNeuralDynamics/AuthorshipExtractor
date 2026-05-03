@@ -1415,7 +1415,7 @@ function render({ model, el: rootEl }) {
           ? edges.filter(e => highlightedEdges.has(e.edgeIdx))
           : edges;
         if (visibleEdges.length === 0) continue;
-        const baseOpacity = !isHovering ? 0.25 : 0.6;
+        const baseOpacity = !isHovering ? 0.45 : 0.75;
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -1425,13 +1425,13 @@ function render({ model, el: rootEl }) {
         const sx = s.x + ux * (s.radius + gap), sy = s.y + uy * (s.radius + gap);
         const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
 
-        const strandGap = 2.8;
+        const strandGap = 3.5;
         const bandW = visibleEdges.length * strandGap;
         let offset = -bandW / 2 + strandGap / 2;
 
         for (const e of visibleEdges) {
-          // Stroke width by contribution level: lead=4, equal=2, supporting=0.7
-          const strandW = e.level === 'lead' ? 4.0 : e.level === 'equal' ? 2.0 : 0.7;
+          // Stroke width by contribution level: lead=6, equal=3.5, supporting=1.5
+          const strandW = e.level === 'lead' ? 6.0 : e.level === 'equal' ? 3.5 : 1.5;
           const ox = nx * offset, oy = ny * offset;
           const path = document.createElementNS(ns, 'path');
           path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
