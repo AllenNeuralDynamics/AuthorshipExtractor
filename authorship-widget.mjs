@@ -1256,8 +1256,8 @@ function render({ model, el: rootEl }) {
 
     // Node sizes — keep nodes legible even for large teams
     const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
-    const minR = isLarge ? 20 : 18;
-    const maxR = isLarge ? 38 : 38;
+    const minR = isLarge ? 24 : 18;
+    const maxR = isLarge ? 44 : 38;
 
     // Build node objects with metadata
     const nodes = sorted.map((a, i) => {
@@ -1540,7 +1540,7 @@ function render({ model, el: rootEl }) {
         label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 16 : 18)));
         label.setAttribute('text-anchor', 'middle');
         label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
-        label.setAttribute('font-size', isLarge ? '12' : '11');
+        label.setAttribute('font-size', isLarge ? '14' : '11');
         label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
