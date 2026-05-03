@@ -1746,6 +1746,723 @@ function render({ model, el: rootEl }) {
     });
   }
 
+  function buildCircleOfCircles(sorted, groups, opts, highlightSet) {
+    const wrap = el('div', { className: 'ae-network' });
+    const n = sorted.length;
+    const ns = 'http://www.w3.org/2000/svg';
+    if (n === 0) {
+      wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
+      return wrap;
+    }
+    wrap.appendChild(buildNetworkModeToggle());
+
+    const nGroups = groups.length;
+
+    // Author roles for per-member rendering
+    const authorRoles = sorted.map(a => {
+      const levels = a.credit_levels || [];
+      return levels.map(cl => ({
+        role: cl.role, level: cl.level,
+        color: getRoleCat(cl.role).color,
+        opacity: LEVEL_OPACITY[cl.level] || 0.4,
+      }));
+    });
+
+    // Inter-group links: count shared members or shared roles between groups
+    const groupLinks = [];
+    for (let i = 0; i < nGroups; i++) {
+      for (let j = i + 1; j < nGroups; j++) {
+        // Shared members (people in both groups)
+        const setI = new Set(groups[i].members);
+        let sharedMemberCount = 0;
+        for (const mj of groups[j].members) {
+          if (setI.has(mj)) sharedMemberCount++;
+        }
+        // Shared roles across groups
+        let sharedRoleCount = 0;
+        for (const role of ALL_CREDIT_ROLES) {
+          const iHas = groups[i].members.some(mi => findCreditLevel(sorted[mi], role));
+          const jHas = groups[j].members.some(mj => findCreditLevel(sorted[mj], role));
+          if (iHas && jHas) sharedRoleCount++;
+        }
+        const weight = sharedMemberCount * 3 + sharedRoleCount;
+        if (weight > 0) {
+          groupLinks.push({ i, j, sharedMemberCount, sharedRoleCount, weight });
+        }
+      }
+    }
+
+    // Member circle radius — large enough to read initials clearly
+    const totalMembers = groups.reduce((s, g) => s + g.members.length, 0);
+    const maxGroupSize = Math.max(1, ...groups.map(g => g.members.length));
+    const MEMBER_R = totalMembers > 50 ? 14 : totalMembers > 30 ? 17 : totalMembers > 15 ? 20 : 24;
+    const GAP = 16; // minimum gap between member circles — room for name labels
+
+    // Compute concentric ring layout for N circles of radius r with gap, returns { rings, outerR }
+    function planRings(n, r) {
+      if (n === 0) return { rings: [], outerR: 0 };
+      if (n === 1) return { rings: [{ count: 1, ringR: 0 }], outerR: r + GAP };
+      const d = 2 * r + GAP; // diameter + gap = min center-to-center distance
+      const rings = [];
+      let placed = 0;
+      let ringIdx = 0;
+      // First ring can be a single center circle or a small ring
+      if (n <= 6) {
+        // All on one ring
+        const ringR = d / (2 * Math.sin(Math.PI / n));
+        rings.push({ count: n, ringR });
+        return { rings, outerR: ringR + r + GAP };
+      }
+      // Center circle
+      rings.push({ count: 1, ringR: 0 });
+      placed = 1;
+      ringIdx = 1;
+      let currentR = d; // first ring radius
+      while (placed < n) {
+        // How many fit on this ring? circumference / min-arc-distance
+        const circumference = 2 * Math.PI * currentR;
+        const maxOnRing = Math.max(1, Math.floor(circumference / d));
+        const needed = n - placed;
+        const count = Math.min(maxOnRing, needed);
+        rings.push({ count, ringR: currentR });
+        placed += count;
+        currentR += d; // next ring
+        ringIdx++;
+      }
+      const lastRing = rings[rings.length - 1];
+      return { rings, outerR: lastRing.ringR + r + GAP };
+    }
+
+    // Compute group radii first
+    const groupRadii = groups.map(g => {
+      const { outerR } = planRings(g.members.length, MEMBER_R);
+      return Math.max(MEMBER_R + 14, outerR + 6);
+    });
+
+    // Compute minimum orbit so no adjacent groups overlap (with 10px margin)
+    const MARGIN = 12;
+    let minOrbit = 0;
+    if (nGroups >= 2) {
+      for (let i = 0; i < nGroups; i++) {
+        const j = (i + 1) % nGroups;
+        const angleDiff = 2 * Math.PI / nGroups;
+        // distance between centers on orbit = orbit * 2 * sin(angleDiff/2)
+        const needed = (groupRadii[i] + groupRadii[j] + MARGIN) / (2 * Math.sin(angleDiff / 2));
+        if (needed > minOrbit) minOrbit = needed;
+      }
+    }
+
+    // SVG dimensions — auto-scale to fit all groups without overlap
+    const maxR = Math.max(...groupRadii);
+    const ORBIT = Math.max(minOrbit, maxR + 40);
+    const W = Math.max(800, 2 * (ORBIT + maxR + 50));
+    const H = Math.max(700, 2 * (ORBIT + maxR + 50));
+    const CX = W / 2, CY = H / 2;
+
+    // Group positions
+    const groupData = groups.map((g, i) => {
+      const angle = (2 * Math.PI * i) / nGroups - Math.PI / 2;
+      return { ...g, x: CX + ORBIT * Math.cos(angle), y: CY + ORBIT * Math.sin(angle), radius: groupRadii[i], angle };
+    });
+
+    // Pack author circles inside a group circle — non-overlapping concentric rings
+    function packMembers(gd) {
+      const mLen = gd.members.length;
+      if (mLen === 0) return [];
+      const { rings } = planRings(mLen, MEMBER_R);
+      const positions = [];
+      let placed = 0;
+      for (const ring of rings) {
+        for (let i = 0; i < ring.count && placed < mLen; i++) {
+          const a = ring.ringR === 0 ? 0 : (2 * Math.PI * i) / ring.count - Math.PI / 2;
+          positions.push({
+            x: gd.x + ring.ringR * Math.cos(a),
+            y: gd.y + ring.ringR * Math.sin(a),
+            r: MEMBER_R,
+          });
+          placed++;
+        }
+      }
+      return positions;
+    }
+
+    // State
+    let hoveredGroup = null;
+    let expandedGroup = null;
+    let hoveredMember = null;      // used in expanded view
+    let hoveredOverviewMember = null; // { groupIdx, memberIdx, authorIdx } in overview
+
+    function renderSVG() {
+      const svg = document.createElementNS(ns, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+      svg.setAttribute('class', 'ae-network-svg');
+      svg.style.width = '100%'; svg.style.maxWidth = W + 'px';
+      svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
+
+      // Background
+      const defs = document.createElementNS(ns, 'defs');
+      const grad = document.createElementNS(ns, 'radialGradient');
+      grad.setAttribute('id', 'ae-bg-glow-cc');
+      grad.setAttribute('cx', '50%'); grad.setAttribute('cy', '45%'); grad.setAttribute('r', '55%');
+      const s1 = document.createElementNS(ns, 'stop');
+      s1.setAttribute('offset', '0%'); s1.setAttribute('stop-color', isDark ? '#312e81' : '#dbe4ff'); s1.setAttribute('stop-opacity', '0.2');
+      const s2 = document.createElementNS(ns, 'stop');
+      s2.setAttribute('offset', '100%'); s2.setAttribute('stop-color', isDark ? '#1f2937' : 'white'); s2.setAttribute('stop-opacity', '0');
+      grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+      const bgRect = document.createElementNS(ns, 'rect');
+      bgRect.setAttribute('x', '0'); bgRect.setAttribute('y', '0');
+      bgRect.setAttribute('width', String(W)); bgRect.setAttribute('height', String(H));
+      bgRect.setAttribute('fill', 'url(#ae-bg-glow-cc)');
+      svg.appendChild(bgRect);
+
+      if (expandedGroup === null) {
+        // ── Overview: group circles with member dots inside ──
+
+        // Inter-group chords — clipped to group circle edges
+        for (const link of groupLinks) {
+          const s = groupData[link.i], t = groupData[link.j];
+          const isHL = hoveredGroup === link.i || hoveredGroup === link.j;
+          const isDim = hoveredGroup !== null && !isHL;
+          const baseOpacity = isDim ? 0.03 : isHL ? 0.35 : 0.1;
+          const dx = t.x - s.x, dy = t.y - s.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const ux = dx / dist, uy = dy / dist;
+          const sx = s.x + ux * s.radius, sy = s.y + uy * s.radius;
+          const tx = t.x - ux * t.radius, ty = t.y - uy * t.radius;
+          const midX = (sx + tx) / 2 + (CX - (sx + tx) / 2) * 0.3;
+          const midY = (sy + ty) / 2 + (CY - (sy + ty) / 2) * 0.3;
+          const thickness = Math.min(8, 1.5 + link.weight * 0.2);
+          const path = document.createElementNS(ns, 'path');
+          path.setAttribute('d', `M${sx},${sy} Q${midX},${midY} ${tx},${ty}`);
+          path.setAttribute('fill', 'none'); path.setAttribute('stroke', s.color);
+          path.setAttribute('stroke-width', String(thickness));
+          path.setAttribute('stroke-opacity', String(baseOpacity));
+          path.setAttribute('stroke-linecap', 'round'); path.setAttribute('class', 'ae-chord');
+          svg.appendChild(path);
+        }
+
+        // Group circles with packed member dots
+        for (let idx = 0; idx < nGroups; idx++) {
+          const gd = groupData[idx];
+          if (gd.members.length === 0) continue;
+          const isHovered = hoveredGroup === idx;
+          const isDim = hoveredGroup !== null && !isHovered;
+          const g = document.createElementNS(ns, 'g');
+          g.style.cursor = 'pointer'; g.style.opacity = String(isDim ? 0.3 : 1);
+          g.style.transition = 'opacity 0.2s';
+
+          // Outer container circle
+          const outerCircle = document.createElementNS(ns, 'circle');
+          outerCircle.setAttribute('cx', String(gd.x)); outerCircle.setAttribute('cy', String(gd.y));
+          outerCircle.setAttribute('r', String(gd.radius));
+          outerCircle.setAttribute('fill', gd.color); outerCircle.setAttribute('fill-opacity', '0.08');
+          outerCircle.setAttribute('stroke', gd.color);
+          outerCircle.setAttribute('stroke-width', isHovered ? '2.5' : '1.5');
+          outerCircle.setAttribute('stroke-opacity', isHovered ? '0.7' : '0.35');
+          g.appendChild(outerCircle);
+
+          // Pack author circles inside (same style as Authors chord)
+          const memberPositions = packMembers(gd);
+          for (let mi = 0; mi < memberPositions.length; mi++) {
+            const mp = memberPositions[mi];
+            const authorIdx = gd.members[mi];
+            const author = sorted[authorIdx];
+            const isMemberHovered = hoveredOverviewMember &&
+              hoveredOverviewMember.groupIdx === idx && hoveredOverviewMember.memberIdx === mi;
+            const isSearchDimmed = highlightSet && !highlightSet.has(authorIdx);
+
+            const mg = document.createElementNS(ns, 'g');
+            mg.style.cursor = 'pointer';
+            mg.style.transition = 'transform 0.15s, opacity 0.2s';
+            if (isSearchDimmed) mg.style.opacity = '0.15';
+
+            // Shadow
+            const shadow = document.createElementNS(ns, 'circle');
+            shadow.setAttribute('cx', String(mp.x)); shadow.setAttribute('cy', String(mp.y + 1));
+            shadow.setAttribute('r', String(mp.r)); shadow.setAttribute('fill', 'black');
+            shadow.setAttribute('opacity', '0.08');
+            mg.appendChild(shadow);
+
+            // Colored circle
+            const dot = document.createElementNS(ns, 'circle');
+            dot.setAttribute('cx', String(mp.x)); dot.setAttribute('cy', String(mp.y));
+            dot.setAttribute('r', String(mp.r));
+            dot.setAttribute('fill', getColor(author.name));
+            dot.setAttribute('stroke', isMemberHovered ? getColor(author.name) : (isDark ? '#374151' : 'white'));
+            dot.setAttribute('stroke-width', isMemberHovered ? '3' : '2');
+            if (isMemberHovered) dot.setAttribute('stroke-opacity', '0.5');
+            mg.appendChild(dot);
+
+            // Hover ring
+            if (isMemberHovered) {
+              const hRing = document.createElementNS(ns, 'circle');
+              hRing.setAttribute('cx', String(mp.x)); hRing.setAttribute('cy', String(mp.y));
+              hRing.setAttribute('r', String(mp.r + 3));
+              hRing.setAttribute('fill', 'none');
+              hRing.setAttribute('stroke', getColor(author.name));
+              hRing.setAttribute('stroke-width', '2'); hRing.setAttribute('opacity', '0.5');
+              mg.appendChild(hRing);
+            }
+
+            // Avatar image or initials fallback
+            appendSvgAvatar(svg, mg, ns, mp.x, mp.y, mp.r, author, Math.max(8, mp.r * 0.6));
+
+            // Name label — always show last name, full name on hover
+            const nl = document.createElementNS(ns, 'text');
+            nl.setAttribute('x', String(mp.x)); nl.setAttribute('y', String(mp.y + mp.r + 12));
+            nl.setAttribute('text-anchor', 'middle');
+            nl.setAttribute('fill', isMemberHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : (isDark ? '#c4cad4' : '#64748b'));
+            nl.setAttribute('font-size', '8');
+            nl.setAttribute('font-weight', isMemberHovered ? '600' : '400');
+            nl.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+            nl.style.pointerEvents = 'none';
+            nl.textContent = isMemberHovered ? author.name : getLastName(author.name);
+            mg.appendChild(nl);
+
+            // Member hover & click
+            mg.addEventListener('mouseenter', (e) => {
+              e.stopPropagation();
+              hoveredOverviewMember = { groupIdx: idx, memberIdx: mi, authorIdx };
+              hoveredGroup = idx;
+              rerenderNetwork();
+            });
+            mg.addEventListener('mouseleave', (e) => {
+              e.stopPropagation();
+              hoveredOverviewMember = null;
+              rerenderNetwork();
+            });
+            mg.addEventListener('click', (e) => {
+              e.stopPropagation();
+              // Expand this group and highlight this member
+              expandedGroup = idx; hoveredGroup = null;
+              hoveredMember = mi; hoveredOverviewMember = null;
+              rerenderNetwork();
+            });
+
+            g.appendChild(mg);
+          }
+
+          // Group label below
+          const label = document.createElementNS(ns, 'text');
+          label.setAttribute('x', String(gd.x)); label.setAttribute('y', String(gd.y + gd.radius + 14));
+          label.setAttribute('text-anchor', 'middle');
+          label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : (isDark ? '#cbd5e1' : '#475569'));
+          const labelFontSize = nGroups > 10 ? '8' : '10';
+          label.setAttribute('font-size', labelFontSize); label.setAttribute('font-weight', isHovered ? '600' : '500');
+          label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+          label.style.pointerEvents = 'none';
+          const maxLen = nGroups > 10 ? 18 : 26;
+          label.textContent = gd.label.length > maxLen ? gd.label.slice(0, maxLen - 2) + '…' : gd.label;
+          g.appendChild(label);
+
+          // Count badge
+          const countLabel = document.createElementNS(ns, 'text');
+          countLabel.setAttribute('x', String(gd.x)); countLabel.setAttribute('y', String(gd.y + gd.radius + (nGroups > 10 ? 23 : 26)));
+          countLabel.setAttribute('text-anchor', 'middle'); countLabel.setAttribute('fill', '#94a3b8');
+          countLabel.setAttribute('font-size', nGroups > 10 ? '7' : '8.5');
+          countLabel.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+          countLabel.style.pointerEvents = 'none';
+          countLabel.textContent = `${gd.members.length} contributor${gd.members.length > 1 ? 's' : ''}`;
+          g.appendChild(countLabel);
+
+          // Hover hint
+          if (isHovered) {
+            const hint = document.createElementNS(ns, 'text');
+            hint.setAttribute('x', String(gd.x)); hint.setAttribute('y', String(gd.y + gd.radius + (nGroups > 10 ? 32 : 38)));
+            hint.setAttribute('text-anchor', 'middle'); hint.setAttribute('fill', '#94a3b8');
+            hint.setAttribute('font-size', '8'); hint.setAttribute('font-style', 'italic');
+            hint.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+            hint.style.pointerEvents = 'none'; hint.textContent = 'click to expand';
+            g.appendChild(hint);
+          }
+
+          g.addEventListener('mouseenter', () => { hoveredGroup = idx; rerenderNetwork(); });
+          g.addEventListener('mouseleave', () => { hoveredGroup = null; rerenderNetwork(); });
+          g.addEventListener('click', (e) => {
+            e.stopPropagation();
+            expandedGroup = idx; hoveredGroup = null; hoveredMember = null; rerenderNetwork();
+          });
+          svg.appendChild(g);
+        }
+
+      } else {
+        // ── Expanded: show members of selected group ──
+        const gd = groupData[expandedGroup];
+        const members = gd.members;
+        const mLen = members.length;
+        const isLargeGroup = mLen > 15;
+
+        // Dimmed other groups on periphery
+        for (let idx = 0; idx < nGroups; idx++) {
+          if (idx === expandedGroup) continue;
+          const od = groupData[idx];
+          if (od.members.length === 0) continue;
+          const g = document.createElementNS(ns, 'g');
+          g.style.cursor = 'pointer'; g.style.opacity = '0.25';
+          const sR = 16;
+          const circle = document.createElementNS(ns, 'circle');
+          circle.setAttribute('cx', String(od.x)); circle.setAttribute('cy', String(od.y));
+          circle.setAttribute('r', String(sR)); circle.setAttribute('fill', od.color);
+          circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '2');
+          g.appendChild(circle);
+          const cnt = document.createElementNS(ns, 'text');
+          cnt.setAttribute('x', String(od.x)); cnt.setAttribute('y', String(od.y + 1));
+          cnt.setAttribute('text-anchor', 'middle'); cnt.setAttribute('dominant-baseline', 'central');
+          cnt.setAttribute('fill', '#fff'); cnt.setAttribute('font-size', '9');
+          cnt.setAttribute('font-weight', '700'); cnt.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+          cnt.style.pointerEvents = 'none'; cnt.textContent = String(od.members.length);
+          g.appendChild(cnt);
+          const lbl = document.createElementNS(ns, 'text');
+          lbl.setAttribute('x', String(od.x)); lbl.setAttribute('y', String(od.y + sR + 12));
+          lbl.setAttribute('text-anchor', 'middle'); lbl.setAttribute('fill', '#94a3b8');
+          lbl.setAttribute('font-size', '8'); lbl.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+          lbl.style.pointerEvents = 'none';
+          lbl.textContent = od.label.length > 16 ? od.label.slice(0, 13) + '…' : od.label;
+          g.appendChild(lbl);
+          g.addEventListener('click', (e) => {
+            e.stopPropagation();
+            expandedGroup = idx; hoveredMember = null; rerenderNetwork();
+          });
+          svg.appendChild(g);
+        }
+
+        // Title
+        const title = document.createElementNS(ns, 'text');
+        title.setAttribute('x', String(CX)); title.setAttribute('y', '28');
+        title.setAttribute('text-anchor', 'middle'); title.setAttribute('fill', gd.color);
+        title.setAttribute('font-size', '14'); title.setAttribute('font-weight', '700');
+        title.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+        title.textContent = `${gd.label} — ${mLen} contributor${mLen > 1 ? 's' : ''}`;
+        svg.appendChild(title);
+
+        // Back button
+        const backG = document.createElementNS(ns, 'g');
+        backG.style.cursor = 'pointer';
+        const backBg = document.createElementNS(ns, 'rect');
+        backBg.setAttribute('x', '10'); backBg.setAttribute('y', '10');
+        backBg.setAttribute('width', '75'); backBg.setAttribute('height', '24');
+        backBg.setAttribute('rx', '12'); backBg.setAttribute('fill', isDark ? '#334155' : '#f1f5f9');
+        backBg.setAttribute('stroke', isDark ? '#475569' : '#e2e8f0'); backBg.setAttribute('stroke-width', '1');
+        backG.appendChild(backBg);
+        const backTxt = document.createElementNS(ns, 'text');
+        backTxt.setAttribute('x', '47'); backTxt.setAttribute('y', '26');
+        backTxt.setAttribute('text-anchor', 'middle'); backTxt.setAttribute('fill', isDark ? '#cbd5e1' : '#475569');
+        backTxt.setAttribute('font-size', '11'); backTxt.setAttribute('font-weight', '500');
+        backTxt.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+        backTxt.textContent = '← All';
+        backG.appendChild(backTxt);
+        backG.addEventListener('click', (e) => {
+          e.stopPropagation();
+          expandedGroup = null; hoveredMember = null; rerenderNetwork();
+        });
+        svg.appendChild(backG);
+
+        // Member positions
+        const memberOrbit = mLen === 1 ? 0 : Math.min(ORBIT * 0.75, 50 + mLen * 10);
+        const maxRoles = Math.max(1, ...members.map(mi => authorRoles[mi].length));
+        const memberNodes = members.map((mi, i) => {
+          const angle = mLen === 1 ? 0 : (2 * Math.PI * i) / mLen - Math.PI / 2;
+          const roles = authorRoles[mi];
+          const weight = roles.length + (sorted[mi].section_contributions || []).length;
+          const minR = isLargeGroup ? 11 : 18;
+          const maxR = isLargeGroup ? 22 : 36;
+          const radius = minR + ((weight / (maxRoles + 8)) * (maxR - minR));
+          return {
+            x: CX + memberOrbit * Math.cos(angle), y: CY + memberOrbit * Math.sin(angle),
+            radius, roles, mi,
+            name: sorted[mi].name,
+            firstName: getFirstName(sorted[mi].name), lastName: getLastName(sorted[mi].name),
+            careerStage: sorted[mi].career_stage || '',
+            roleCount: roles.length, secCount: (sorted[mi].section_contributions || []).length,
+            color: getColor(sorted[mi].name),
+          };
+        });
+
+        // Intra-group edges — clipped to node edges
+        for (let a = 0; a < mLen; a++) {
+          for (let b = a + 1; b < mLen; b++) {
+            const ai = members[a], bi = members[b];
+            const sharedRoles = [];
+            for (const role of ALL_CREDIT_ROLES) {
+              if (findCreditLevel(sorted[ai], role) && findCreditLevel(sorted[bi], role))
+                sharedRoles.push({ role, color: getRoleCat(role).color });
+            }
+            if (sharedRoles.length === 0) continue;
+            const s = memberNodes[a], t = memberNodes[b];
+            const isHL = hoveredMember === a || hoveredMember === b;
+            const isDim = hoveredMember !== null && !isHL;
+            const baseOpacity = isDim ? 0.03 : isHL ? 0.5 : 0.12;
+            const dx = t.x - s.x, dy = t.y - s.y;
+            const len = Math.sqrt(dx * dx + dy * dy) || 1;
+            const ux = dx / len, uy = dy / len;
+            const nx = -uy, ny = ux;
+            const sx = s.x + ux * (s.radius + 5), sy = s.y + uy * (s.radius + 5);
+            const tx = t.x - ux * (t.radius + 5), ty = t.y - uy * (t.radius + 5);
+            const midX = (sx + tx) / 2 + (CX - (sx + tx) / 2) * 0.25;
+            const midY = (sy + ty) / 2 + (CY - (sy + ty) / 2) * 0.25;
+            const strandW = 2, gap = strandW + 0.8;
+            const bandW = sharedRoles.length * gap;
+            let offset = -bandW / 2 + gap / 2;
+            for (const sr of sharedRoles) {
+              const ox = nx * offset, oy = ny * offset;
+              const path = document.createElementNS(ns, 'path');
+              path.setAttribute('d', `M${sx + ox},${sy + oy} Q${midX + ox},${midY + oy} ${tx + ox},${ty + oy}`);
+              path.setAttribute('fill', 'none'); path.setAttribute('stroke', sr.color);
+              path.setAttribute('stroke-width', String(strandW));
+              path.setAttribute('stroke-opacity', String(baseOpacity));
+              path.setAttribute('stroke-linecap', 'round'); path.setAttribute('class', 'ae-chord');
+              svg.appendChild(path);
+              offset += gap;
+            }
+          }
+        }
+
+        // Member nodes
+        for (let idx = 0; idx < mLen; idx++) {
+          const nd = memberNodes[idx];
+          const isHovered = hoveredMember === idx;
+          const isDim = hoveredMember !== null && !isHovered;
+          const isSearchDimmed = highlightSet && !highlightSet.has(nd.mi);
+          const g = document.createElementNS(ns, 'g');
+          g.style.cursor = 'pointer'; g.style.opacity = String(isSearchDimmed ? 0.15 : isDim ? 0.3 : 1);
+          g.style.transition = 'opacity 0.2s';
+
+          // Group-color halo
+          const halo = document.createElementNS(ns, 'circle');
+          halo.setAttribute('cx', String(nd.x)); halo.setAttribute('cy', String(nd.y));
+          halo.setAttribute('r', String(nd.radius + 5));
+          halo.setAttribute('fill', 'none'); halo.setAttribute('stroke', gd.color);
+          halo.setAttribute('stroke-width', '2.5'); halo.setAttribute('opacity', isHovered ? '0.6' : '0.2');
+          g.appendChild(halo);
+
+          // Role ring arcs
+          const ringR = nd.radius + 8;
+          const roles = nd.roles;
+          if (roles.length > 0) {
+            const arcGap = 0.06;
+            const totalAngle = 2 * Math.PI - roles.length * arcGap;
+            const segAngle = totalAngle / roles.length;
+            for (let ri = 0; ri < roles.length; ri++) {
+              const startA = -Math.PI / 2 + ri * (segAngle + arcGap);
+              const endA = startA + segAngle;
+              const arcS = { x: nd.x + ringR * Math.cos(startA), y: nd.y + ringR * Math.sin(startA) };
+              const arcE = { x: nd.x + ringR * Math.cos(endA), y: nd.y + ringR * Math.sin(endA) };
+              const largeArc = (endA - startA) > Math.PI ? 1 : 0;
+              const arc = document.createElementNS(ns, 'path');
+              arc.setAttribute('d', `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`);
+              arc.setAttribute('stroke', roles[ri].color); arc.setAttribute('stroke-width', '3');
+              arc.setAttribute('stroke-linecap', 'round'); arc.setAttribute('fill', 'none');
+              arc.setAttribute('opacity', String(roles[ri].opacity));
+              g.appendChild(arc);
+            }
+          }
+
+          // Shadow + circle
+          const shadow = document.createElementNS(ns, 'circle');
+          shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 1));
+          shadow.setAttribute('r', String(nd.radius)); shadow.setAttribute('fill', 'black'); shadow.setAttribute('opacity', '0.06');
+          g.appendChild(shadow);
+          const circle = document.createElementNS(ns, 'circle');
+          circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
+          circle.setAttribute('r', String(nd.radius)); circle.setAttribute('fill', nd.color);
+          circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '2');
+          g.appendChild(circle);
+
+          // Avatar image or initials fallback
+          appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[nd.mi], nd.radius * 0.55);
+
+          // Name
+          const label = document.createElementNS(ns, 'text');
+          label.setAttribute('x', String(nd.x)); label.setAttribute('y', String(nd.y + nd.radius + (isLargeGroup ? 12 : 16)));
+          label.setAttribute('text-anchor', 'middle');
+          label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : (isDark ? '#c4cad4' : '#64748b'));
+          label.setAttribute('font-size', isLargeGroup ? '8' : '10');
+          label.setAttribute('font-weight', isHovered ? '600' : '400');
+          label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+          label.style.pointerEvents = 'none';
+          label.textContent = isLargeGroup ? nd.lastName : `${nd.firstName} ${nd.lastName}`;
+          g.appendChild(label);
+
+          if (isHovered && nd.careerStage) {
+            const cs = document.createElementNS(ns, 'text');
+            cs.setAttribute('x', String(nd.x)); cs.setAttribute('y', String(nd.y + nd.radius + 28));
+            cs.setAttribute('text-anchor', 'middle'); cs.setAttribute('fill', '#94a3b8');
+            cs.setAttribute('font-size', '9'); cs.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+            cs.style.pointerEvents = 'none'; cs.textContent = nd.careerStage;
+            g.appendChild(cs);
+          }
+
+          g.addEventListener('mouseenter', () => { hoveredMember = idx; rerenderNetwork(); });
+          g.addEventListener('mouseleave', () => { hoveredMember = null; rerenderNetwork(); });
+          svg.appendChild(g);
+        }
+      }
+
+      return svg;
+    }
+
+    function renderInfoCard() {
+      // Overview: hovering a specific member circle
+      if (expandedGroup === null && hoveredOverviewMember) {
+        const mi = hoveredOverviewMember.authorIdx;
+        const roles = authorRoles[mi];
+        const gd = groupData[hoveredOverviewMember.groupIdx];
+        const onRight = gd.x > CX; const onBottom = gd.y > CY;
+        const cardStyle = {};
+        if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
+        else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
+        if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
+        else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
+        const card = el('div', { className: 'ae-info-card', style: cardStyle });
+        const avatarRow = el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' } });
+        avatarRow.appendChild(buildHtmlAvatar(sorted[mi], 'ae-info-avatar', { width: '40px', height: '40px', borderRadius: '50%', flexShrink: '0' }));
+        avatarRow.appendChild(el('div', {},
+          el('p', { className: 'ae-info-name' }, sorted[mi].name),
+          el('p', { className: 'ae-info-stage' }, sorted[mi].career_stage || ''),
+        ));
+        card.appendChild(avatarRow);
+        card.appendChild(el('div', { className: 'ae-info-stats' },
+            el('p', {}, el('strong', {}, String(roles.length)), ' CRediT roles'),
+            el('p', {}, el('strong', {}, String((sorted[mi].section_contributions || []).length)), ' sections'),
+          ),
+        );
+        const badges = el('div', { className: 'ae-info-badges' });
+        for (const r of roles) {
+          badges.appendChild(el('span', {
+            className: 'ae-info-badge',
+            style: { backgroundColor: r.color, opacity: r.opacity },
+          }, r.role.replace('Writing – ', 'W: ').replace('Formal ', '').slice(0, 14)));
+        }
+        card.appendChild(badges);
+        return card;
+      }
+      // Overview: hovering a group (but not a specific member)
+      if (expandedGroup === null && hoveredGroup !== null && !hoveredOverviewMember) {
+        const gd = groupData[hoveredGroup];
+        const onRight = gd.x > CX; const onBottom = gd.y > CY;
+        const cardStyle = {};
+        if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
+        else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
+        if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
+        else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
+        const memberNames = gd.members.map(mi => sorted[mi].name).join(', ');
+        const card = el('div', { className: 'ae-info-card', style: cardStyle },
+          el('p', { className: 'ae-info-name' }, gd.label),
+          el('p', { className: 'ae-info-stage' }, `${gd.members.length} contributor${gd.members.length > 1 ? 's' : ''}`),
+        );
+        card.appendChild(el('p', {
+          style: { fontSize: '10px', color: isDark ? '#94a3b8' : '#64748b', marginTop: '4px', lineHeight: '1.3' }
+        }, memberNames));
+        return card;
+      }
+      if (expandedGroup !== null && hoveredMember !== null) {
+        const gd = groupData[expandedGroup];
+        const mi = gd.members[hoveredMember];
+        if (mi === undefined) return null;
+        const roles = authorRoles[mi];
+        const card = el('div', { className: 'ae-info-card', style: { right: '56px', top: '12px' } });
+        const avatarRow = el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' } });
+        avatarRow.appendChild(buildHtmlAvatar(sorted[mi], 'ae-info-avatar', { width: '40px', height: '40px', borderRadius: '50%', flexShrink: '0' }));
+        avatarRow.appendChild(el('div', {},
+          el('p', { className: 'ae-info-name' }, sorted[mi].name),
+          el('p', { className: 'ae-info-stage' }, sorted[mi].career_stage || ''),
+        ));
+        card.appendChild(avatarRow);
+        card.appendChild(el('div', { className: 'ae-info-stats' },
+            el('p', {}, el('strong', {}, String(roles.length)), ' CRediT roles'),
+            el('p', {}, el('strong', {}, String((sorted[mi].section_contributions || []).length)), ' sections'),
+          ),
+        );
+        const badges = el('div', { className: 'ae-info-badges' });
+        for (const r of roles) {
+          badges.appendChild(el('span', {
+            className: 'ae-info-badge',
+            style: { backgroundColor: r.color, opacity: r.opacity },
+          }, r.role.replace('Writing – ', 'W: ').replace('Formal ', '').slice(0, 14)));
+        }
+        card.appendChild(badges);
+        return card;
+      }
+      return null;
+    }
+
+    // Graph container with zoom/pan
+    const graphWrap = el('div', { className: 'ae-network-graph' });
+    let vbX = 0, vbY = 0, vbW = W, vbH = H;
+    let isPanning = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
+    function applyViewBox() {
+      const svg = graphWrap.querySelector('.ae-network-svg');
+      if (svg) svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+    }
+    graphWrap.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 1.1 : 0.9;
+      const newW = Math.max(W * 0.2, Math.min(W * 2, vbW * factor));
+      const newH = Math.max(H * 0.2, Math.min(H * 2, vbH * factor));
+      const rect = graphWrap.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) / rect.width;
+      const my = (e.clientY - rect.top) / rect.height;
+      vbX += (vbW - newW) * mx; vbY += (vbH - newH) * my;
+      vbW = newW; vbH = newH; applyViewBox();
+    }, { passive: false });
+    graphWrap.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isPanning = true; panStartX = e.clientX; panStartY = e.clientY;
+      panStartVbX = vbX; panStartVbY = vbY; graphWrap.style.cursor = 'grabbing';
+    });
+    graphWrap.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      const rect = graphWrap.getBoundingClientRect();
+      vbX = panStartVbX - (e.clientX - panStartX) * (vbW / rect.width);
+      vbY = panStartVbY - (e.clientY - panStartY) * (vbH / rect.height);
+      applyViewBox();
+    });
+    const stopPan = () => { isPanning = false; graphWrap.style.cursor = 'grab'; };
+    graphWrap.addEventListener('mouseup', stopPan);
+    graphWrap.addEventListener('mouseleave', stopPan);
+    const zoomControls = el('div', { className: 'ae-zoom-controls' });
+    zoomControls.appendChild(el('button', { className: 'ae-zoom-btn', title: 'Zoom in',
+      onClick: () => { const nW = Math.max(W*0.2, vbW*0.7), nH = Math.max(H*0.2, vbH*0.7); vbX += (vbW-nW)/2; vbY += (vbH-nH)/2; vbW = nW; vbH = nH; applyViewBox(); },
+    }, '+'));
+    zoomControls.appendChild(el('button', { className: 'ae-zoom-btn', title: 'Zoom out',
+      onClick: () => { const nW = Math.min(W*2, vbW*1.4), nH = Math.min(H*2, vbH*1.4); vbX += (vbW-nW)/2; vbY += (vbH-nH)/2; vbW = nW; vbH = nH; applyViewBox(); },
+    }, '−'));
+    zoomControls.appendChild(el('button', { className: 'ae-zoom-btn', title: 'Reset zoom',
+      onClick: () => { vbX = 0; vbY = 0; vbW = W; vbH = H; applyViewBox(); },
+    }, '⟲'));
+    graphWrap.appendChild(zoomControls);
+
+    function rerenderNetwork() {
+      const oldSvg = graphWrap.querySelector('.ae-network-svg');
+      const newSvg = renderSVG();
+      newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+      if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
+      const oldCard = graphWrap.querySelector('.ae-info-card');
+      const newCard = renderInfoCard();
+      if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
+      else if (newCard) graphWrap.appendChild(newCard);
+    }
+    rerenderNetwork();
+    wrap.appendChild(graphWrap);
+
+    // Stats
+    const stats = el('div', { className: 'ae-network-stats' });
+    stats.appendChild(el('div', { className: 'ae-stat' },
+      el('span', { className: 'ae-stat-value' }, String(nGroups)),
+      el('span', { className: 'ae-stat-label' }, opts.groupLabel || 'Groups')
+    ));
+    stats.appendChild(el('div', { className: 'ae-stat' },
+      el('span', { className: 'ae-stat-value' }, String(n)),
+      el('span', { className: 'ae-stat-label' }, 'Contributors')
+    ));
+    stats.appendChild(el('div', { className: 'ae-stat' },
+      el('span', { className: 'ae-stat-value' }, String(groupLinks.length)),
+      el('span', { className: 'ae-stat-label' }, opts.linkLabel || 'Links')
+    ));
+    wrap.appendChild(stats);
+
+    return wrap;
+  }
   // ──── Institution circle-of-circles ────
   function buildInstitutionChord(sorted, highlightSet) {
     const n = sorted.length;
