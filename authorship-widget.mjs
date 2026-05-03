@@ -1249,15 +1249,15 @@ function render({ model, el: rootEl }) {
     }
     const maxWeight = Math.max(1, ...links.map(l => l.weight));
 
-    // SVG dimensions
+    // SVG dimensions — scale canvas with team size for readability
     const isLarge = n > 20;
-    const W = isLarge ? 900 : 600;
-    const H = isLarge ? 900 : 500;
+    const W = isLarge ? Math.min(1800, 600 + n * 18) : 600;
+    const H = isLarge ? Math.min(1600, 500 + n * 16) : 500;
 
-    // Node sizes
+    // Node sizes — keep nodes legible even for large teams
     const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
-    const minR = isLarge ? 10 : 18;
-    const maxR = isLarge ? 20 : 38;
+    const minR = isLarge ? 16 : 18;
+    const maxR = isLarge ? 32 : 38;
 
     // Build node objects with metadata
     const nodes = sorted.map((a, i) => {
@@ -1537,14 +1537,14 @@ function render({ model, el: rootEl }) {
         const isSearchMatch = highlightSet && highlightSet.has(idx);
         const label = document.createElementNS(ns, 'text');
         label.setAttribute('x', String(nd.x));
-        label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 12 : 18)));
+        label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 14 : 18)));
         label.setAttribute('text-anchor', 'middle');
         label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
-        label.setAttribute('font-size', isLarge ? '8' : '11');
+        label.setAttribute('font-size', isLarge ? '10' : '11');
         label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
-        label.textContent = isLarge ? nd.lastName : `${nd.firstName} ${nd.lastName}`;
+        label.textContent = `${nd.firstName} ${nd.lastName}`;
         g.appendChild(label);
 
         if (isHovered && nd.careerStage) {
