@@ -1164,10 +1164,10 @@ function render({ model, el: rootEl }) {
   function buildNetworkModeToggle() {
     const modeBar = el('div', { className: 'ae-mode-bar' });
     const modes = [
-      { key: 'collab', label: '🧲 Collaboration' },
-      { key: 'institutions', label: '🏛️ By Institutions' },
-      { key: 'force', label: '🎯 By Role' },
-      { key: 'sections', label: '📄 By Section & Figure' },
+      { key: 'collab', label: 'Network' },
+      { key: 'institutions', label: 'By Institution' },
+      { key: 'force', label: 'By Role' },
+      { key: 'sections', label: 'By Section' },
     ];
     for (const m of modes) {
       modeBar.appendChild(el('button', {
