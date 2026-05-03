@@ -432,8 +432,9 @@ function render({ model, el: rootEl }) {
   let activeTab = 'network';
   let showCreditMenu = false;
   let authorMode = 'simulated'; // 'simulated' or 'real'
-  let networkMode = 'collab'; // 'collab' | 'institutions' | 'force' | 'sections'
+  let networkMode = 'collab'; // 'collab' | 'flow' | 'institutions' | 'force' | 'sections'
   let searchQuery = ''; // search/filter across all views
+  let cachedLayout = null; // { key, positions: [{x,y}] } — shared between Network & Flow
 
   // Search highlight: matches name, institution, or CRediT role
   function matchesSearch(author, query) {
@@ -1265,26 +1266,38 @@ function render({ model, el: rootEl }) {
       };
     });
 
-    // Let the caller compute positions
-    positionFn(nodes, links, n, W, H, isLarge);
+    // Reuse cached positions if available, otherwise compute fresh
+    const layoutKey = sorted.map(a => a.name).join('|');
+    if (cachedLayout && cachedLayout.key === layoutKey) {
+      for (let i = 0; i < n; i++) {
+        nodes[i].x = cachedLayout.positions[i].x;
+        nodes[i].y = cachedLayout.positions[i].y;
+      }
+    } else {
+      // Let the caller compute positions
+      positionFn(nodes, links, n, W, H, isLarge);
 
-    // Normalize positions to fit within the SVG with padding
-    const pad = maxR + 30;
-    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    for (const nd of nodes) {
-      minX = Math.min(minX, nd.x - nd.radius);
-      minY = Math.min(minY, nd.y - nd.radius);
-      maxX = Math.max(maxX, nd.x + nd.radius);
-      maxY = Math.max(maxY, nd.y + nd.radius);
-    }
-    const dataW = (maxX - minX) || 1, dataH = (maxY - minY) || 1;
-    const scaleX = (W - 2 * pad) / dataW, scaleY = (H - 2 * pad) / dataH;
-    const scale = Math.min(scaleX, scaleY);
-    const offsetX = pad + ((W - 2 * pad) - dataW * scale) / 2 - minX * scale;
-    const offsetY = pad + ((H - 2 * pad) - dataH * scale) / 2 - minY * scale;
-    for (const nd of nodes) {
-      nd.x = nd.x * scale + offsetX;
-      nd.y = nd.y * scale + offsetY;
+      // Normalize positions to fit within the SVG with padding
+      const pad = maxR + 30;
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const nd of nodes) {
+        minX = Math.min(minX, nd.x - nd.radius);
+        minY = Math.min(minY, nd.y - nd.radius);
+        maxX = Math.max(maxX, nd.x + nd.radius);
+        maxY = Math.max(maxY, nd.y + nd.radius);
+      }
+      const dataW = (maxX - minX) || 1, dataH = (maxY - minY) || 1;
+      const scaleX = (W - 2 * pad) / dataW, scaleY = (H - 2 * pad) / dataH;
+      const scale = Math.min(scaleX, scaleY);
+      const offsetX = pad + ((W - 2 * pad) - dataW * scale) / 2 - minX * scale;
+      const offsetY = pad + ((H - 2 * pad) - dataH * scale) / 2 - minY * scale;
+      for (const nd of nodes) {
+        nd.x = nd.x * scale + offsetX;
+        nd.y = nd.y * scale + offsetY;
+      }
+
+      // Cache positions for shared layout between Network & Flow views
+      cachedLayout = { key: layoutKey, positions: nodes.map(nd => ({ x: nd.x, y: nd.y })) };
     }
 
     // Compute tight bounding box around actual node positions (including labels)
@@ -1766,48 +1779,56 @@ function render({ model, el: rootEl }) {
       };
     });
 
-    // Force-directed layout (same as collab)
-    const CX = W / 2, CY = H / 2;
-    for (let i = 0; i < n; i++) {
-      const angle = (2 * Math.PI * i) / n;
-      nodes[i].x = CX + (W * 0.25) * Math.cos(angle);
-      nodes[i].y = CY + (H * 0.25) * Math.sin(angle);
-      nodes[i].vx = 0; nodes[i].vy = 0;
-    }
-    const ITERS = 300;
-    const repulsion = isLarge ? 8000 : 15000;
-    const attraction = 0.005;
-    const damping = 0.92;
-    const centerPull = 0.003;
-    const wMax = Math.max(1, ...links.map(l => l.weight));
-    for (let iter = 0; iter < ITERS; iter++) {
-      const alpha = 1 - iter / ITERS;
+    // Reuse cached positions from Network view, or compute fresh
+    const layoutKey = sorted.map(a => a.name).join('|');
+    if (cachedLayout && cachedLayout.key === layoutKey) {
       for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
-          let dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const minDist = nodes[i].radius + nodes[j].radius + 8;
-          if (dist < minDist) dist = minDist;
-          const force = (repulsion * alpha) / (dist * dist);
-          nodes[i].vx += (dx / dist) * force; nodes[i].vy += (dy / dist) * force;
-          nodes[j].vx -= (dx / dist) * force; nodes[j].vy -= (dy / dist) * force;
+        nodes[i].x = cachedLayout.positions[i].x;
+        nodes[i].y = cachedLayout.positions[i].y;
+      }
+    } else {
+      // Force-directed layout (same as collab)
+      const CX = W / 2, CY = H / 2;
+      for (let i = 0; i < n; i++) {
+        const angle = (2 * Math.PI * i) / n;
+        nodes[i].x = CX + (W * 0.25) * Math.cos(angle);
+        nodes[i].y = CY + (H * 0.25) * Math.sin(angle);
+        nodes[i].vx = 0; nodes[i].vy = 0;
+      }
+      const ITERS = 300;
+      const repulsion = isLarge ? 8000 : 15000;
+      const attraction = 0.005;
+      const damping = 0.92;
+      const centerPull = 0.003;
+      const wMax = Math.max(1, ...links.map(l => l.weight));
+      for (let iter = 0; iter < ITERS; iter++) {
+        const alpha = 1 - iter / ITERS;
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+            let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const minDist = nodes[i].radius + nodes[j].radius + 8;
+            if (dist < minDist) dist = minDist;
+            const force = (repulsion * alpha) / (dist * dist);
+            nodes[i].vx += (dx / dist) * force; nodes[i].vy += (dy / dist) * force;
+            nodes[j].vx -= (dx / dist) * force; nodes[j].vy -= (dy / dist) * force;
+          }
         }
-      }
-      for (const link of links) {
-        const a = nodes[link.i], b = nodes[link.j];
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const w = link.weight / wMax;
-        const force = attraction * w * alpha * Math.log(1 + dist);
-        a.vx += (dx / dist) * force; a.vy += (dy / dist) * force;
-        b.vx -= (dx / dist) * force; b.vy -= (dy / dist) * force;
-      }
-      for (let i = 0; i < n; i++) {
-        nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
-        nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
-        nodes[i].vx *= damping; nodes[i].vy *= damping;
-        nodes[i].x += nodes[i].vx; nodes[i].y += nodes[i].vy;
-      }
+        for (const link of links) {
+          const a = nodes[link.i], b = nodes[link.j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const w = link.weight / wMax;
+          const force = attraction * w * alpha * Math.log(1 + dist);
+          a.vx += (dx / dist) * force; a.vy += (dy / dist) * force;
+          b.vx -= (dx / dist) * force; b.vy -= (dy / dist) * force;
+        }
+        for (let i = 0; i < n; i++) {
+          nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
+          nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
+          nodes[i].vx *= damping; nodes[i].vy *= damping;
+          nodes[i].x += nodes[i].vx; nodes[i].y += nodes[i].vy;
+        }
       for (let pass = 0; pass < 3; pass++) {
         for (let i = 0; i < n; i++) {
           for (let j = i + 1; j < n; j++) {
@@ -1823,26 +1844,28 @@ function render({ model, el: rootEl }) {
           }
         }
       }
-    }
 
-    // Normalize positions
-    const pad = maxR + 30;
-    let bMinX = Infinity, bMinY = Infinity, bMaxX = -Infinity, bMaxY = -Infinity;
-    for (const nd of nodes) {
-      bMinX = Math.min(bMinX, nd.x - nd.radius);
-      bMinY = Math.min(bMinY, nd.y - nd.radius);
-      bMaxX = Math.max(bMaxX, nd.x + nd.radius);
-      bMaxY = Math.max(bMaxY, nd.y + nd.radius);
-    }
-    const dataW = (bMaxX - bMinX) || 1, dataH = (bMaxY - bMinY) || 1;
-    const scaleX = (W - 2 * pad) / dataW, scaleY = (H - 2 * pad) / dataH;
-    const scale = Math.min(scaleX, scaleY);
-    const offsetX = pad + ((W - 2 * pad) - dataW * scale) / 2 - bMinX * scale;
-    const offsetY = pad + ((H - 2 * pad) - dataH * scale) / 2 - bMinY * scale;
-    for (const nd of nodes) {
-      nd.x = nd.x * scale + offsetX;
-      nd.y = nd.y * scale + offsetY;
-    }
+      // Normalize positions
+      const pad = maxR + 30;
+      let bMinX = Infinity, bMinY = Infinity, bMaxX = -Infinity, bMaxY = -Infinity;
+      for (const nd of nodes) {
+        bMinX = Math.min(bMinX, nd.x - nd.radius);
+        bMinY = Math.min(bMinY, nd.y - nd.radius);
+        bMaxX = Math.max(bMaxX, nd.x + nd.radius);
+        bMaxY = Math.max(bMaxY, nd.y + nd.radius);
+      }
+      const dataW = (bMaxX - bMinX) || 1, dataH = (bMaxY - bMinY) || 1;
+      const scaleX = (W - 2 * pad) / dataW, scaleY = (H - 2 * pad) / dataH;
+      const scale = Math.min(scaleX, scaleY);
+      const offsetX = pad + ((W - 2 * pad) - dataW * scale) / 2 - bMinX * scale;
+      const offsetY = pad + ((H - 2 * pad) - dataH * scale) / 2 - bMinY * scale;
+      for (const nd of nodes) {
+        nd.x = nd.x * scale + offsetX;
+        nd.y = nd.y * scale + offsetY;
+      }
+      // Save to cache
+      cachedLayout = { key: layoutKey, positions: nodes.map(nd => ({ x: nd.x, y: nd.y })) };
+    } // end else (fresh layout)
 
     // Per-role MST edges with direction (from higher-level to lower-level contributor)
     const flowEdges = []; // { fromIdx, toIdx, role, color, fromLevel, toLevel }
