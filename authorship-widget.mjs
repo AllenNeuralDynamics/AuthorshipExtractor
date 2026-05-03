@@ -1711,10 +1711,10 @@ function render({ model, el: rootEl }) {
       }
 
       const ITERS = 300;
-      const repulsion = isLarge ? 8000 : 15000;
-      const attraction = 0.008;
+      const repulsion = isLarge ? 5000 : 12000;
+      const attraction = 0.02;
       const damping = 0.92;
-      const centerPull = 0.002;
+      const centerPull = 0.005;
 
       for (let iter = 0; iter < ITERS; iter++) {
         const alpha = 1 - iter / ITERS;
