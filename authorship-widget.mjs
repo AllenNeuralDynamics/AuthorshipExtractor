@@ -1170,6 +1170,7 @@ function render({ model, el: rootEl }) {
     const modeBar = el('div', { className: 'ae-mode-bar' });
     const modes = [
       { key: 'collab', label: 'Network' },
+      { key: 'flow', label: 'Flow' },
       { key: 'institutions', label: 'By Institution' },
       { key: 'force', label: 'By Role' },
       { key: 'sections', label: 'By Section & Figure' },
@@ -1186,6 +1187,7 @@ function render({ model, el: rootEl }) {
   function buildNetworkTab(sorted, highlightSet) {
     const n = sorted.length;
     // Dispatch to mode-specific builder
+    if (networkMode === 'flow') return buildFlowView(sorted, highlightSet);
     if (networkMode === 'institutions') return buildInstitutionChord(sorted, highlightSet);
     if (networkMode === 'force') return buildForceGraph(sorted, highlightSet);
     if (networkMode === 'sections') return buildSectionCircles(sorted, highlightSet);
@@ -1698,6 +1700,477 @@ function render({ model, el: rootEl }) {
 
     return wrap;
   }
+
+  // ──── Flow view — animated particles along per-role MST edges ────
+  function buildFlowView(sorted, highlightSet) {
+    const n = sorted.length;
+    const wrap = el('div', { className: 'ae-network' });
+    const ns = 'http://www.w3.org/2000/svg';
+    if (n === 0) {
+      wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
+      return wrap;
+    }
+    wrap.appendChild(buildNetworkModeToggle());
+
+    // Compute per-author roles with colors
+    const authorRoles = sorted.map(a => {
+      const levels = a.credit_levels || [];
+      return levels.map(cl => ({
+        role: cl.role, level: cl.level,
+        color: getRoleCat(cl.role).color,
+        opacity: LEVEL_OPACITY[cl.level] || 0.4,
+      }));
+    });
+
+    // Build edges from shared CRediT roles
+    const links = [];
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const sharedRoles = [];
+        let levelWeight = 0;
+        for (const role of ALL_CREDIT_ROLES) {
+          const lvlI = findCreditLevel(sorted[i], role);
+          const lvlJ = findCreditLevel(sorted[j], role);
+          if (lvlI && lvlJ) {
+            sharedRoles.push({ role, color: getRoleCat(role).color });
+            levelWeight += (LEVEL_RANK[lvlI] || 1) + (LEVEL_RANK[lvlJ] || 1);
+          }
+        }
+        if (sharedRoles.length > 0) {
+          links.push({ i, j, sharedRoles, weight: levelWeight });
+        }
+      }
+    }
+
+    // SVG dimensions
+    const isLarge = n > 20;
+    const W = isLarge ? Math.min(2400, 900 + n * 24) : 700;
+    const H = Math.round(W / 1.5);
+
+    // Node sizes
+    const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
+    const minR = isLarge ? 24 : 18;
+    const maxR = isLarge ? 44 : 38;
+
+    // Build nodes
+    const nodes = sorted.map((a, i) => {
+      const roles = authorRoles[i];
+      const weight = roles.length;
+      const radius = minR + ((weight / (maxRoles + 10)) * (maxR - minR));
+      return {
+        x: 0, y: 0, radius, roles,
+        name: a.name,
+        lastName: getLastName(a.name),
+        color: getColor(a.name),
+        roleCount: roles.length,
+      };
+    });
+
+    // Force-directed layout (same as collab)
+    const CX = W / 2, CY = H / 2;
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI * i) / n;
+      nodes[i].x = CX + (W * 0.25) * Math.cos(angle);
+      nodes[i].y = CY + (H * 0.25) * Math.sin(angle);
+      nodes[i].vx = 0; nodes[i].vy = 0;
+    }
+    const ITERS = 300;
+    const repulsion = isLarge ? 8000 : 15000;
+    const attraction = 0.005;
+    const damping = 0.92;
+    const centerPull = 0.003;
+    const wMax = Math.max(1, ...links.map(l => l.weight));
+    for (let iter = 0; iter < ITERS; iter++) {
+      const alpha = 1 - iter / ITERS;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          let dx = nodes[i].x - nodes[j].x, dy = nodes[i].y - nodes[j].y;
+          let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const minDist = nodes[i].radius + nodes[j].radius + 8;
+          if (dist < minDist) dist = minDist;
+          const force = (repulsion * alpha) / (dist * dist);
+          nodes[i].vx += (dx / dist) * force; nodes[i].vy += (dy / dist) * force;
+          nodes[j].vx -= (dx / dist) * force; nodes[j].vy -= (dy / dist) * force;
+        }
+      }
+      for (const link of links) {
+        const a = nodes[link.i], b = nodes[link.j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        const w = link.weight / wMax;
+        const force = attraction * w * alpha * Math.log(1 + dist);
+        a.vx += (dx / dist) * force; a.vy += (dy / dist) * force;
+        b.vx -= (dx / dist) * force; b.vy -= (dy / dist) * force;
+      }
+      for (let i = 0; i < n; i++) {
+        nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
+        nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
+        nodes[i].vx *= damping; nodes[i].vy *= damping;
+        nodes[i].x += nodes[i].vx; nodes[i].y += nodes[i].vy;
+      }
+      for (let pass = 0; pass < 3; pass++) {
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            const dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+            const md = nodes[i].radius + nodes[j].radius + 12;
+            if (dist < md) {
+              const overlap = (md - dist) / 2;
+              const ux = dx / dist, uy = dy / dist;
+              nodes[i].x -= ux * overlap; nodes[i].y -= uy * overlap;
+              nodes[j].x += ux * overlap; nodes[j].y += uy * overlap;
+            }
+          }
+        }
+      }
+    }
+
+    // Normalize positions
+    const pad = maxR + 30;
+    let bMinX = Infinity, bMinY = Infinity, bMaxX = -Infinity, bMaxY = -Infinity;
+    for (const nd of nodes) {
+      bMinX = Math.min(bMinX, nd.x - nd.radius);
+      bMinY = Math.min(bMinY, nd.y - nd.radius);
+      bMaxX = Math.max(bMaxX, nd.x + nd.radius);
+      bMaxY = Math.max(bMaxY, nd.y + nd.radius);
+    }
+    const dataW = (bMaxX - bMinX) || 1, dataH = (bMaxY - bMinY) || 1;
+    const scaleX = (W - 2 * pad) / dataW, scaleY = (H - 2 * pad) / dataH;
+    const scale = Math.min(scaleX, scaleY);
+    const offsetX = pad + ((W - 2 * pad) - dataW * scale) / 2 - bMinX * scale;
+    const offsetY = pad + ((H - 2 * pad) - dataH * scale) / 2 - bMinY * scale;
+    for (const nd of nodes) {
+      nd.x = nd.x * scale + offsetX;
+      nd.y = nd.y * scale + offsetY;
+    }
+
+    // Per-role MST edges with direction (from higher-level to lower-level contributor)
+    const flowEdges = []; // { fromIdx, toIdx, role, color, fromLevel, toLevel }
+    for (const role of ALL_CREDIT_ROLES) {
+      const rc = getRoleCat(role);
+      const members = [];
+      const memberLevel = new Map();
+      for (let i = 0; i < n; i++) {
+        const lvl = findCreditLevel(sorted[i], role);
+        if (lvl) { members.push(i); memberLevel.set(i, lvl); }
+      }
+      if (members.length < 2) continue;
+
+      // Prim's MST
+      const inTree = new Set([members[0]]);
+      const remaining = new Set(members.slice(1));
+      while (remaining.size > 0) {
+        let bestDist = Infinity, bestA = -1, bestB = -1;
+        for (const a of inTree) {
+          for (const b of remaining) {
+            const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+            const d = dx * dx + dy * dy;
+            if (d < bestDist) { bestDist = d; bestA = a; bestB = b; }
+          }
+        }
+        inTree.add(bestB);
+        remaining.delete(bestB);
+        const lvlA = LEVEL_RANK[memberLevel.get(bestA)] || 0;
+        const lvlB = LEVEL_RANK[memberLevel.get(bestB)] || 0;
+        // Flow direction: higher level → lower level (or alphabetical for ties)
+        const fromIdx = lvlA >= lvlB ? bestA : bestB;
+        const toIdx = lvlA >= lvlB ? bestB : bestA;
+        flowEdges.push({
+          fromIdx, toIdx, role, color: rc.color,
+          fromLevel: memberLevel.get(fromIdx),
+          toLevel: memberLevel.get(toIdx),
+        });
+      }
+    }
+
+    // Compute tight-fit viewBox
+    const labelPad = isLarge ? 30 : 25;
+    let vbMinX = Infinity, vbMinY = Infinity, vbMaxX = -Infinity, vbMaxY = -Infinity;
+    for (const nd of nodes) {
+      vbMinX = Math.min(vbMinX, nd.x - nd.radius - 10);
+      vbMinY = Math.min(vbMinY, nd.y - nd.radius - 10);
+      vbMaxX = Math.max(vbMaxX, nd.x + nd.radius + 10);
+      vbMaxY = Math.max(vbMaxY, nd.y + nd.radius + labelPad + 10);
+    }
+    const initVbX = vbMinX, initVbY = vbMinY;
+    const initVbW = (vbMaxX - vbMinX) || W;
+    const initVbH = (vbMaxY - vbMinY) || H;
+
+    // SVG
+    const isDark = document.documentElement.dataset.theme === 'dark';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'ae-network-svg');
+    svg.setAttribute('viewBox', `${initVbX} ${initVbY} ${initVbW} ${initVbH}`);
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+    // Draw faint static edge paths
+    const gap = 9;
+    const edgePaths = []; // store path data for particle animation
+    // Group by pair
+    const pairEdges = new Map();
+    for (let ei = 0; ei < flowEdges.length; ei++) {
+      const e = flowEdges[ei];
+      const key = Math.min(e.fromIdx, e.toIdx) + '::' + Math.max(e.fromIdx, e.toIdx);
+      const arr = pairEdges.get(key) || [];
+      arr.push({ ...e, edgeIdx: ei });
+      pairEdges.set(key, arr);
+    }
+
+    for (const [, edges] of pairEdges) {
+      const s = nodes[edges[0].fromIdx], t = nodes[edges[0].toIdx];
+      const dx = t.x - s.x, dy = t.y - s.y;
+      const len = Math.sqrt(dx * dx + dy * dy) || 1;
+      const ux = dx / len, uy = dy / len;
+      const nx = -uy, ny = ux;
+      const sx = s.x + ux * (s.radius + gap), sy = s.y + uy * (s.radius + gap);
+      const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
+
+      const strandGap = 3.5;
+      const bandW = edges.length * strandGap;
+      let offset = -bandW / 2 + strandGap / 2;
+
+      for (const e of edges) {
+        const ox = nx * offset, oy = ny * offset;
+        const x1 = sx + ox, y1 = sy + oy;
+        const x2 = tx + ox, y2 = ty + oy;
+        // Ensure from→to direction for particles
+        const fNode = nodes[e.fromIdx], tNode = nodes[e.toIdx];
+        const fdx = fNode.x - x1, fdy = fNode.y - y1;
+        const tdx = tNode.x - x1, tdy = tNode.y - y1;
+        const fDistSq = fdx * fdx + fdy * fdy;
+        const tDistSq = tdx * tdx + tdy * tdy;
+        const px1 = fDistSq <= tDistSq ? x1 : x2;
+        const py1 = fDistSq <= tDistSq ? y1 : y2;
+        const px2 = fDistSq <= tDistSq ? x2 : x1;
+        const py2 = fDistSq <= tDistSq ? y2 : y1;
+
+        // Faint static path
+        const path = document.createElementNS(ns, 'path');
+        path.setAttribute('d', `M${px1},${py1} L${px2},${py2}`);
+        path.setAttribute('fill', 'none');
+        path.setAttribute('stroke', e.color);
+        path.setAttribute('stroke-width', '1.5');
+        path.setAttribute('stroke-opacity', '0.15');
+        path.setAttribute('stroke-linecap', 'round');
+        path.setAttribute('vector-effect', 'non-scaling-stroke');
+        svg.appendChild(path);
+
+        // Store for particle animation
+        edgePaths.push({
+          x1: px1, y1: py1, x2: px2, y2: py2,
+          color: e.color, role: e.role,
+          fromLevel: e.fromLevel, toLevel: e.toLevel,
+        });
+        offset += strandGap;
+      }
+    }
+
+    // Draw nodes
+    for (let idx = 0; idx < n; idx++) {
+      const nd = nodes[idx];
+      const isSearchDim = highlightSet && !highlightSet.has(idx);
+      const groupOpacity = isSearchDim ? 0.25 : 1;
+      const g = document.createElementNS(ns, 'g');
+      g.style.opacity = String(groupOpacity);
+
+      // Role ring arcs
+      const ringR = nd.radius + 5;
+      const roles = nd.roles;
+      const arcGap = 0.06;
+      const totalAngle = 2 * Math.PI - roles.length * arcGap;
+      const segAngle = roles.length > 0 ? totalAngle / roles.length : 0;
+      for (let ri = 0; ri < roles.length; ri++) {
+        const startA = -Math.PI / 2 + ri * (segAngle + arcGap);
+        const endA = startA + segAngle;
+        const arcS = { x: nd.x + ringR * Math.cos(startA), y: nd.y + ringR * Math.sin(startA) };
+        const arcE = { x: nd.x + ringR * Math.cos(endA), y: nd.y + ringR * Math.sin(endA) };
+        const largeArc = (endA - startA) > Math.PI ? 1 : 0;
+        const arc = document.createElementNS(ns, 'path');
+        arc.setAttribute('d', `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`);
+        arc.setAttribute('stroke', roles[ri].color);
+        arc.setAttribute('stroke-width', '4'); arc.setAttribute('stroke-linecap', 'round');
+        arc.setAttribute('fill', 'none'); arc.setAttribute('opacity', String(roles[ri].opacity));
+        arc.setAttribute('vector-effect', 'non-scaling-stroke');
+        g.appendChild(arc);
+      }
+
+      // Circle
+      const shadow = document.createElementNS(ns, 'circle');
+      shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2));
+      shadow.setAttribute('r', String(nd.radius));
+      shadow.setAttribute('fill', 'black'); shadow.setAttribute('opacity', '0.08');
+      g.appendChild(shadow);
+
+      const circle = document.createElementNS(ns, 'circle');
+      circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
+      circle.setAttribute('r', String(nd.radius));
+      circle.setAttribute('fill', nd.color);
+      circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '3');
+      circle.setAttribute('vector-effect', 'non-scaling-stroke');
+      g.appendChild(circle);
+
+      appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
+
+      const label = document.createElementNS(ns, 'text');
+      label.setAttribute('x', String(nd.x));
+      label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 16 : 18)));
+      label.setAttribute('text-anchor', 'middle');
+      label.setAttribute('fill', isDark ? '#e2e8f0' : '#1f2937');
+      label.setAttribute('font-size', isLarge ? '19' : '15');
+      label.setAttribute('font-weight', '500');
+      label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+      label.style.pointerEvents = 'none';
+      label.textContent = nd.lastName;
+      g.appendChild(label);
+
+      svg.appendChild(g);
+    }
+
+    // Animated particles
+    const PARTICLE_COUNT = 3; // particles per edge
+    const particleEls = [];
+    for (const ep of edgePaths) {
+      const speed = ep.fromLevel === 'lead' ? 0.6 : ep.fromLevel === 'equal' ? 0.45 : 0.3; // units/sec normalized
+      for (let p = 0; p < PARTICLE_COUNT; p++) {
+        const dot = document.createElementNS(ns, 'circle');
+        const r = ep.fromLevel === 'lead' ? 5 : ep.fromLevel === 'equal' ? 3.5 : 2.5;
+        dot.setAttribute('r', String(r));
+        dot.setAttribute('fill', ep.color);
+        dot.setAttribute('opacity', '0.85');
+        dot.setAttribute('vector-effect', 'non-scaling-stroke');
+        svg.appendChild(dot);
+        particleEls.push({
+          el: dot,
+          x1: ep.x1, y1: ep.y1, x2: ep.x2, y2: ep.y2,
+          t: p / PARTICLE_COUNT, // stagger start
+          speed,
+        });
+      }
+    }
+
+    // Animation loop
+    let animId = null;
+    let lastTime = null;
+    function animateParticles(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = (timestamp - lastTime) / 1000; // seconds
+      lastTime = timestamp;
+      for (const p of particleEls) {
+        p.t += p.speed * dt;
+        if (p.t > 1) p.t -= Math.floor(p.t); // wrap around
+        const x = p.x1 + (p.x2 - p.x1) * p.t;
+        const y = p.y1 + (p.y2 - p.y1) * p.t;
+        p.el.setAttribute('cx', String(x));
+        p.el.setAttribute('cy', String(y));
+        // Fade in/out at edges
+        const fade = Math.min(p.t * 4, (1 - p.t) * 4, 1);
+        p.el.setAttribute('opacity', String(0.85 * fade));
+      }
+      animId = requestAnimationFrame(animateParticles);
+    }
+
+    // Container with zoom/pan
+    const graphOuter = el('div', { className: 'ae-graph-outer' });
+    const graphWrap = el('div', { className: 'ae-network-graph' });
+
+    let vbX = initVbX, vbY = initVbY, vbW = initVbW, vbH = initVbH;
+    let isPanning = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
+    function applyViewBox() {
+      svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
+    }
+    graphWrap.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 1.1 : 0.9;
+      const newW = Math.max(initVbW * 0.2, Math.min(initVbW * 3, vbW * factor));
+      const newH = Math.max(initVbH * 0.2, Math.min(initVbH * 3, vbH * factor));
+      const rect = graphWrap.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) / rect.width;
+      const my = (e.clientY - rect.top) / rect.height;
+      vbX += (vbW - newW) * mx; vbY += (vbH - newH) * my;
+      vbW = newW; vbH = newH;
+      applyViewBox();
+    }, { passive: false });
+    graphWrap.addEventListener('mousedown', (e) => {
+      if (e.button !== 0) return;
+      isPanning = true; panStartX = e.clientX; panStartY = e.clientY;
+      panStartVbX = vbX; panStartVbY = vbY;
+      graphWrap.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      const rect = graphWrap.getBoundingClientRect();
+      const dx = (e.clientX - panStartX) / rect.width * vbW;
+      const dy = (e.clientY - panStartY) / rect.height * vbH;
+      vbX = panStartVbX - dx; vbY = panStartVbY - dy;
+      applyViewBox();
+    });
+    window.addEventListener('mouseup', () => {
+      if (isPanning) { isPanning = false; graphWrap.style.cursor = 'grab'; }
+    });
+
+    // Zoom reset button
+    const resetBtn = el('button', {
+      className: 'ae-zoom-reset',
+      onClick: () => { vbX = initVbX; vbY = initVbY; vbW = initVbW; vbH = initVbH; applyViewBox(); },
+      title: 'Reset zoom',
+    }, '⟳');
+
+    graphWrap.appendChild(svg);
+    graphOuter.appendChild(graphWrap);
+    graphOuter.appendChild(resetBtn);
+    wrap.appendChild(graphOuter);
+
+    // Start animation when the SVG is in the DOM
+    const observer = new MutationObserver(() => {
+      if (document.contains(svg)) {
+        observer.disconnect();
+        animId = requestAnimationFrame(animateParticles);
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+    // Also try immediately in case already mounted
+    requestAnimationFrame(() => {
+      if (document.contains(svg) && !animId) {
+        animId = requestAnimationFrame(animateParticles);
+      }
+    });
+    // Clean up when SVG is removed from DOM
+    const cleanupObserver = new MutationObserver(() => {
+      if (!document.contains(svg)) {
+        cleanupObserver.disconnect();
+        if (animId) cancelAnimationFrame(animId);
+      }
+    });
+    cleanupObserver.observe(document.body, { childList: true, subtree: true });
+
+    // Legend
+    const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
+    for (const role of ALL_CREDIT_ROLES) {
+      const rc = getRoleCat(role);
+      legend.appendChild(el('div', { className: 'ae-legend-item' },
+        el('span', { className: 'ae-legend-dot', style: { backgroundColor: rc.color } }),
+        el('span', { className: 'ae-legend-label' }, role.replace('Writing – ', 'W: ').replace('Formal a', 'A')),
+      ));
+    }
+    wrap.appendChild(legend);
+
+    // Level key
+    const levelKey = el('div', { className: 'ae-network-legend' });
+    for (const [lvl, size] of [['Lead', 5], ['Equal', 3.5], ['Supporting', 2.5]]) {
+      const dotStyle = {
+        width: size * 2 + 'px', height: size * 2 + 'px',
+        borderRadius: '50%', backgroundColor: '#6366f1', flexShrink: '0',
+      };
+      levelKey.appendChild(el('div', { className: 'ae-legend-item' },
+        el('span', { style: dotStyle }),
+        el('span', { className: 'ae-legend-label' }, lvl),
+      ));
+    }
+    wrap.appendChild(levelKey);
+
+    return wrap;
+  }
+
   // ──── Force-directed collaboration layout ────
   function buildCollabLayout(sorted, highlightSet) {
     return buildScatterView(sorted, highlightSet, (nodes, links, n, W, H, isLarge) => {
