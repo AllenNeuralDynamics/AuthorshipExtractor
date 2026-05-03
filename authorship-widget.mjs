@@ -1212,38 +1212,22 @@ function render({ model, el: rootEl }) {
       }));
     });
 
-    // Build edges (shared CRediT roles + shared sections)
-    const sectionAuthors = new Map();
-    for (let i = 0; i < n; i++) {
-      for (const sc of (sorted[i].section_contributions || [])) {
-        const arr = sectionAuthors.get(sc.section) || [];
-        arr.push(i);
-        sectionAuthors.set(sc.section, arr);
-      }
-    }
-    const edgeMap = new Map();
-    for (const [, authIdxs] of sectionAuthors) {
-      for (let i = 0; i < authIdxs.length; i++) {
-        for (let j = i + 1; j < authIdxs.length; j++) {
-          const key = [authIdxs[i], authIdxs[j]].sort().join('::');
-          const set = edgeMap.get(key) || new Set();
-          set.add(1);
-          edgeMap.set(key, set);
-        }
-      }
-    }
+    // Build edges from shared CRediT roles, weighted by contribution level
     const links = [];
     for (let i = 0; i < n; i++) {
       for (let j = i + 1; j < n; j++) {
         const sharedRoles = [];
+        let levelWeight = 0;
         for (const role of ALL_CREDIT_ROLES) {
-          if (findCreditLevel(sorted[i], role) && findCreditLevel(sorted[j], role))
+          const lvlI = findCreditLevel(sorted[i], role);
+          const lvlJ = findCreditLevel(sorted[j], role);
+          if (lvlI && lvlJ) {
             sharedRoles.push({ role, color: getRoleCat(role).color });
+            levelWeight += (LEVEL_RANK[lvlI] || 1) + (LEVEL_RANK[lvlJ] || 1);
+          }
         }
-        const key = [i, j].sort().join('::');
-        const sharedSections = edgeMap.get(key) ? edgeMap.get(key).size : 0;
-        if (sharedRoles.length > 0 || sharedSections > 0) {
-          links.push({ i, j, sharedRoles, weight: sharedRoles.length + sharedSections });
+        if (sharedRoles.length > 0) {
+          links.push({ i, j, sharedRoles, weight: levelWeight });
         }
       }
     }
