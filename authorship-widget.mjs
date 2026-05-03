@@ -1312,9 +1312,9 @@ function render({ model, el: rootEl }) {
       svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
 
       // Edges — per-role, differentiated by contribution level:
-      //   lead: full connectivity to all others in that role
-      //   equal: MST edges, thick stroke
-      //   supporting: MST edges, thin stroke
+      //   lead: MST edges, thick stroke (4px)
+      //   equal: MST edges, medium stroke (2px)
+      //   supporting: MST edges, thin stroke (0.7px)
       const roleMSTEdges = [];
       for (const role of ALL_CREDIT_ROLES) {
         const rc = getRoleCat(role);
@@ -1327,42 +1327,25 @@ function render({ model, el: rootEl }) {
         }
         if (members.length < 2) continue;
 
-        // Identify lead members for full connectivity
-        const leadMembers = members.filter(i => memberLevel.get(i) === 'lead');
-        const leadPairs = new Set(); // track lead-connected pairs to avoid MST duplicates
-
-        // Lead → connect to every other member of this role
-        for (const a of leadMembers) {
-          for (const b of members) {
-            if (a === b) continue;
-            const key = a < b ? `${a}::${b}` : `${b}::${a}`;
-            if (leadPairs.has(key)) continue;
-            leadPairs.add(key);
-            roleMSTEdges.push({ i: a < b ? a : b, j: a < b ? b : a, role, color: rc.color, level: 'lead' });
-          }
-        }
-
-        // Prim's MST only among non-lead members (nearest-neighbor chains)
-        const nonLeadMembers = members.filter(i => memberLevel.get(i) !== 'lead');
-        if (nonLeadMembers.length >= 2) {
-          const inTree = new Set([nonLeadMembers[0]]);
-          const remaining = new Set(nonLeadMembers.slice(1));
-          while (remaining.size > 0) {
-            let bestDist = Infinity, bestA = -1, bestB = -1;
-            for (const a of inTree) {
-              for (const b of remaining) {
-                const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
-                const d = dx * dx + dy * dy;
-                if (d < bestDist) { bestDist = d; bestA = a; bestB = b; }
-              }
+        // Prim's MST among all members (nearest-neighbor chains)
+        const inTree = new Set([members[0]]);
+        const remaining = new Set(members.slice(1));
+        while (remaining.size > 0) {
+          let bestDist = Infinity, bestA = -1, bestB = -1;
+          for (const a of inTree) {
+            for (const b of remaining) {
+              const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+              const d = dx * dx + dy * dy;
+              if (d < bestDist) { bestDist = d; bestA = a; bestB = b; }
             }
-            inTree.add(bestB);
-            remaining.delete(bestB);
-            const lvlA = LEVEL_RANK[memberLevel.get(bestA)] || 0;
-            const lvlB = LEVEL_RANK[memberLevel.get(bestB)] || 0;
-            const edgeLevel = lvlA >= lvlB ? memberLevel.get(bestA) : memberLevel.get(bestB);
-            roleMSTEdges.push({ i: bestA, j: bestB, role, color: rc.color, level: edgeLevel });
           }
+          inTree.add(bestB);
+          remaining.delete(bestB);
+          // Edge level = higher level of the two endpoints
+          const lvlA = LEVEL_RANK[memberLevel.get(bestA)] || 0;
+          const lvlB = LEVEL_RANK[memberLevel.get(bestB)] || 0;
+          const edgeLevel = lvlA >= lvlB ? memberLevel.get(bestA) : memberLevel.get(bestB);
+          roleMSTEdges.push({ i: bestA, j: bestB, role, color: rc.color, level: edgeLevel });
         }
       }
 
@@ -1447,8 +1430,8 @@ function render({ model, el: rootEl }) {
         let offset = -bandW / 2 + strandGap / 2;
 
         for (const e of visibleEdges) {
-          // Stroke width by contribution level: lead=2, equal=3, supporting=1
-          const strandW = e.level === 'equal' ? 3.0 : e.level === 'supporting' ? 1.0 : 2.0;
+          // Stroke width by contribution level: lead=4, equal=2, supporting=0.7
+          const strandW = e.level === 'lead' ? 4.0 : e.level === 'equal' ? 2.0 : 0.7;
           const ox = nx * offset, oy = ny * offset;
           const path = document.createElementNS(ns, 'path');
           path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
