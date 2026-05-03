@@ -1557,9 +1557,9 @@ function render({ model, el: rootEl }) {
         label.setAttribute('x', String(nd.x));
         label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 16 : 18)));
         label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#c4cad4' : '#64748b'));
+        label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#e2e8f0' : '#1f2937'));
         label.setAttribute('font-size', isLarge ? '19' : '15');
-        label.setAttribute('font-weight', isHovered || isSearchMatch ? '600' : '400');
+        label.setAttribute('font-weight', isHovered || isSearchMatch ? '700' : '500');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
         label.textContent = nd.lastName;
