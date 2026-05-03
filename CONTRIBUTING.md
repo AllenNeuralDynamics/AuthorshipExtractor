@@ -103,8 +103,8 @@ npx mystmd start
 
 Switch to **"Real contributors"** mode using the toggle at the top of the widget.
 Verify your profile appears and your contributions display correctly.
-Check the **Collaboration** tab — switch between Chord, Collab, and the circle-of-circles modes
-to see how your shared roles connect you to other contributors.
+Check the **Collaboration** tab — switch between Authors, Collaboration, and the circle-of-circles modes
+(By Institutions, By Role, By Section & Figure) to see how your shared roles connect you to other contributors.
 
 ### 5. Open a pull request
 

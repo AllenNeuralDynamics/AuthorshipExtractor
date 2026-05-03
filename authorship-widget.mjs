@@ -432,7 +432,7 @@ function render({ model, el: rootEl }) {
   let activeTab = 'network';
   let showCreditMenu = false;
   let authorMode = 'simulated'; // 'simulated' or 'real'
-  let networkMode = 'chord'; // 'chord' | 'institutions' | 'force' | 'sections'
+  let networkMode = 'chord'; // 'chord' | 'collab' | 'institutions' | 'force' | 'sections'
   let searchQuery = ''; // search/filter across all views
 
   // Search highlight: matches name, institution, or CRediT role
@@ -2432,7 +2432,7 @@ function render({ model, el: rootEl }) {
     return wrap;
   }
 
-  // ──── Shared scatter-view renderer (used by Collab + UMAP) ────
+  // ──── Shared scatter-view renderer (used by Collab layout) ────
   function buildScatterView(sorted, highlightSet, positionFn) {
     const n = sorted.length;
     const wrap = el('div', { className: 'ae-network' });
