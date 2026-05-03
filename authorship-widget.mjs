@@ -2555,15 +2555,51 @@ function render({ model, el: rootEl }) {
       svg.style.width = '100%'; svg.style.maxWidth = W + 'px';
       svg.style.height = 'auto'; svg.style.display = 'block'; svg.style.margin = '0 auto';
 
-      // Edges — only show on hover, dimmed otherwise
-      for (const link of links) {
-        const s = nodes[link.i], t = nodes[link.j];
-        const isHL = hoveredIdx === link.i || hoveredIdx === link.j;
+      // Edges — per-role MST: for each CRediT role, connect contributors
+      // via minimum spanning tree (nearest-neighbor chains) in that role's color
+      const roleMSTEdges = [];
+      for (const role of ALL_CREDIT_ROLES) {
+        const rc = getRoleCat(role);
+        // Find all author indices who have this role
+        const members = [];
+        for (let i = 0; i < n; i++) {
+          if (findCreditLevel(sorted[i], role)) members.push(i);
+        }
+        if (members.length < 2) continue;
+        // Prim's MST on Euclidean distances
+        const inTree = new Set([members[0]]);
+        const remaining = new Set(members.slice(1));
+        while (remaining.size > 0) {
+          let bestDist = Infinity, bestA = -1, bestB = -1;
+          for (const a of inTree) {
+            for (const b of remaining) {
+              const dx = nodes[a].x - nodes[b].x, dy = nodes[a].y - nodes[b].y;
+              const d = dx * dx + dy * dy;
+              if (d < bestDist) { bestDist = d; bestA = a; bestB = b; }
+            }
+          }
+          inTree.add(bestB);
+          remaining.delete(bestB);
+          roleMSTEdges.push({ i: bestA, j: bestB, role, color: rc.color });
+        }
+      }
+
+      // Group MST edges by author pair to draw parallel strands
+      const pairEdges = new Map();
+      for (const e of roleMSTEdges) {
+        const key = e.i < e.j ? `${e.i}::${e.j}` : `${e.j}::${e.i}`;
+        const arr = pairEdges.get(key) || [];
+        arr.push(e);
+        pairEdges.set(key, arr);
+      }
+
+      for (const [, edges] of pairEdges) {
+        const { i, j } = edges[0];
+        const s = nodes[i], t = nodes[j];
+        const isHL = hoveredIdx === i || hoveredIdx === j;
         const isDim = hoveredIdx !== null && !isHL;
         if (isDim) continue;
-        const baseOpacity = hoveredIdx === null
-          ? Math.min(0.25, 0.05 + (link.weight / maxWeight) * 0.2)
-          : 0.6;
+        const baseOpacity = hoveredIdx === null ? 0.25 : 0.6;
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -2574,22 +2610,21 @@ function render({ model, el: rootEl }) {
         const tx = t.x - ux * (t.radius + gap), ty = t.y - uy * (t.radius + gap);
 
         const strandW = 2.0, strandGap = strandW + 0.8;
-        const strands = link.sharedRoles;
-        const bandW = strands.length * strandGap;
+        const bandW = edges.length * strandGap;
         let offset = -bandW / 2 + strandGap / 2;
 
-        for (const sr of strands) {
+        for (const e of edges) {
           const ox = nx * offset, oy = ny * offset;
           const path = document.createElementNS(ns, 'path');
           path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
           path.setAttribute('fill', 'none');
-          path.setAttribute('stroke', sr.color);
+          path.setAttribute('stroke', e.color);
           path.setAttribute('stroke-width', String(strandW));
           path.setAttribute('stroke-opacity', String(baseOpacity));
           path.setAttribute('stroke-linecap', 'round');
           path.setAttribute('vector-effect', 'non-scaling-stroke');
           const title = document.createElementNS(ns, 'title');
-          title.textContent = `${sorted[link.i].name} ↔ ${sorted[link.j].name}\n${sr.role}`;
+          title.textContent = `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role}`;
           path.appendChild(title);
           svg.appendChild(path);
           offset += strandGap;
