@@ -1711,10 +1711,11 @@ function render({ model, el: rootEl }) {
       }
 
       const ITERS = 300;
-      const repulsion = isLarge ? 5000 : 12000;
-      const attraction = 0.02;
+      const repulsion = isLarge ? 8000 : 15000;
+      const attraction = 0.005;
       const damping = 0.92;
-      const centerPull = 0.005;
+      const centerPull = 0.003;
+      const wMax = Math.max(1, ...links.map(l => l.weight));
 
       for (let iter = 0; iter < ITERS; iter++) {
         const alpha = 1 - iter / ITERS;
@@ -1735,12 +1736,13 @@ function render({ model, el: rootEl }) {
           }
         }
 
-        // Attraction (connected pairs)
+        // Attraction (connected pairs) — normalized weight, log-distance
         for (const link of links) {
           const a = nodes[link.i], b = nodes[link.j];
           const dx = b.x - a.x, dy = b.y - a.y;
           const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          const force = attraction * link.weight * alpha * dist;
+          const w = link.weight / wMax;  // normalize to 0..1
+          const force = attraction * w * alpha * Math.log(1 + dist);
           const fx = (dx / dist) * force;
           const fy = (dy / dist) * force;
           a.vx += fx; a.vy += fy;
