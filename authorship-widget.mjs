@@ -1166,6 +1166,7 @@ function render({ model, el: rootEl }) {
     const modes = [
       { key: 'chord', label: '👤 Authors' },
       { key: 'collab', label: '🧲 Collaboration' },
+      { key: 'umap', label: '🗺️ UMAP' },
       { key: 'institutions', label: '🏛️ By Institutions' },
       { key: 'force', label: '🎯 By Role' },
       { key: 'sections', label: '📄 By Section & Figure' },
@@ -1186,6 +1187,7 @@ function render({ model, el: rootEl }) {
     if (networkMode === 'force') return buildForceGraph(sorted, highlightSet);
     if (networkMode === 'sections') return buildSectionCircles(sorted, highlightSet);
     if (networkMode === 'collab') return buildCollabLayout(sorted, highlightSet);
+    if (networkMode === 'umap') return buildUmapLayout(sorted, highlightSet);
 
     const wrap = el('div', { className: 'ae-network' });
     const ns = 'http://www.w3.org/2000/svg';
@@ -1195,7 +1197,7 @@ function render({ model, el: rootEl }) {
     }
 
     // Mode toggle
-    wrap.appendChild(buildNetworkModeToggle(n));
+    wrap.appendChild(buildNetworkModeToggle());
 
     // Compute per-author roles with colors
     const authorRoles = sorted.map(a => {
@@ -2432,8 +2434,8 @@ function render({ model, el: rootEl }) {
     return wrap;
   }
 
-  // ──── Force-directed collaboration layout ────
-  function buildCollabLayout(sorted, highlightSet) {
+  // ──── Shared scatter-view renderer (used by Collab + UMAP) ────
+  function buildScatterView(sorted, highlightSet, positionFn) {
     const n = sorted.length;
     const wrap = el('div', { className: 'ae-network' });
     const ns = 'http://www.w3.org/2000/svg';
@@ -2494,25 +2496,20 @@ function render({ model, el: rootEl }) {
     const isLarge = n > 20;
     const W = isLarge ? 900 : 600;
     const H = isLarge ? 900 : 500;
-    const CX = W / 2, CY = H / 2;
 
     // Node sizes
     const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
     const minR = isLarge ? 10 : 18;
     const maxR = isLarge ? 20 : 38;
 
-    // ── Force simulation ──
-    // Initialize positions on a circle to avoid overlap at start
+    // Build node objects with metadata
     const nodes = sorted.map((a, i) => {
-      const angle = (2 * Math.PI * i) / n;
       const roles = authorRoles[i];
       const secCount = (a.section_contributions || []).length;
       const weight = roles.length + secCount;
       const radius = minR + ((weight / (maxRoles + 10)) * (maxR - minR));
       return {
-        x: CX + (W * 0.25) * Math.cos(angle),
-        y: CY + (H * 0.25) * Math.sin(angle),
-        vx: 0, vy: 0,
+        x: 0, y: 0,
         radius, roles,
         name: a.name,
         firstName: getFirstName(a.name),
@@ -2524,79 +2521,8 @@ function render({ model, el: rootEl }) {
       };
     });
 
-    // Run simulation steps
-    const ITERS = 300;
-    const repulsion = isLarge ? 8000 : 15000;
-    const attraction = 0.008;
-    const damping = 0.92;
-    const centerPull = 0.002;
-
-    for (let iter = 0; iter < ITERS; iter++) {
-      const alpha = 1 - iter / ITERS; // cooling
-
-      // Repulsion (all pairs)
-      for (let i = 0; i < n; i++) {
-        for (let j = i + 1; j < n; j++) {
-          let dx = nodes[i].x - nodes[j].x;
-          let dy = nodes[i].y - nodes[j].y;
-          let dist = Math.sqrt(dx * dx + dy * dy) || 1;
-          // Minimum distance = sum of radii + gap
-          const minDist = nodes[i].radius + nodes[j].radius + 8;
-          if (dist < minDist) dist = minDist;
-          const force = (repulsion * alpha) / (dist * dist);
-          const fx = (dx / dist) * force;
-          const fy = (dy / dist) * force;
-          nodes[i].vx += fx; nodes[i].vy += fy;
-          nodes[j].vx -= fx; nodes[j].vy -= fy;
-        }
-      }
-
-      // Attraction (connected pairs)
-      for (const link of links) {
-        const a = nodes[link.i], b = nodes[link.j];
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-        const force = attraction * link.weight * alpha * dist;
-        const fx = (dx / dist) * force;
-        const fy = (dy / dist) * force;
-        a.vx += fx; a.vy += fy;
-        b.vx -= fx; b.vy -= fy;
-      }
-
-      // Center gravity
-      for (let i = 0; i < n; i++) {
-        nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
-        nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
-      }
-
-      // Integrate + damp
-      for (let i = 0; i < n; i++) {
-        nodes[i].vx *= damping;
-        nodes[i].vy *= damping;
-        nodes[i].x += nodes[i].vx;
-        nodes[i].y += nodes[i].vy;
-      }
-
-      // Collision resolution — hard separation so nodes never overlap
-      for (let pass = 0; pass < 3; pass++) {
-        for (let i = 0; i < n; i++) {
-          for (let j = i + 1; j < n; j++) {
-            const dx = nodes[j].x - nodes[i].x;
-            const dy = nodes[j].y - nodes[i].y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
-            const minDist = nodes[i].radius + nodes[j].radius + 12;
-            if (dist < minDist) {
-              const overlap = (minDist - dist) / 2;
-              const ux = dx / dist, uy = dy / dist;
-              nodes[i].x -= ux * overlap;
-              nodes[i].y -= uy * overlap;
-              nodes[j].x += ux * overlap;
-              nodes[j].y += uy * overlap;
-            }
-          }
-        }
-      }
-    }
+    // Let the caller compute positions
+    positionFn(nodes, links, n, W, H, isLarge);
 
     // Normalize positions to fit within the SVG with padding
     const pad = maxR + 30;
@@ -2632,7 +2558,7 @@ function render({ model, el: rootEl }) {
         const s = nodes[link.i], t = nodes[link.j];
         const isHL = hoveredIdx === link.i || hoveredIdx === link.j;
         const isDim = hoveredIdx !== null && !isHL;
-        if (isDim) continue; // hide non-connected edges entirely when hovering
+        if (isDim) continue;
         const baseOpacity = hoveredIdx === null
           ? Math.min(0.25, 0.05 + (link.weight / maxWeight) * 0.2)
           : 0.6;
@@ -2643,7 +2569,6 @@ function render({ model, el: rootEl }) {
         const sx = s.x + ux * (s.radius + 4), sy = s.y + uy * (s.radius + 4);
         const tx = t.x - ux * (t.radius + 4), ty = t.y - uy * (t.radius + 4);
 
-        // Single line colored by strongest shared role
         const mainColor = link.sharedRoles.length > 0 ? link.sharedRoles[0].color : '#94a3b8';
         const strokeW = 1 + (link.weight / maxWeight) * 3;
 
@@ -2719,10 +2644,8 @@ function render({ model, el: rootEl }) {
           g.appendChild(hRing);
         }
 
-        // Avatar or initials
         appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
 
-        // Name label
         const isSearchMatch = highlightSet && highlightSet.has(idx);
         const label = document.createElementNS(ns, 'text');
         label.setAttribute('x', String(nd.x));
@@ -2747,18 +2670,17 @@ function render({ model, el: rootEl }) {
           g.appendChild(cs);
         }
 
-        // Hover + keyboard
-        g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderCollab(); });
-        g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderCollab(); });
+        g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderView(); });
+        g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderView(); });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
         g.setAttribute('aria-label', nd.name);
         g.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault(); hoveredIdx = hoveredIdx === idx ? null : idx; rerenderCollab();
+            e.preventDefault(); hoveredIdx = hoveredIdx === idx ? null : idx; rerenderView();
           }
         });
-        g.addEventListener('focus', () => { hoveredIdx = idx; rerenderCollab(); });
-        g.addEventListener('blur', () => { hoveredIdx = null; rerenderCollab(); });
+        g.addEventListener('focus', () => { hoveredIdx = idx; rerenderView(); });
+        g.addEventListener('blur', () => { hoveredIdx = null; rerenderView(); });
 
         svg.appendChild(g);
       }
@@ -2846,7 +2768,7 @@ function render({ model, el: rootEl }) {
       onClick: () => { vbX=0; vbY=0; vbW=W; vbH=H; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
     graphWrap.appendChild(zoomControls);
 
-    function rerenderCollab() {
+    function rerenderView() {
       const oldSvg = graphWrap.querySelector('.ae-network-svg');
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
@@ -2857,7 +2779,7 @@ function render({ model, el: rootEl }) {
       else if (newCard) graphWrap.appendChild(newCard);
     }
 
-    rerenderCollab();
+    rerenderView();
     wrap.appendChild(graphWrap);
 
     // Legend
@@ -2886,6 +2808,314 @@ function render({ model, el: rootEl }) {
     wrap.appendChild(stats);
 
     return wrap;
+  }
+
+  // ──── Force-directed collaboration layout ────
+  function buildCollabLayout(sorted, highlightSet) {
+    return buildScatterView(sorted, highlightSet, (nodes, links, n, W, H, isLarge) => {
+      const CX = W / 2, CY = H / 2;
+      // Initialize positions on a circle
+      for (let i = 0; i < n; i++) {
+        const angle = (2 * Math.PI * i) / n;
+        nodes[i].x = CX + (W * 0.25) * Math.cos(angle);
+        nodes[i].y = CY + (H * 0.25) * Math.sin(angle);
+        nodes[i].vx = 0; nodes[i].vy = 0;
+      }
+
+      const ITERS = 300;
+      const repulsion = isLarge ? 8000 : 15000;
+      const attraction = 0.008;
+      const damping = 0.92;
+      const centerPull = 0.002;
+
+      for (let iter = 0; iter < ITERS; iter++) {
+        const alpha = 1 - iter / ITERS;
+
+        // Repulsion (all pairs)
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            let dx = nodes[i].x - nodes[j].x;
+            let dy = nodes[i].y - nodes[j].y;
+            let dist = Math.sqrt(dx * dx + dy * dy) || 1;
+            const minDist = nodes[i].radius + nodes[j].radius + 8;
+            if (dist < minDist) dist = minDist;
+            const force = (repulsion * alpha) / (dist * dist);
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            nodes[i].vx += fx; nodes[i].vy += fy;
+            nodes[j].vx -= fx; nodes[j].vy -= fy;
+          }
+        }
+
+        // Attraction (connected pairs)
+        for (const link of links) {
+          const a = nodes[link.i], b = nodes[link.j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const force = attraction * link.weight * alpha * dist;
+          const fx = (dx / dist) * force;
+          const fy = (dy / dist) * force;
+          a.vx += fx; a.vy += fy;
+          b.vx -= fx; b.vy -= fy;
+        }
+
+        // Center gravity
+        for (let i = 0; i < n; i++) {
+          nodes[i].vx += (CX - nodes[i].x) * centerPull * alpha;
+          nodes[i].vy += (CY - nodes[i].y) * centerPull * alpha;
+        }
+
+        // Integrate + damp
+        for (let i = 0; i < n; i++) {
+          nodes[i].vx *= damping; nodes[i].vy *= damping;
+          nodes[i].x += nodes[i].vx; nodes[i].y += nodes[i].vy;
+        }
+
+        // Collision resolution
+        for (let pass = 0; pass < 3; pass++) {
+          for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+              const dx = nodes[j].x - nodes[i].x;
+              const dy = nodes[j].y - nodes[i].y;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+              const minDist = nodes[i].radius + nodes[j].radius + 12;
+              if (dist < minDist) {
+                const overlap = (minDist - dist) / 2;
+                const ux = dx / dist, uy = dy / dist;
+                nodes[i].x -= ux * overlap; nodes[i].y -= uy * overlap;
+                nodes[j].x += ux * overlap; nodes[j].y += uy * overlap;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  // ──── UMAP layout ────
+  function buildUmapLayout(sorted, highlightSet) {
+    return buildScatterView(sorted, highlightSet, (nodes, links, n, W, H) => {
+      if (n <= 2) {
+        nodes[0].x = W * 0.3; nodes[0].y = H * 0.5;
+        if (n === 2) { nodes[1].x = W * 0.7; nodes[1].y = H * 0.5; }
+        return;
+      }
+
+      // Build distance matrix from collaboration weights
+      // d(i,j) = 1 / (1 + weight) for connected, 1 for unconnected
+      const dist = Array.from({ length: n }, () => new Float64Array(n));
+      const wMap = new Map();
+      for (const link of links) {
+        const key = link.i * n + link.j;
+        wMap.set(key, link.weight);
+        wMap.set(link.j * n + link.i, link.weight);
+      }
+      for (let i = 0; i < n; i++) {
+        for (let j = 0; j < n; j++) {
+          if (i === j) { dist[i][j] = 0; continue; }
+          const w = wMap.get(i * n + j) || 0;
+          dist[i][j] = w > 0 ? 1 / (1 + w) : 1;
+        }
+      }
+
+      // k-NN: find nearest neighbors for each point
+      const k = Math.min(15, n - 1);
+      const knnIdx = Array.from({ length: n }, () => []);
+      const knnDist = Array.from({ length: n }, () => []);
+      for (let i = 0; i < n; i++) {
+        const neighbors = [];
+        for (let j = 0; j < n; j++) {
+          if (j !== i) neighbors.push({ j, d: dist[i][j] });
+        }
+        neighbors.sort((a, b) => a.d - b.d);
+        for (let ki = 0; ki < k; ki++) {
+          knnIdx[i].push(neighbors[ki].j);
+          knnDist[i].push(neighbors[ki].d);
+        }
+      }
+
+      // Compute smooth k-NN distances (σ per point via binary search)
+      // Target: Σ exp(-(d - ρ) / σ) = log2(k)
+      const target = Math.log2(k);
+      const rho = new Float64Array(n);
+      const sigma = new Float64Array(n);
+      for (let i = 0; i < n; i++) {
+        rho[i] = knnDist[i][0]; // distance to nearest neighbor
+        let lo = 1e-5, hi = 100;
+        for (let iter = 0; iter < 64; iter++) {
+          const mid = (lo + hi) / 2;
+          let sum = 0;
+          for (let ki = 0; ki < k; ki++) {
+            const d = knnDist[i][ki] - rho[i];
+            sum += d > 0 ? Math.exp(-d / mid) : 1;
+          }
+          if (sum > target) hi = mid; else lo = mid;
+        }
+        sigma[i] = (lo + hi) / 2;
+      }
+
+      // Build fuzzy simplicial set (high-dimensional weights)
+      // v_{j|i} = exp(-(d(i,j) - ρ_i) / σ_i) for k-NN, 0 otherwise
+      const hiW = Array.from({ length: n }, () => new Float64Array(n));
+      for (let i = 0; i < n; i++) {
+        for (let ki = 0; ki < k; ki++) {
+          const j = knnIdx[i][ki];
+          const d = knnDist[i][ki] - rho[i];
+          hiW[i][j] = d > 0 ? Math.exp(-d / sigma[i]) : 1;
+        }
+      }
+
+      // Symmetrize: v_{ij} = v_{j|i} + v_{i|j} - v_{j|i} * v_{i|j}
+      const symW = Array.from({ length: n }, () => new Float64Array(n));
+      const edges = [];
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const a = hiW[i][j], b = hiW[j][i];
+          const w = a + b - a * b;
+          if (w > 1e-6) {
+            symW[i][j] = w; symW[j][i] = w;
+            edges.push({ i, j, w });
+          }
+        }
+      }
+
+      // Initialize embedding with spectral initialization (first 2 eigenvectors of Laplacian)
+      const emb = Array.from({ length: n }, () => [0, 0]);
+      // Build normalized Laplacian from symW
+      const L = Array.from({ length: n }, () => new Float64Array(n));
+      for (let i = 0; i < n; i++) {
+        let deg = 0;
+        for (let j = 0; j < n; j++) {
+          if (i !== j) { L[i][j] = -symW[i][j]; deg += symW[i][j]; }
+        }
+        L[i][i] = deg;
+      }
+      // Power iteration for 2nd and 3rd smallest eigenvectors
+      let alpha = 0;
+      for (let i = 0; i < n; i++) alpha = Math.max(alpha, L[i][i]);
+      alpha *= 2; if (alpha === 0) alpha = 1;
+      const invSqrtN = 1 / Math.sqrt(n);
+
+      function fiedlerVector(deflectVecs) {
+        let v = new Float64Array(n);
+        for (let i = 0; i < n; i++) v[i] = Math.sin(2.7 * i + 0.3 * deflectVecs.length);
+        let norm = Math.sqrt(v.reduce((s, x) => s + x * x, 0));
+        for (let i = 0; i < n; i++) v[i] /= norm;
+        for (let iter = 0; iter < 200; iter++) {
+          const vNew = new Float64Array(n);
+          for (let i = 0; i < n; i++) {
+            let sum = alpha * v[i];
+            for (let j = 0; j < n; j++) sum -= L[i][j] * v[j];
+            vNew[i] = sum;
+          }
+          // Deflate against constant vector
+          let proj = 0;
+          for (let i = 0; i < n; i++) proj += vNew[i] * invSqrtN;
+          for (let i = 0; i < n; i++) vNew[i] -= proj * invSqrtN;
+          // Deflate against previous vectors
+          for (const dv of deflectVecs) {
+            let p = 0;
+            for (let i = 0; i < n; i++) p += vNew[i] * dv[i];
+            for (let i = 0; i < n; i++) vNew[i] -= p * dv[i];
+          }
+          norm = Math.sqrt(vNew.reduce((s, x) => s + x * x, 0));
+          if (norm < 1e-12) break;
+          for (let i = 0; i < n; i++) vNew[i] /= norm;
+          v = vNew;
+        }
+        return v;
+      }
+
+      const ev1 = fiedlerVector([]);
+      const ev2 = fiedlerVector([ev1]);
+      for (let i = 0; i < n; i++) {
+        emb[i][0] = ev1[i] * 10;
+        emb[i][1] = ev2[i] * 10;
+      }
+
+      // SGD optimization (UMAP's layout optimization)
+      const aParam = 1.577, bParam = 0.895; // default UMAP a, b for min_dist=0.1
+      const nEpochs = 500;
+      const initialLR = 1.0;
+
+      // Compute epochs per edge (sample proportional to weight)
+      const maxEdgeW = Math.max(1e-6, ...edges.map(e => e.w));
+      const epochsPerEdge = edges.map(e => {
+        const ratio = e.w / maxEdgeW;
+        return ratio > 0 ? Math.max(1, Math.round(nEpochs * ratio)) : nEpochs;
+      });
+      // Build schedule: for each epoch, which edges to process
+      const edgeEpoch = edges.map((_, ei) => {
+        const interval = nEpochs / epochsPerEdge[ei];
+        return interval;
+      });
+      const nextEdgeEpoch = edges.map(() => 0);
+
+      const negSamples = 5;
+
+      for (let epoch = 0; epoch < nEpochs; epoch++) {
+        const lr = initialLR * (1 - epoch / nEpochs);
+
+        // Attractive forces (sampled edges)
+        for (let ei = 0; ei < edges.length; ei++) {
+          if (epoch < nextEdgeEpoch[ei]) continue;
+          nextEdgeEpoch[ei] += edgeEpoch[ei];
+          const { i, j } = edges[ei];
+          const dx = emb[i][0] - emb[j][0];
+          const dy = emb[i][1] - emb[j][1];
+          const distSq = dx * dx + dy * dy + 1e-6;
+          const d = Math.sqrt(distSq);
+          // Gradient of attractive force
+          const gradCoeff = (-2 * aParam * bParam * Math.pow(distSq, bParam - 1)) /
+            (1 + aParam * Math.pow(distSq, bParam));
+          const gx = gradCoeff * dx * lr;
+          const gy = gradCoeff * dy * lr;
+          emb[i][0] += Math.max(-4, Math.min(4, gx));
+          emb[i][1] += Math.max(-4, Math.min(4, gy));
+          emb[j][0] -= Math.max(-4, Math.min(4, gx));
+          emb[j][1] -= Math.max(-4, Math.min(4, gy));
+
+          // Repulsive forces (negative sampling)
+          for (let ns = 0; ns < negSamples; ns++) {
+            const kk = Math.floor(Math.random() * n);
+            if (kk === i) continue;
+            const ndx = emb[i][0] - emb[kk][0];
+            const ndy = emb[i][1] - emb[kk][1];
+            const ndistSq = ndx * ndx + ndy * ndy + 1e-6;
+            const repGrad = (2 * bParam) /
+              ((0.001 + ndistSq) * (1 + aParam * Math.pow(ndistSq, bParam)));
+            const rgx = repGrad * ndx * lr;
+            const rgy = repGrad * ndy * lr;
+            emb[i][0] += Math.max(-4, Math.min(4, rgx));
+            emb[i][1] += Math.max(-4, Math.min(4, rgy));
+          }
+        }
+      }
+
+      // Copy embedding to node positions
+      for (let i = 0; i < n; i++) {
+        nodes[i].x = emb[i][0];
+        nodes[i].y = emb[i][1];
+      }
+
+      // Collision resolution post-UMAP
+      for (let pass = 0; pass < 10; pass++) {
+        for (let i = 0; i < n; i++) {
+          for (let j = i + 1; j < n; j++) {
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            const d = Math.sqrt(dx * dx + dy * dy) || 0.01;
+            const minDist = nodes[i].radius + nodes[j].radius + 12;
+            if (d < minDist) {
+              const overlap = (minDist - d) / 2;
+              const ux = dx / d, uy = dy / d;
+              nodes[i].x -= ux * overlap; nodes[i].y -= uy * overlap;
+              nodes[j].x += ux * overlap; nodes[j].y += uy * overlap;
+            }
+          }
+        }
+      }
+    });
   }
 
   // ──── Institution circle-of-circles ────
