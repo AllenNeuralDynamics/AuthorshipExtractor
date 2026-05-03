@@ -1896,9 +1896,9 @@ function render({ model, el: rootEl }) {
         remaining.delete(bestB);
         const lvlA = LEVEL_RANK[memberLevel.get(bestA)] || 0;
         const lvlB = LEVEL_RANK[memberLevel.get(bestB)] || 0;
-        // Flow direction: higher level → lower level (or alphabetical for ties)
-        const fromIdx = lvlA >= lvlB ? bestA : bestB;
-        const toIdx = lvlA >= lvlB ? bestB : bestA;
+        // Flow direction: lower level → higher level (supporting→equal→lead)
+        const fromIdx = lvlA <= lvlB ? bestA : bestB;
+        const toIdx = lvlA <= lvlB ? bestB : bestA;
         flowEdges.push({
           fromIdx, toIdx, role, color: rc.color,
           fromLevel: memberLevel.get(fromIdx),
