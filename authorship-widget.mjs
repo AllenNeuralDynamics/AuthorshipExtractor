@@ -1251,8 +1251,9 @@ function render({ model, el: rootEl }) {
 
     // SVG dimensions — scale canvas with team size for readability
     const isLarge = n > 20;
-    const W = isLarge ? Math.min(3000, 1000 + n * 32) : 700;
-    const H = isLarge ? Math.min(1200, 500 + n * 12) : 450;
+    // Canvas aspect ratio ~1.5:1 to match typical landscape containers
+    const W = isLarge ? Math.min(2400, 900 + n * 24) : 700;
+    const H = Math.round(W / 1.5);
 
     // Node sizes — keep nodes legible even for large teams
     const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
@@ -1299,6 +1300,23 @@ function render({ model, el: rootEl }) {
       nd.x = nd.x * scale + offsetX;
       nd.y = nd.y * scale + offsetY;
     }
+
+    // Compute tight bounding box around actual node positions (including labels)
+    const labelPad = 30; // extra space for name labels below nodes
+    let tMinX = Infinity, tMinY = Infinity, tMaxX = -Infinity, tMaxY = -Infinity;
+    for (const nd of nodes) {
+      tMinX = Math.min(tMinX, nd.x - nd.radius - 10);
+      tMinY = Math.min(tMinY, nd.y - nd.radius - 10);
+      tMaxX = Math.max(tMaxX, nd.x + nd.radius + 10);
+      tMaxY = Math.max(tMaxY, nd.y + nd.radius + labelPad);
+    }
+    const fitW = tMaxX - tMinX, fitH = tMaxY - tMinY;
+    // Initial viewBox: tight fit with small margin
+    const fitMargin = 20;
+    const initVbX = tMinX - fitMargin;
+    const initVbY = tMinY - fitMargin;
+    const initVbW = fitW + 2 * fitMargin;
+    const initVbH = fitH + 2 * fitMargin;
 
     // Hover state
     let hoveredIdx = null;
@@ -1601,8 +1619,8 @@ function render({ model, el: rootEl }) {
     const graphOuter = el('div', { className: 'ae-graph-outer' });
     const graphWrap = el('div', { className: 'ae-network-graph' });
 
-    // Zoom/pan
-    let vbX = 0, vbY = 0, vbW = W, vbH = H;
+    // Zoom/pan — start with tight-fit viewBox
+    let vbX = initVbX, vbY = initVbY, vbW = initVbW, vbH = initVbH;
     let isPanning = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
     function applyViewBox() {
       const svg = graphWrap.querySelector('.ae-network-svg');
@@ -1611,8 +1629,8 @@ function render({ model, el: rootEl }) {
     graphWrap.addEventListener('wheel', (e) => {
       e.preventDefault();
       const factor = e.deltaY > 0 ? 1.1 : 0.9;
-      const newW = Math.max(W * 0.2, Math.min(W * 2, vbW * factor));
-      const newH = Math.max(H * 0.2, Math.min(H * 2, vbH * factor));
+      const newW = Math.max(initVbW * 0.2, Math.min(initVbW * 3, vbW * factor));
+      const newH = Math.max(initVbH * 0.2, Math.min(initVbH * 3, vbH * factor));
       const rect = graphWrap.getBoundingClientRect();
       const mx = (e.clientX - rect.left) / rect.width;
       const my = (e.clientY - rect.top) / rect.height;
@@ -1638,11 +1656,11 @@ function render({ model, el: rootEl }) {
     // Zoom controls
     const zoomControls = el('div', { className: 'ae-zoom-controls' });
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
-      onClick: () => { const nW = Math.max(W*0.2,vbW*0.7), nH = Math.max(H*0.2,vbH*0.7); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom in' }, '+'));
+      onClick: () => { const nW = Math.max(initVbW*0.2,vbW*0.7), nH = Math.max(initVbH*0.2,vbH*0.7); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom in' }, '+'));
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
-      onClick: () => { const nW = Math.min(W*2,vbW*1.4), nH = Math.min(H*2,vbH*1.4); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom out' }, '−'));
+      onClick: () => { const nW = Math.min(initVbW*3,vbW*1.4), nH = Math.min(initVbH*3,vbH*1.4); vbX+=(vbW-nW)/2; vbY+=(vbH-nH)/2; vbW=nW; vbH=nH; applyViewBox(); }, title: 'Zoom out' }, '−'));
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
-      onClick: () => { vbX=0; vbY=0; vbW=W; vbH=H; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
+      onClick: () => { vbX=initVbX; vbY=initVbY; vbW=initVbW; vbH=initVbH; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
     graphWrap.appendChild(zoomControls);
 
     function rerenderView() {
