@@ -1571,14 +1571,7 @@ function render({ model, el: rootEl }) {
       const nd = nodes[hoveredIdx];
       const authorEdges = links.filter(l => l.i === hoveredIdx || l.j === hoveredIdx);
       const totalShared = authorEdges.reduce((s, l) => s + l.sharedRoles.length, 0);
-      const onRight = nd.x > W / 2;
-      const onBottom = nd.y > H / 2;
-      const cardStyle = {};
-      if (onRight) { cardStyle.left = '12px'; cardStyle.right = 'auto'; }
-      else { cardStyle.right = '56px'; cardStyle.left = 'auto'; }
-      if (onBottom) { cardStyle.top = '12px'; cardStyle.bottom = 'auto'; }
-      else { cardStyle.bottom = '12px'; cardStyle.top = 'auto'; }
-      const card = el('div', { className: 'ae-info-card', style: cardStyle });
+      const card = el('div', { className: 'ae-info-card' });
       const avatarRow = el('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' } });
       avatarRow.appendChild(buildHtmlAvatar(sorted[hoveredIdx], 'ae-info-avatar', { width: '40px', height: '40px', borderRadius: '50%', flexShrink: '0' }));
       const nameBlock = el('div', {},
@@ -1604,8 +1597,10 @@ function render({ model, el: rootEl }) {
       return card;
     }
 
-    // Container
+    // Container — flex row with graph + side panel for info card
+    const graphRow = el('div', { className: 'ae-graph-row' });
     const graphWrap = el('div', { className: 'ae-network-graph' });
+    const sideCard = el('div', { className: 'ae-side-card' });
 
     // Zoom/pan
     let vbX = 0, vbY = 0, vbW = W, vbH = H;
@@ -1656,14 +1651,17 @@ function render({ model, el: rootEl }) {
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
-      const oldCard = graphWrap.querySelector('.ae-info-card');
+      // Info card goes in side panel
+      const oldCard = sideCard.querySelector('.ae-info-card');
       const newCard = renderInfoCard();
       if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
-      else if (newCard) graphWrap.appendChild(newCard);
+      else if (newCard) sideCard.appendChild(newCard);
     }
 
     rerenderView();
-    wrap.appendChild(graphWrap);
+    graphRow.appendChild(graphWrap);
+    graphRow.appendChild(sideCard);
+    wrap.appendChild(graphRow);
 
     // Legend
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
