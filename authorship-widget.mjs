@@ -1597,10 +1597,9 @@ function render({ model, el: rootEl }) {
       return card;
     }
 
-    // Container — flex row with graph + side panel for info card
-    const graphRow = el('div', { className: 'ae-graph-row' });
+    // Container — outer wrapper allows info card to overflow into margin
+    const graphOuter = el('div', { className: 'ae-graph-outer' });
     const graphWrap = el('div', { className: 'ae-network-graph' });
-    const sideCard = el('div', { className: 'ae-side-card' });
 
     // Zoom/pan
     let vbX = 0, vbY = 0, vbW = W, vbH = H;
@@ -1651,17 +1650,16 @@ function render({ model, el: rootEl }) {
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
-      // Info card goes in side panel
-      const oldCard = sideCard.querySelector('.ae-info-card');
+      // Info card floats in margin via graphOuter
+      const oldCard = graphOuter.querySelector('.ae-info-card');
       const newCard = renderInfoCard();
       if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
-      else if (newCard) sideCard.appendChild(newCard);
+      else if (newCard) graphOuter.appendChild(newCard);
     }
 
     rerenderView();
-    graphRow.appendChild(graphWrap);
-    graphRow.appendChild(sideCard);
-    wrap.appendChild(graphRow);
+    graphOuter.appendChild(graphWrap);
+    wrap.appendChild(graphOuter);
 
     // Legend
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });

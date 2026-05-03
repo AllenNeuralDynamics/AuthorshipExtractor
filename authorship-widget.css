@@ -1085,8 +1085,6 @@
   border: 1px solid #f1f5f9;
   overflow: hidden;
   cursor: grab;
-  flex: 1;
-  min-width: 0;
   height: 550px;
 }
 
@@ -1095,24 +1093,18 @@
   height: 100%;
 }
 
-.ae-graph-row {
-  display: flex;
-  gap: 12px;
-  align-items: stretch;
+.ae-graph-outer {
+  position: relative;
+  overflow: visible;
 }
 
-.ae-side-card {
-  width: 220px;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
-
-.ae-side-card .ae-info-card {
-  position: static;
-  pointer-events: auto;
-  width: auto;
+.ae-graph-outer > .ae-info-card {
+  position: absolute;
+  top: 12px;
+  left: calc(100% + 12px);
+  pointer-events: none;
+  width: 210px;
+  z-index: 20;
 }
 
 .ae-zoom-controls {
