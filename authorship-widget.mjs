@@ -1688,6 +1688,7 @@ function render({ model, el: rootEl }) {
         g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderView(); });
         g.addEventListener('click', (e) => {
           e.stopPropagation();
+          console.log('[AuthorshipWidget] Node clicked:', nd.name, 'selectedIdx was:', selectedIdx, '→', selectedIdx === idx ? null : idx);
           if (selectedIdx === idx) {
             selectedIdx = null; // deselect: return to default view
           } else {
@@ -1791,9 +1792,30 @@ function render({ model, el: rootEl }) {
       onClick: () => { vbX=initVbX; vbY=initVbY; vbW=initVbW; vbH=initVbH; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
     graphWrap.appendChild(zoomControls);
 
+    let lastSelectedIdx = selectedIdx; // track if selection changed
+
     function rerenderView() {
       // Reapply ego layout (or restore base positions) based on current selectedIdx
       applyEgoLayout();
+
+      // Refit viewBox when selection state changes
+      if (selectedIdx !== lastSelectedIdx) {
+        lastSelectedIdx = selectedIdx;
+        const labelPadR = 30;
+        let tMinXR = Infinity, tMinYR = Infinity, tMaxXR = -Infinity, tMaxYR = -Infinity;
+        for (const nd of nodes) {
+          tMinXR = Math.min(tMinXR, nd.x - nd.radius - 10);
+          tMinYR = Math.min(tMinYR, nd.y - nd.radius - 10);
+          tMaxXR = Math.max(tMaxXR, nd.x + nd.radius + 10);
+          tMaxYR = Math.max(tMaxYR, nd.y + nd.radius + labelPadR);
+        }
+        const fitWR = tMaxXR - tMinXR, fitHR = tMaxYR - tMinYR;
+        const fitMarginR = 20;
+        vbX = tMinXR - fitMarginR;
+        vbY = tMinYR - fitMarginR;
+        vbW = fitWR + 2 * fitMarginR;
+        vbH = fitHR + 2 * fitMarginR;
+      }
 
       const oldSvg = graphWrap.querySelector('.ae-network-svg');
       const newSvg = renderSVG();
