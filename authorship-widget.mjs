@@ -1588,6 +1588,7 @@ function render({ model, el: rootEl }) {
 
         const g = document.createElementNS(ns, 'g');
         g.style.cursor = 'pointer';
+        g.setAttribute('data-node-idx', String(idx));
         g.style.opacity = String(groupOpacity);
         g.style.transition = 'opacity 0.2s';
 
@@ -1684,8 +1685,46 @@ function render({ model, el: rootEl }) {
           }
         }
 
-        g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderView(); });
-        g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderView(); });
+        g.addEventListener('mouseenter', () => {
+          hoveredIdx = idx;
+          // Lightweight hover: update opacity on existing <g> elements without replacing SVG
+          const svgEl = g.closest('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          // Build set of connected node indices for this hovered node
+          const connectedSet = new Set([idx]);
+          for (const link of links) {
+            if (link.i === idx) connectedSet.add(link.j);
+            if (link.j === idx) connectedSet.add(link.i);
+          }
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            if (gIdx === idx) {
+              gEl.style.opacity = '1';
+            } else if (connectedSet.has(gIdx)) {
+              gEl.style.opacity = '0.85';
+            } else {
+              gEl.style.opacity = '0.2';
+            }
+          });
+        });
+        g.addEventListener('mouseleave', () => {
+          hoveredIdx = null;
+          // Restore all node opacities
+          const svgEl = g.closest('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            // Restore ego opacity if in ego mode
+            let opacity = 1;
+            if (selectedIdx !== null && gIdx !== selectedIdx) {
+              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
+              opacity = w ? 0.4 + 0.6 * (w.weight / maxWeight) : 0.2;
+            }
+            gEl.style.opacity = String(opacity);
+          });
+        });
         g.addEventListener('pointerdown', (e) => {
           g._clickStartX = e.clientX;
           g._clickStartY = e.clientY;
@@ -1711,8 +1750,38 @@ function render({ model, el: rootEl }) {
             e.preventDefault(); hoveredIdx = hoveredIdx === idx ? null : idx; rerenderView();
           }
         });
-        g.addEventListener('focus', () => { hoveredIdx = idx; rerenderView(); });
-        g.addEventListener('blur', () => { hoveredIdx = null; rerenderView(); });
+        g.addEventListener('focus', () => {
+          hoveredIdx = idx;
+          const svgEl = g.closest('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          const connectedSet = new Set([idx]);
+          for (const link of links) {
+            if (link.i === idx) connectedSet.add(link.j);
+            if (link.j === idx) connectedSet.add(link.i);
+          }
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            if (gIdx === idx) gEl.style.opacity = '1';
+            else if (connectedSet.has(gIdx)) gEl.style.opacity = '0.85';
+            else gEl.style.opacity = '0.2';
+          });
+        });
+        g.addEventListener('blur', () => {
+          hoveredIdx = null;
+          const svgEl = g.closest('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            let opacity = 1;
+            if (selectedIdx !== null && gIdx !== selectedIdx) {
+              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
+              opacity = w ? 0.4 + 0.6 * (w.weight / maxWeight) : 0.2;
+            }
+            gEl.style.opacity = String(opacity);
+          });
+        });
 
         svg.appendChild(g);
       }
@@ -1834,7 +1903,8 @@ function render({ model, el: rootEl }) {
       const oldSvg = graphWrap.querySelector('.ae-network-svg');
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
-      if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
+      if (oldSvg && oldSvg.parentNode) oldSvg.replaceWith(newSvg);
+      else if (!oldSvg) graphWrap.appendChild(newSvg);
 
       // "Show All" button
       const oldBack = graphWrap.querySelector('.ae-ego-back-btn');
