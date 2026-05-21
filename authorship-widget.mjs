@@ -1406,7 +1406,7 @@ function render({ model, el: rootEl }) {
         bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
         bg.setAttribute('fill', 'transparent');
         bg.style.cursor = 'pointer';
-        bg.addEventListener('click', () => { selectedIdx = null; rerenderView(); });
+        bg.addEventListener('pointerup', () => { selectedIdx = null; rerenderView(); });
         svg.appendChild(bg);
       }
 
@@ -1686,15 +1686,23 @@ function render({ model, el: rootEl }) {
 
         g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderView(); });
         g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderView(); });
-        g.addEventListener('click', (e) => {
-          e.stopPropagation();
-          console.log('[AuthorshipWidget] Node clicked:', nd.name, 'selectedIdx was:', selectedIdx, '→', selectedIdx === idx ? null : idx);
-          if (selectedIdx === idx) {
-            selectedIdx = null; // deselect: return to default view
-          } else {
-            selectedIdx = idx; // select: ego-centric view
+        g.addEventListener('pointerdown', (e) => {
+          g._clickStartX = e.clientX;
+          g._clickStartY = e.clientY;
+        });
+        g.addEventListener('pointerup', (e) => {
+          const dx = e.clientX - (g._clickStartX || 0);
+          const dy = e.clientY - (g._clickStartY || 0);
+          if (Math.abs(dx) < 5 && Math.abs(dy) < 5) {
+            e.stopPropagation();
+            console.log('[AuthorshipWidget] Node clicked:', nd.name, 'selectedIdx:', selectedIdx, '→', selectedIdx === idx ? null : idx);
+            if (selectedIdx === idx) {
+              selectedIdx = null;
+            } else {
+              selectedIdx = idx;
+            }
+            rerenderView();
           }
-          rerenderView();
         });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
         g.setAttribute('aria-label', nd.name);
@@ -1750,7 +1758,8 @@ function render({ model, el: rootEl }) {
 
     // Zoom/pan — start with tight-fit viewBox
     let vbX = initVbX, vbY = initVbY, vbW = initVbW, vbH = initVbH;
-    let isPanning = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
+    let isPanning = false, hasPanned = false, panStartX = 0, panStartY = 0, panStartVbX = 0, panStartVbY = 0;
+    const PAN_THRESHOLD = 4; // pixels of movement before panning starts
     function applyViewBox() {
       const svg = graphWrap.querySelector('.ae-network-svg');
       if (svg) svg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
@@ -1768,14 +1777,19 @@ function render({ model, el: rootEl }) {
     }, { passive: false });
     graphWrap.addEventListener('mousedown', (e) => {
       if (e.button !== 0) return;
-      isPanning = true; panStartX = e.clientX; panStartY = e.clientY;
-      panStartVbX = vbX; panStartVbY = vbY; graphWrap.style.cursor = 'grabbing';
+      isPanning = true; hasPanned = false;
+      panStartX = e.clientX; panStartY = e.clientY;
+      panStartVbX = vbX; panStartVbY = vbY;
     });
     graphWrap.addEventListener('mousemove', (e) => {
       if (!isPanning) return;
+      const dx = e.clientX - panStartX, dy = e.clientY - panStartY;
+      if (!hasPanned && Math.abs(dx) < PAN_THRESHOLD && Math.abs(dy) < PAN_THRESHOLD) return;
+      hasPanned = true;
+      graphWrap.style.cursor = 'grabbing';
       const rect = graphWrap.getBoundingClientRect();
-      vbX = panStartVbX - (e.clientX - panStartX) * (vbW / rect.width);
-      vbY = panStartVbY - (e.clientY - panStartY) * (vbH / rect.height);
+      vbX = panStartVbX - dx * (vbW / rect.width);
+      vbY = panStartVbY - dy * (vbH / rect.height);
       applyViewBox();
     });
     const stopPan = () => { isPanning = false; graphWrap.style.cursor = 'grab'; };
