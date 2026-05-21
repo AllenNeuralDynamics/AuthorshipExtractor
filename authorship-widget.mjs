@@ -1301,8 +1301,19 @@ function render({ model, el: rootEl }) {
       cachedLayout = { key: layoutKey, positions: nodes.map(nd => ({ x: nd.x, y: nd.y })) };
     }
 
-    // ── Ego-centric layout override when an author is selected ──
-    if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
+    // Save base positions (before any ego override) for restoration
+    const basePositions = nodes.map(nd => ({ x: nd.x, y: nd.y }));
+
+    // ── Ego-centric layout: reposition nodes around a selected author ──
+    function applyEgoLayout() {
+      if (selectedIdx === null || selectedIdx < 0 || selectedIdx >= n) {
+        // Restore base positions
+        for (let i = 0; i < n; i++) {
+          nodes[i].x = basePositions[i].x;
+          nodes[i].y = basePositions[i].y;
+        }
+        return;
+      }
       const CX = W / 2, CY = H / 2;
       // Compute collaboration weight between selectedIdx and each other node
       const collabWeights = new Array(n).fill(0);
@@ -1317,30 +1328,26 @@ function render({ model, el: rootEl }) {
       nodes[selectedIdx].y = CY;
 
       // Place others radially: distance inversely proportional to collaboration
-      // More collaboration = closer to center
       const others = [];
       for (let i = 0; i < n; i++) {
         if (i === selectedIdx) continue;
         others.push({ idx: i, weight: collabWeights[i] });
       }
-      // Sort by weight descending (strongest collaborators first / closest)
       others.sort((a, b) => b.weight - a.weight);
 
-      const innerR = 80; // minimum distance from center
-      const outerR = Math.min(W, H) * 0.42; // maximum distance
+      const innerR = 80;
+      const outerR = Math.min(W, H) * 0.42;
 
       for (let oi = 0; oi < others.length; oi++) {
         const { idx, weight } = others[oi];
-        // Distance: high weight → close, zero weight → far
-        const normalizedWeight = weight / maxCollab; // 0..1
+        const normalizedWeight = weight / maxCollab;
         const dist = innerR + (1 - normalizedWeight) * (outerR - innerR);
-        // Spread angle evenly among all others
         const angle = (2 * Math.PI * oi) / others.length - Math.PI / 2;
         nodes[idx].x = CX + dist * Math.cos(angle);
         nodes[idx].y = CY + dist * Math.sin(angle);
       }
 
-      // Collision resolution for ego layout
+      // Collision resolution
       for (let pass = 0; pass < 5; pass++) {
         for (let i = 0; i < n; i++) {
           if (i === selectedIdx) continue;
@@ -1360,6 +1367,9 @@ function render({ model, el: rootEl }) {
         }
       }
     }
+
+    // Apply ego layout if selected on initial build
+    applyEgoLayout();
 
     // Compute tight bounding box around actual node positions (including labels)
     const labelPad = 30; // extra space for name labels below nodes
@@ -1396,7 +1406,7 @@ function render({ model, el: rootEl }) {
         bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
         bg.setAttribute('fill', 'transparent');
         bg.style.cursor = 'pointer';
-        bg.addEventListener('click', () => { selectedIdx = null; setTimeout(rerender, 0); });
+        bg.addEventListener('click', () => { selectedIdx = null; rerenderView(); });
         svg.appendChild(bg);
       }
 
@@ -1683,7 +1693,7 @@ function render({ model, el: rootEl }) {
           } else {
             selectedIdx = idx; // select: ego-centric view
           }
-          setTimeout(rerender, 0);
+          rerenderView();
         });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
         g.setAttribute('aria-label', nd.name);
@@ -1781,21 +1791,30 @@ function render({ model, el: rootEl }) {
       onClick: () => { vbX=initVbX; vbY=initVbY; vbW=initVbW; vbH=initVbH; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
     graphWrap.appendChild(zoomControls);
 
-    // "Show All" button when in ego-centric mode
-    if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
-      const backBtn = el('button', {
-        className: 'ae-ego-back-btn',
-        onClick: () => { selectedIdx = null; setTimeout(rerender, 0); },
-        title: 'Return to full network view',
-      }, '← Show All');
-      graphWrap.appendChild(backBtn);
-    }
-
     function rerenderView() {
+      // Reapply ego layout (or restore base positions) based on current selectedIdx
+      applyEgoLayout();
+
       const oldSvg = graphWrap.querySelector('.ae-network-svg');
       const newSvg = renderSVG();
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg) oldSvg.replaceWith(newSvg); else graphWrap.appendChild(newSvg);
+
+      // "Show All" button
+      const oldBack = graphWrap.querySelector('.ae-ego-back-btn');
+      if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
+        if (!oldBack) {
+          const backBtn = el('button', {
+            className: 'ae-ego-back-btn',
+            onClick: () => { selectedIdx = null; rerenderView(); },
+            title: 'Return to full network view',
+          }, '← Show All');
+          graphWrap.appendChild(backBtn);
+        }
+      } else {
+        if (oldBack) oldBack.remove();
+      }
+
       // Info card floats in right margin using fixed positioning
       const oldCard = graphOuter.querySelector('.ae-info-card');
       const newCard = renderInfoCard();
