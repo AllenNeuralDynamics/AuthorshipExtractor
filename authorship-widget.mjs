@@ -1396,7 +1396,7 @@ function render({ model, el: rootEl }) {
         bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
         bg.setAttribute('fill', 'transparent');
         bg.style.cursor = 'pointer';
-        bg.addEventListener('click', () => { selectedIdx = null; rerender(); });
+        bg.addEventListener('click', () => { selectedIdx = null; setTimeout(rerender, 0); });
         svg.appendChild(bg);
       }
 
@@ -1683,7 +1683,7 @@ function render({ model, el: rootEl }) {
           } else {
             selectedIdx = idx; // select: ego-centric view
           }
-          rerender();
+          setTimeout(rerender, 0);
         });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
         g.setAttribute('aria-label', nd.name);
@@ -1785,7 +1785,7 @@ function render({ model, el: rootEl }) {
     if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
       const backBtn = el('button', {
         className: 'ae-ego-back-btn',
-        onClick: () => { selectedIdx = null; rerender(); },
+        onClick: () => { selectedIdx = null; setTimeout(rerender, 0); },
         title: 'Return to full network view',
       }, '← Show All');
       graphWrap.appendChild(backBtn);
