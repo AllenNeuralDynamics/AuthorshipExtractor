@@ -1137,6 +1137,39 @@
   background: #f3f4f6;
 }
 
+/* Ego-centric "Show All" back button */
+.ae-ego-back-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4338ca;
+  background: rgba(238, 242, 255, 0.95);
+  backdrop-filter: blur(4px);
+  border: 1px solid #c7d2fe;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  z-index: 10;
+  white-space: nowrap;
+}
+.ae-ego-back-btn:hover {
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+  transform: translateX(-2px);
+}
+.ae-dark .ae-ego-back-btn {
+  color: #a5b4fc;
+  background: rgba(30, 27, 75, 0.9);
+  border-color: #4338ca;
+}
+.ae-dark .ae-ego-back-btn:hover {
+  background: rgba(49, 46, 129, 0.95);
+}
+
 .ae-chord {
   transition: stroke-opacity 0.2s;
   cursor: default;

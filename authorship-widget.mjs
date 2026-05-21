@@ -435,6 +435,7 @@ function render({ model, el: rootEl }) {
   let networkMode = 'collab'; // 'collab' | 'flow' | 'institutions' | 'force' | 'sections'
   let searchQuery = ''; // search/filter across all views
   let cachedLayout = null; // { key, positions: [{x,y}] } — shared between Network & Flow
+  let selectedIdx = null; // ego-centric view: index of clicked/selected author
 
   // Search highlight: matches name, institution, or CRediT role
   function matchesSearch(author, query) {
@@ -1300,6 +1301,66 @@ function render({ model, el: rootEl }) {
       cachedLayout = { key: layoutKey, positions: nodes.map(nd => ({ x: nd.x, y: nd.y })) };
     }
 
+    // ── Ego-centric layout override when an author is selected ──
+    if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
+      const CX = W / 2, CY = H / 2;
+      // Compute collaboration weight between selectedIdx and each other node
+      const collabWeights = new Array(n).fill(0);
+      for (const link of links) {
+        if (link.i === selectedIdx) collabWeights[link.j] = link.weight;
+        else if (link.j === selectedIdx) collabWeights[link.i] = link.weight;
+      }
+      const maxCollab = Math.max(1, ...collabWeights);
+
+      // Place selected at center
+      nodes[selectedIdx].x = CX;
+      nodes[selectedIdx].y = CY;
+
+      // Place others radially: distance inversely proportional to collaboration
+      // More collaboration = closer to center
+      const others = [];
+      for (let i = 0; i < n; i++) {
+        if (i === selectedIdx) continue;
+        others.push({ idx: i, weight: collabWeights[i] });
+      }
+      // Sort by weight descending (strongest collaborators first / closest)
+      others.sort((a, b) => b.weight - a.weight);
+
+      const innerR = 80; // minimum distance from center
+      const outerR = Math.min(W, H) * 0.42; // maximum distance
+
+      for (let oi = 0; oi < others.length; oi++) {
+        const { idx, weight } = others[oi];
+        // Distance: high weight → close, zero weight → far
+        const normalizedWeight = weight / maxCollab; // 0..1
+        const dist = innerR + (1 - normalizedWeight) * (outerR - innerR);
+        // Spread angle evenly among all others
+        const angle = (2 * Math.PI * oi) / others.length - Math.PI / 2;
+        nodes[idx].x = CX + dist * Math.cos(angle);
+        nodes[idx].y = CY + dist * Math.sin(angle);
+      }
+
+      // Collision resolution for ego layout
+      for (let pass = 0; pass < 5; pass++) {
+        for (let i = 0; i < n; i++) {
+          if (i === selectedIdx) continue;
+          for (let j = i + 1; j < n; j++) {
+            if (j === selectedIdx) continue;
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+            const minDist = nodes[i].radius + nodes[j].radius + 10;
+            if (dist < minDist) {
+              const overlap = (minDist - dist) / 2;
+              const ux = dx / dist, uy = dy / dist;
+              nodes[i].x -= ux * overlap; nodes[i].y -= uy * overlap;
+              nodes[j].x += ux * overlap; nodes[j].y += uy * overlap;
+            }
+          }
+        }
+      }
+    }
+
     // Compute tight bounding box around actual node positions (including labels)
     const labelPad = 30; // extra space for name labels below nodes
     let tMinX = Infinity, tMinY = Infinity, tMaxX = -Infinity, tMaxY = -Infinity;
@@ -1327,6 +1388,17 @@ function render({ model, el: rootEl }) {
       svg.setAttribute('class', 'ae-network-svg');
       svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
       svg.style.display = 'block';
+
+      // Background click to deselect
+      if (selectedIdx !== null) {
+        const bg = document.createElementNS(ns, 'rect');
+        bg.setAttribute('x', '0'); bg.setAttribute('y', '0');
+        bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
+        bg.setAttribute('fill', 'transparent');
+        bg.style.cursor = 'pointer';
+        bg.addEventListener('click', () => { selectedIdx = null; rerender(); });
+        svg.appendChild(bg);
+      }
 
       // Edges — per-role, differentiated by contribution level:
       //   lead: MST edges, thick stroke (4px)
@@ -1492,10 +1564,17 @@ function render({ model, el: rootEl }) {
       for (let idx = 0; idx < n; idx++) {
         const nd = nodes[idx];
         const isHovered = hoveredIdx === idx;
+        const isSelected = selectedIdx === idx;
         const isConnected = isHovering && highlightedNodes.has(idx);
         const isDim = isHovering && !isHovered && !isConnected;
         const isSearchDim = highlightSet && !highlightSet.has(idx);
-        const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : 1;
+        // In ego mode, dim unconnected nodes (weight=0)
+        let egoOpacity = 1;
+        if (selectedIdx !== null && !isSelected) {
+          const w = links.find(l => (l.i === selectedIdx && l.j === idx) || (l.j === selectedIdx && l.i === idx));
+          egoOpacity = w ? 0.4 + 0.6 * (w.weight / maxWeight) : 0.2;
+        }
+        const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : egoOpacity;
 
         const g = document.createElementNS(ns, 'g');
         g.style.cursor = 'pointer';
@@ -1549,6 +1628,18 @@ function render({ model, el: rootEl }) {
           g.appendChild(hRing);
         }
 
+        if (isSelected) {
+          const sRing = document.createElementNS(ns, 'circle');
+          sRing.setAttribute('cx', String(nd.x)); sRing.setAttribute('cy', String(nd.y));
+          sRing.setAttribute('r', String(nd.radius + 6));
+          sRing.setAttribute('fill', 'none');
+          sRing.setAttribute('stroke', '#4338ca'); sRing.setAttribute('stroke-width', '3');
+          sRing.setAttribute('stroke-dasharray', '6 3');
+          sRing.setAttribute('opacity', '0.8');
+          sRing.setAttribute('vector-effect', 'non-scaling-stroke');
+          g.appendChild(sRing);
+        }
+
         appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
 
         const isSearchMatch = highlightSet && highlightSet.has(idx);
@@ -1556,16 +1647,44 @@ function render({ model, el: rootEl }) {
         label.setAttribute('x', String(nd.x));
         label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 16 : 18)));
         label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('fill', isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#e2e8f0' : '#1f2937'));
-        label.setAttribute('font-size', isLarge ? '19' : '15');
-        label.setAttribute('font-weight', isHovered || isSearchMatch ? '700' : '500');
+        label.setAttribute('fill', isSelected ? (isDark ? '#a5b4fc' : '#4338ca') : isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#e2e8f0' : '#1f2937'));
+        label.setAttribute('font-size', isSelected ? (isLarge ? '22' : '17') : isLarge ? '19' : '15');
+        label.setAttribute('font-weight', isSelected || isHovered || isSearchMatch ? '700' : '500');
         label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
         label.style.pointerEvents = 'none';
-        label.textContent = nd.lastName;
+        label.textContent = isSelected ? nd.name : nd.lastName;
         g.appendChild(label);
+
+        // In ego-centric mode, show collaboration score under non-selected nodes
+        if (selectedIdx !== null && !isSelected) {
+          const collabLink = links.find(l => (l.i === selectedIdx && l.j === idx) || (l.j === selectedIdx && l.i === idx));
+          const score = collabLink ? collabLink.sharedRoles.length : 0;
+          if (score > 0) {
+            const scoreLabel = document.createElementNS(ns, 'text');
+            scoreLabel.setAttribute('x', String(nd.x));
+            scoreLabel.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 30 : 32)));
+            scoreLabel.setAttribute('text-anchor', 'middle');
+            scoreLabel.setAttribute('fill', isDark ? '#9ca3af' : '#6b7280');
+            scoreLabel.setAttribute('font-size', isLarge ? '14' : '11');
+            scoreLabel.setAttribute('font-weight', '400');
+            scoreLabel.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+            scoreLabel.style.pointerEvents = 'none';
+            scoreLabel.textContent = `${score} shared role${score > 1 ? 's' : ''}`;
+            g.appendChild(scoreLabel);
+          }
+        }
 
         g.addEventListener('mouseenter', () => { hoveredIdx = idx; rerenderView(); });
         g.addEventListener('mouseleave', () => { hoveredIdx = null; rerenderView(); });
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (selectedIdx === idx) {
+            selectedIdx = null; // deselect: return to default view
+          } else {
+            selectedIdx = idx; // select: ego-centric view
+          }
+          rerender();
+        });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
         g.setAttribute('aria-label', nd.name);
         g.addEventListener('keydown', (e) => {
@@ -1661,6 +1780,16 @@ function render({ model, el: rootEl }) {
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',
       onClick: () => { vbX=initVbX; vbY=initVbY; vbW=initVbW; vbH=initVbH; applyViewBox(); }, title: 'Reset zoom' }, '⟲'));
     graphWrap.appendChild(zoomControls);
+
+    // "Show All" button when in ego-centric mode
+    if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
+      const backBtn = el('button', {
+        className: 'ae-ego-back-btn',
+        onClick: () => { selectedIdx = null; rerender(); },
+        title: 'Return to full network view',
+      }, '← Show All');
+      graphWrap.appendChild(backBtn);
+    }
 
     function rerenderView() {
       const oldSvg = graphWrap.querySelector('.ae-network-svg');
