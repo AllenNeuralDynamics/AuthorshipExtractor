@@ -1327,7 +1327,7 @@ function render({ model, el: rootEl }) {
       nodes[selectedIdx].x = CX;
       nodes[selectedIdx].y = CY;
 
-      // Place others radially: distance inversely proportional to collaboration
+      // Group others into concentric rings by collaboration strength
       const others = [];
       for (let i = 0; i < n; i++) {
         if (i === selectedIdx) continue;
@@ -1335,20 +1335,40 @@ function render({ model, el: rootEl }) {
       }
       others.sort((a, b) => b.weight - a.weight);
 
-      const innerR = 80;
-      const outerR = Math.min(W, H) * 0.42;
+      // Split into rings: strong collaborators (inner), weak (middle), unconnected (outer)
+      const rings = [];
+      const strong = others.filter(o => o.weight > maxCollab * 0.4);
+      const moderate = others.filter(o => o.weight > 0 && o.weight <= maxCollab * 0.4);
+      const unconnected = others.filter(o => o.weight === 0);
+      if (strong.length > 0) rings.push(strong);
+      if (moderate.length > 0) rings.push(moderate);
+      if (unconnected.length > 0) rings.push(unconnected);
 
-      for (let oi = 0; oi < others.length; oi++) {
-        const { idx, weight } = others[oi];
-        const normalizedWeight = weight / maxCollab;
-        const dist = innerR + (1 - normalizedWeight) * (outerR - innerR);
-        const angle = (2 * Math.PI * oi) / others.length - Math.PI / 2;
-        nodes[idx].x = CX + dist * Math.cos(angle);
-        nodes[idx].y = CY + dist * Math.sin(angle);
+      // Compute ring radii based on node sizes to avoid overlap
+      const selectedR = nodes[selectedIdx].radius;
+      let currentR = selectedR + 30; // gap from center node
+
+      for (let ri = 0; ri < rings.length; ri++) {
+        const ring = rings[ri];
+        // Find the max node radius in this ring for spacing
+        const maxNodeR = Math.max(...ring.map(o => nodes[o.idx].radius));
+        // Minimum ring radius: enough circumference to fit all nodes without overlap
+        const minSpacing = maxNodeR * 2 + 25; // diameter + padding for labels
+        const minCircumference = ring.length * minSpacing;
+        const minRingR = Math.max(currentR + maxNodeR + 15, minCircumference / (2 * Math.PI));
+
+        const ringR = minRingR;
+        for (let oi = 0; oi < ring.length; oi++) {
+          const { idx } = ring[oi];
+          const angle = (2 * Math.PI * oi) / ring.length - Math.PI / 2;
+          nodes[idx].x = CX + ringR * Math.cos(angle);
+          nodes[idx].y = CY + ringR * Math.sin(angle);
+        }
+        currentR = ringR + maxNodeR + 20; // gap before next ring
       }
 
-      // Collision resolution
-      for (let pass = 0; pass < 5; pass++) {
+      // Collision resolution (more passes, label-aware spacing)
+      for (let pass = 0; pass < 15; pass++) {
         for (let i = 0; i < n; i++) {
           if (i === selectedIdx) continue;
           for (let j = i + 1; j < n; j++) {
@@ -1356,7 +1376,7 @@ function render({ model, el: rootEl }) {
             const dx = nodes[j].x - nodes[i].x;
             const dy = nodes[j].y - nodes[i].y;
             const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
-            const minDist = nodes[i].radius + nodes[j].radius + 10;
+            const minDist = nodes[i].radius + nodes[j].radius + 20;
             if (dist < minDist) {
               const overlap = (minDist - dist) / 2;
               const ux = dx / dist, uy = dy / dist;
