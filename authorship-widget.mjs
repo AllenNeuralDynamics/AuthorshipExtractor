@@ -1733,6 +1733,7 @@ function render({ model, el: rootEl }) {
               gEl.style.opacity = '0.2';
             }
           });
+          updateInfoCard();
         });
         g.addEventListener('mouseleave', () => {
           hoveredIdx = null;
@@ -1750,6 +1751,7 @@ function render({ model, el: rootEl }) {
             }
             gEl.style.opacity = String(opacity);
           });
+          updateInfoCard();
         });
         g.addEventListener('pointerdown', (e) => {
           e.stopPropagation(); // prevent pan from starting when clicking a node
@@ -1852,6 +1854,19 @@ function render({ model, el: rootEl }) {
     // Container — outer wrapper allows info card to overflow into margin
     const graphOuter = el('div', { className: 'ae-graph-outer' });
     const graphWrap = el('div', { className: 'ae-network-graph' });
+
+    // Update info card on hover (called from mouseenter/mouseleave)
+    function updateInfoCard() {
+      const oldCard = graphOuter.querySelector('.ae-info-card');
+      const newCard = renderInfoCard();
+      if (newCard) {
+        const rect = graphWrap.getBoundingClientRect();
+        newCard.style.top = rect.top + 12 + 'px';
+        newCard.style.left = rect.right + 12 + 'px';
+      }
+      if (oldCard) { if (newCard) oldCard.replaceWith(newCard); else oldCard.remove(); }
+      else if (newCard) graphOuter.appendChild(newCard);
+    }
 
     // Zoom/pan — start with tight-fit viewBox
     let vbX = initVbX, vbY = initVbY, vbW = initVbW, vbH = initVbH;
