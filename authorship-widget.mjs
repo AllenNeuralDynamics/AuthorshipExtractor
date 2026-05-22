@@ -1566,7 +1566,7 @@ function render({ model, el: rootEl }) {
         bg.setAttribute('fill', 'transparent');
         bg.style.cursor = 'pointer';
         bg.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); });
-        bg.addEventListener('pointerup', () => { selectedIdx = null; selectedGroup = null; rerenderView(); });
+        bg.addEventListener('pointerup', () => { selectedIdx = null; selectedGroup = null; rerenderView(); updateLegendStyles(); });
         svg.appendChild(bg);
       }
 
@@ -1927,6 +1927,7 @@ function render({ model, el: rootEl }) {
               selectedGroup = null;
             }
             rerenderView();
+            updateLegendStyles();
           }
         });
         g.setAttribute('tabindex', '0'); g.setAttribute('role', 'button');
@@ -2168,7 +2169,7 @@ function render({ model, el: rootEl }) {
         if (!oldBack) {
           const backBtn = el('button', {
             className: 'ae-ego-back-btn',
-            onClick: () => { selectedIdx = null; selectedGroup = null; rerenderView(); },
+            onClick: () => { selectedIdx = null; selectedGroup = null; rerenderView(); updateLegendStyles(); },
             title: 'Return to full network view',
           }, '← Show All');
           graphWrap.appendChild(backBtn);
@@ -2237,6 +2238,25 @@ function render({ model, el: rootEl }) {
       });
     }
 
+    // Track all legend items for selection styling
+    const legendItems = []; // { element, label }
+    function updateLegendStyles() {
+      for (const li of legendItems) {
+        if (selectedGroup) {
+          if (li.label === selectedGroup.label) {
+            li.element.style.opacity = '1';
+            li.element.style.fontWeight = '700';
+          } else {
+            li.element.style.opacity = '0.4';
+            li.element.style.fontWeight = '';
+          }
+        } else {
+          li.element.style.opacity = '1';
+          li.element.style.fontWeight = '';
+        }
+      }
+    }
+
     // Legend — Roles
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
     legend.appendChild(el('div', { className: 'ae-legend-heading' }, 'Roles'));
@@ -2258,7 +2278,9 @@ function render({ model, el: rootEl }) {
         if (selectedGroup && selectedGroup.label === role) { selectedGroup = null; }
         else { selectedGroup = { members, label: role }; selectedIdx = null; }
         rerenderView();
+        updateLegendStyles();
       });
+      legendItems.push({ element: item, label: role });
       legend.appendChild(item);
     }
     wrap.appendChild(legend);
@@ -2294,7 +2316,9 @@ function render({ model, el: rootEl }) {
           if (selectedGroup && selectedGroup.label === inst.name) { selectedGroup = null; }
           else { selectedGroup = { members: inst.members, label: inst.name }; selectedIdx = null; }
           rerenderView();
+          updateLegendStyles();
         });
+        legendItems.push({ element: item, label: inst.name });
         instLegend.appendChild(item);
       });
       wrap.appendChild(instLegend);
@@ -2332,7 +2356,9 @@ function render({ model, el: rootEl }) {
           if (selectedGroup && selectedGroup.label === label) { selectedGroup = null; }
           else { selectedGroup = { members, label }; selectedIdx = null; }
           rerenderView();
+          updateLegendStyles();
         });
+        legendItems.push({ element: item, label });
         return item;
       };
       secEntries.forEach(([secId, members]) => {
