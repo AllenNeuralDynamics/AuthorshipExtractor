@@ -1426,6 +1426,7 @@ function render({ model, el: rootEl }) {
         bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
         bg.setAttribute('fill', 'transparent');
         bg.style.cursor = 'pointer';
+        bg.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); });
         bg.addEventListener('pointerup', () => { selectedIdx = null; rerenderView(); });
         svg.appendChild(bg);
       }
