@@ -1173,9 +1173,7 @@ function render({ model, el: rootEl }) {
     const modes = [
       { key: 'collab', label: 'Network' },
       { key: 'flow', label: 'Flow' },
-      { key: 'institutions', label: 'By Institution' },
       { key: 'force', label: 'By Role' },
-      { key: 'sections', label: 'By Section & Figure' },
     ];
     for (const m of modes) {
       modeBar.appendChild(el('button', {
@@ -2087,7 +2085,7 @@ function render({ model, el: rootEl }) {
     graphOuter.appendChild(graphWrap);
     wrap.appendChild(graphOuter);
 
-    // Legend
+    // Legend — Roles
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
     for (const role of ALL_CREDIT_ROLES) {
       const rc = getRoleCat(role);
@@ -2100,6 +2098,132 @@ function render({ model, el: rootEl }) {
       legend.appendChild(item);
     }
     wrap.appendChild(legend);
+
+    // Legend — Institutions
+    const INST_COLORS = [
+      '#4c6ef5', '#10b981', '#f59e0b', '#e11d48', '#8b5cf6', '#0ea5e9',
+      '#d97706', '#059669', '#7c3aed', '#ec4899', '#14b8a6', '#f43f5e',
+    ];
+    function iKey(aff) { return typeof aff === 'string' ? aff : (aff.name || aff.id || JSON.stringify(aff)); }
+    function iName(aff) { return typeof aff === 'string' ? aff : (aff.name || aff.id || '?'); }
+    const instMap = new Map();
+    for (let i = 0; i < n; i++) {
+      const affs = sorted[i].affiliations || [];
+      if (affs.length === 0) {
+        if (!instMap.has('__none__')) instMap.set('__none__', { name: 'Unaffiliated', members: new Set() });
+        instMap.get('__none__').members.add(i);
+      } else {
+        for (const aff of affs) {
+          const key = iKey(aff);
+          if (!instMap.has(key)) instMap.set(key, { name: iName(aff), members: new Set() });
+          instMap.get(key).members.add(i);
+        }
+      }
+    }
+    const instEntries = [...instMap.entries()].filter(([, v]) => v.members.size > 0);
+    if (instEntries.length > 0) {
+      const instLegend = el('div', { className: 'ae-network-legend ae-inst-legend' });
+      instLegend.appendChild(el('div', { className: 'ae-legend-heading' }, 'Institutions'));
+      instEntries.forEach(([, inst], ci) => {
+        const color = INST_COLORS[ci % INST_COLORS.length];
+        const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
+          el('span', { className: 'ae-legend-dot', style: { backgroundColor: color } }),
+          el('span', { className: 'ae-legend-label' }, inst.name),
+        );
+        item.addEventListener('mouseenter', () => {
+          const svgEl = graphWrap.querySelector('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            gEl.style.opacity = inst.members.has(gIdx) ? '1' : '0.15';
+          });
+        });
+        item.addEventListener('mouseleave', () => {
+          const svgEl = graphWrap.querySelector('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            let opacity = 1;
+            if (selectedIdx !== null && gIdx !== selectedIdx) {
+              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
+              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
+            }
+            gEl.style.opacity = String(opacity);
+          });
+        });
+        instLegend.appendChild(item);
+      });
+      wrap.appendChild(instLegend);
+    }
+
+    // Legend — Sections & Figures
+    const SECTION_COLORS = [
+      '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e',
+      '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e',
+    ];
+    const FIGURE_COLORS = ['#f59e0b', '#fbbf24', '#f97316', '#fb923c', '#fca5a1'];
+    const secMap = new Map();
+    for (let i = 0; i < n; i++) {
+      const secs = sorted[i].section_contributions || [];
+      for (const sc of secs) {
+        if (!secMap.has(sc.section)) secMap.set(sc.section, new Set());
+        secMap.get(sc.section).add(i);
+      }
+    }
+    const figMap = new Map();
+    for (let i = 0; i < n; i++) {
+      const figs = sorted[i].figure_contributions || [];
+      for (const fc of figs) {
+        if (!figMap.has(fc.figure)) figMap.set(fc.figure, new Set());
+        figMap.get(fc.figure).add(i);
+      }
+    }
+    const secEntries = [...secMap.entries()].filter(([, v]) => v.size > 0);
+    const figEntries = [...figMap.entries()].filter(([, v]) => v.size > 0);
+    if (secEntries.length > 0 || figEntries.length > 0) {
+      const secLegend = el('div', { className: 'ae-network-legend ae-sec-legend' });
+      secLegend.appendChild(el('div', { className: 'ae-legend-heading' }, 'Sections & Figures'));
+      const buildSecItem = (label, members, color) => {
+        const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
+          el('span', { className: 'ae-legend-dot', style: { backgroundColor: color } }),
+          el('span', { className: 'ae-legend-label' }, label),
+        );
+        item.addEventListener('mouseenter', () => {
+          const svgEl = graphWrap.querySelector('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            gEl.style.opacity = members.has(gIdx) ? '1' : '0.15';
+          });
+        });
+        item.addEventListener('mouseleave', () => {
+          const svgEl = graphWrap.querySelector('svg');
+          if (!svgEl) return;
+          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+          allGs.forEach(gEl => {
+            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+            let opacity = 1;
+            if (selectedIdx !== null && gIdx !== selectedIdx) {
+              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
+              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
+            }
+            gEl.style.opacity = String(opacity);
+          });
+        });
+        return item;
+      };
+      secEntries.forEach(([secId, members], ci) => {
+        secLegend.appendChild(buildSecItem(sectionLabel(secId), members, SECTION_COLORS[ci % SECTION_COLORS.length]));
+      });
+      figEntries.forEach(([figId, members], ci) => {
+        const label = '📊 ' + figId.replace(/^fig-/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        secLegend.appendChild(buildSecItem(label, members, FIGURE_COLORS[ci % FIGURE_COLORS.length]));
+      });
+      wrap.appendChild(secLegend);
+    }
 
     // Stats
     const stats = el('div', { className: 'ae-network-stats' });
