@@ -1728,6 +1728,7 @@ function render({ model, el: rootEl }) {
         });
         g.addEventListener('pointerdown', (e) => {
           e.stopPropagation(); // prevent pan from starting when clicking a node
+          e.preventDefault();  // prevent subsequent mousedown from firing
           g._clickStartX = e.clientX;
           g._clickStartY = e.clientY;
         });
