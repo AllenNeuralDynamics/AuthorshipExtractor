@@ -1390,6 +1390,30 @@ function render({ model, el: rootEl }) {
         nodes[i].x = posX[i];
         nodes[i].y = posY[i];
       }
+
+      // Normalize: scale ego positions to fill the SVG canvas with padding
+      const pad = 60;
+      let eMinX = Infinity, eMinY = Infinity, eMaxX = -Infinity, eMaxY = -Infinity;
+      for (let i = 0; i < n; i++) {
+        // Only consider visible nodes (connected to selected)
+        const hasLink = i === selectedIdx || collabWeights[i] > 0;
+        if (!hasLink) continue;
+        eMinX = Math.min(eMinX, nodes[i].x - nodes[i].radius);
+        eMinY = Math.min(eMinY, nodes[i].y - nodes[i].radius);
+        eMaxX = Math.max(eMaxX, nodes[i].x + nodes[i].radius);
+        eMaxY = Math.max(eMaxY, nodes[i].y + nodes[i].radius);
+      }
+      const eDataW = (eMaxX - eMinX) || 1, eDataH = (eMaxY - eMinY) || 1;
+      const eScaleX = (W - 2 * pad) / eDataW, eScaleY = (H - 2 * pad) / eDataH;
+      const eScale = Math.min(eScaleX, eScaleY, 1.5); // cap at 1.5x to avoid over-scaling small groups
+      if (eScale < 1) {
+        // Only scale down if nodes overflow; recenter
+        const eCX = (eMinX + eMaxX) / 2, eCY = (eMinY + eMaxY) / 2;
+        for (let i = 0; i < n; i++) {
+          nodes[i].x = W / 2 + (nodes[i].x - eCX) * eScale;
+          nodes[i].y = H / 2 + (nodes[i].y - eCY) * eScale;
+        }
+      }
     }
 
     // Apply ego layout if selected on initial build
