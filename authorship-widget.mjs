@@ -1542,6 +1542,7 @@ function render({ model, el: rootEl }) {
           path.setAttribute('vector-effect', 'non-scaling-stroke');
           const title = document.createElementNS(ns, 'title');
           title.textContent = `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role} (${e.level})`;
+          path.setAttribute('class', 'ae-edge-path');
           path.appendChild(title);
           svg.appendChild(path);
           offset += strandGap;
@@ -1726,6 +1727,7 @@ function render({ model, el: rootEl }) {
           });
         });
         g.addEventListener('pointerdown', (e) => {
+          e.stopPropagation(); // prevent pan from starting when clicking a node
           g._clickStartX = e.clientX;
           g._clickStartY = e.clientY;
         });
@@ -1877,7 +1879,12 @@ function render({ model, el: rootEl }) {
 
     let lastSelectedIdx = selectedIdx; // track if selection changed
 
+    let animFrameId = null;
+
     function rerenderView() {
+      // Capture old positions before layout change
+      const oldPositions = nodes.map(nd => ({ x: nd.x, y: nd.y }));
+
       // Reapply ego layout (or restore base positions) based on current selectedIdx
       applyEgoLayout();
 
@@ -1905,6 +1912,58 @@ function render({ model, el: rootEl }) {
       newSvg.setAttribute('viewBox', `${vbX} ${vbY} ${vbW} ${vbH}`);
       if (oldSvg && oldSvg.parentNode) oldSvg.replaceWith(newSvg);
       else if (!oldSvg) graphWrap.appendChild(newSvg);
+
+      // Animate nodes from old positions to new positions
+      const ANIM_DURATION = 600; // ms
+      const nodeGs = newSvg.querySelectorAll('g[data-node-idx]');
+      const edgePaths = newSvg.querySelectorAll('.ae-edge-path');
+      const hasMovement = oldPositions.some((op, i) =>
+        Math.abs(op.x - nodes[i].x) > 1 || Math.abs(op.y - nodes[i].y) > 1
+      );
+      if (hasMovement && nodeGs.length > 0) {
+        // Apply initial offset transforms (visually at old positions)
+        nodeGs.forEach(gEl => {
+          const idx = parseInt(gEl.getAttribute('data-node-idx'));
+          const dx = oldPositions[idx].x - nodes[idx].x;
+          const dy = oldPositions[idx].y - nodes[idx].y;
+          gEl.setAttribute('transform', `translate(${dx}, ${dy})`);
+        });
+        // Hide edges during transition, fade them in at the end
+        edgePaths.forEach(p => {
+          p._targetOpacity = p.getAttribute('stroke-opacity') || '0.45';
+          p.setAttribute('stroke-opacity', '0');
+        });
+        // Animate to final positions
+        if (animFrameId) cancelAnimationFrame(animFrameId);
+        const startTime = performance.now();
+        function animateStep(now) {
+          const elapsed = now - startTime;
+          const t = Math.min(1, elapsed / ANIM_DURATION);
+          // Ease-out cubic
+          const ease = 1 - Math.pow(1 - t, 3);
+          nodeGs.forEach(gEl => {
+            const idx = parseInt(gEl.getAttribute('data-node-idx'));
+            const dx = oldPositions[idx].x - nodes[idx].x;
+            const dy = oldPositions[idx].y - nodes[idx].y;
+            const cx = dx * (1 - ease);
+            const cy = dy * (1 - ease);
+            gEl.setAttribute('transform', `translate(${cx}, ${cy})`);
+          });
+          // Fade edges in during the second half of animation
+          const edgeT = Math.max(0, (t - 0.4) / 0.6);
+          edgePaths.forEach(p => {
+            p.setAttribute('stroke-opacity', String(parseFloat(p._targetOpacity) * edgeT));
+          });
+          if (t < 1) {
+            animFrameId = requestAnimationFrame(animateStep);
+          } else {
+            nodeGs.forEach(gEl => gEl.removeAttribute('transform'));
+            edgePaths.forEach(p => p.setAttribute('stroke-opacity', p._targetOpacity));
+            animFrameId = null;
+          }
+        }
+        animFrameId = requestAnimationFrame(animateStep);
+      }
 
       // "Show All" button
       const oldBack = graphWrap.querySelector('.ae-ego-back-btn');
