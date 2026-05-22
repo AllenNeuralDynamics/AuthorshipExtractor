@@ -1533,6 +1533,12 @@ function render({ model, el: rootEl }) {
 
       for (const [, edges] of pairEdges) {
         const { i, j } = edges[0];
+        // In ego mode, only show edges involving the selected person's collaborators
+        if (selectedIdx !== null) {
+          const selConnected = (idx) => idx === selectedIdx ||
+            links.some(l => (l.i === selectedIdx && l.j === idx) || (l.j === selectedIdx && l.i === idx));
+          if (!selConnected(i) || !selConnected(j)) continue;
+        }
         const s = nodes[i], t = nodes[j];
         // Filter to only highlighted strands when hovering
         const visibleEdges = isHovering && highlightedEdges
