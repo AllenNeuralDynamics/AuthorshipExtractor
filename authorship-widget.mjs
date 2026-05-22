@@ -432,10 +432,11 @@ function render({ model, el: rootEl }) {
   let activeTab = 'network';
   let showCreditMenu = false;
   let authorMode = 'simulated'; // 'simulated' or 'real'
-  let networkMode = 'collab'; // 'collab' | 'flow' | 'institutions' | 'force' | 'sections'
+  let networkMode = 'collab'; // only 'collab' mode now
   let searchQuery = ''; // search/filter across all views
   let cachedLayout = null; // { key, positions: [{x,y}] } — shared between Network & Flow
   let selectedIdx = null; // ego-centric view: index of clicked/selected author
+  let selectedGroup = null; // { members: Set<idx>, label: string } — group selection from legend click
 
   // Search highlight: matches name, institution, or CRediT role
   function matchesSearch(author, query) {
@@ -1167,30 +1168,9 @@ function render({ model, el: rootEl }) {
     return ROLE_CAT[key] || { color: '#94a3b8' };
   }
 
-  // ── Network mode toggle helper ──
-  function buildNetworkModeToggle() {
-    const modeBar = el('div', { className: 'ae-mode-bar' });
-    const modes = [
-      { key: 'collab', label: 'Network' },
-      { key: 'flow', label: 'Flow' },
-      { key: 'force', label: 'By Role' },
-    ];
-    for (const m of modes) {
-      modeBar.appendChild(el('button', {
-        className: `ae-mode-chip ${networkMode === m.key ? 'ae-active' : ''}`,
-        onClick: () => { networkMode = m.key; rerender(); },
-      }, m.label));
-    }
-    return modeBar;
-  }
+  // Mode toggle removed — only network/collab view remains
 
   function buildNetworkTab(sorted, highlightSet) {
-    const n = sorted.length;
-    // Dispatch to mode-specific builder
-    if (networkMode === 'flow') return buildFlowView(sorted, highlightSet);
-    if (networkMode === 'institutions') return buildInstitutionChord(sorted, highlightSet);
-    if (networkMode === 'force') return buildForceGraph(sorted, highlightSet);
-    if (networkMode === 'sections') return buildSectionCircles(sorted, highlightSet);
     return buildCollabLayout(sorted, highlightSet);
   }
 
@@ -1202,7 +1182,7 @@ function render({ model, el: rootEl }) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
       return wrap;
     }
-    wrap.appendChild(buildNetworkModeToggle());
+
 
     // Compute per-author roles with colors
     const authorRoles = sorted.map(a => {
@@ -1466,14 +1446,14 @@ function render({ model, el: rootEl }) {
       svg.style.display = 'block';
 
       // Background click to deselect
-      if (selectedIdx !== null) {
+      if (selectedIdx !== null || selectedGroup !== null) {
         const bg = document.createElementNS(ns, 'rect');
         bg.setAttribute('x', '0'); bg.setAttribute('y', '0');
         bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
         bg.setAttribute('fill', 'transparent');
         bg.style.cursor = 'pointer';
         bg.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); });
-        bg.addEventListener('pointerup', () => { selectedIdx = null; rerenderView(); });
+        bg.addEventListener('pointerup', () => { selectedIdx = null; selectedGroup = null; rerenderView(); });
         svg.appendChild(bg);
       }
 
@@ -1587,7 +1567,11 @@ function render({ model, el: rootEl }) {
           ? edges.filter(e => highlightedEdges.has(e.edgeIdx))
           : edges;
         if (visibleEdges.length === 0) continue;
-        const baseOpacity = !isHovering ? 0.45 : 0.75;
+        let baseOpacity = !isHovering ? 0.45 : 0.75;
+        // Dim edges not between group members
+        if (selectedGroup && selectedIdx === null) {
+          baseOpacity = (selectedGroup.members.has(i) && selectedGroup.members.has(j)) ? 0.6 : 0.05;
+        }
 
         const dx = t.x - s.x, dy = t.y - s.y;
         const len = Math.sqrt(dx * dx + dy * dy) || 1;
@@ -1616,6 +1600,8 @@ function render({ model, el: rootEl }) {
           const title = document.createElementNS(ns, 'title');
           title.textContent = `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role} (${e.level})`;
           path.setAttribute('class', 'ae-edge-path');
+          path.setAttribute('data-edge-i', String(i));
+          path.setAttribute('data-edge-j', String(j));
           path.appendChild(title);
           svg.appendChild(path);
           offset += strandGap;
@@ -1658,7 +1644,12 @@ function render({ model, el: rootEl }) {
           const w = links.find(l => (l.i === selectedIdx && l.j === idx) || (l.j === selectedIdx && l.i === idx));
           egoOpacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
         }
-        const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : egoOpacity;
+        // Group selection opacity
+        let grpOpacity = egoOpacity;
+        if (selectedGroup && selectedIdx === null) {
+          grpOpacity = selectedGroup.members.has(idx) ? 1 : 0.15;
+        }
+        const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : grpOpacity;
 
         const g = document.createElementNS(ns, 'g');
         g.style.cursor = 'pointer';
@@ -1797,6 +1788,9 @@ function render({ model, el: rootEl }) {
               const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
               opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
             }
+            if (selectedGroup && selectedIdx === null) {
+              opacity = selectedGroup.members.has(gIdx) ? 1 : 0.15;
+            }
             gEl.style.opacity = String(opacity);
           });
           updateInfoCard();
@@ -1817,6 +1811,7 @@ function render({ model, el: rootEl }) {
               selectedIdx = null;
             } else {
               selectedIdx = idx;
+              selectedGroup = null;
             }
             rerenderView();
           }
@@ -2056,11 +2051,11 @@ function render({ model, el: rootEl }) {
 
       // "Show All" button
       const oldBack = graphWrap.querySelector('.ae-ego-back-btn');
-      if (selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) {
+      if ((selectedIdx !== null && selectedIdx >= 0 && selectedIdx < n) || selectedGroup !== null) {
         if (!oldBack) {
           const backBtn = el('button', {
             className: 'ae-ego-back-btn',
-            onClick: () => { selectedIdx = null; rerenderView(); },
+            onClick: () => { selectedIdx = null; selectedGroup = null; rerenderView(); },
             title: 'Return to full network view',
           }, '← Show All');
           graphWrap.appendChild(backBtn);
@@ -2085,8 +2080,53 @@ function render({ model, el: rootEl }) {
     graphOuter.appendChild(graphWrap);
     wrap.appendChild(graphOuter);
 
+    // Helper: dim/restore nodes AND edges for a set of member indices
+    function legendHoverEnter(members) {
+      const svgEl = graphWrap.querySelector('svg');
+      if (!svgEl) return;
+      const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+      allGs.forEach(gEl => {
+        const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+        gEl.style.opacity = members.has(gIdx) ? '1' : '0.15';
+      });
+      const allEdges = svgEl.querySelectorAll('.ae-edge-path');
+      allEdges.forEach(edge => {
+        const ei = parseInt(edge.getAttribute('data-edge-i'));
+        const ej = parseInt(edge.getAttribute('data-edge-j'));
+        edge.style.opacity = (members.has(ei) && members.has(ej)) ? '' : '0.05';
+      });
+    }
+    function legendHoverLeave() {
+      const svgEl = graphWrap.querySelector('svg');
+      if (!svgEl) return;
+      const allGs = svgEl.querySelectorAll('g[data-node-idx]');
+      allGs.forEach(gEl => {
+        const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+        let opacity = 1;
+        if (selectedIdx !== null && gIdx !== selectedIdx) {
+          const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
+          opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
+        }
+        if (selectedGroup && selectedIdx === null) {
+          opacity = selectedGroup.members.has(gIdx) ? 1 : 0.15;
+        }
+        gEl.style.opacity = String(opacity);
+      });
+      const allEdges = svgEl.querySelectorAll('.ae-edge-path');
+      allEdges.forEach(edge => {
+        if (selectedGroup && selectedIdx === null) {
+          const ei = parseInt(edge.getAttribute('data-edge-i'));
+          const ej = parseInt(edge.getAttribute('data-edge-j'));
+          edge.style.opacity = (selectedGroup.members.has(ei) && selectedGroup.members.has(ej)) ? '' : '0.05';
+        } else {
+          edge.style.opacity = '';
+        }
+      });
+    }
+
     // Legend — Roles
     const legend = el('div', { className: 'ae-network-legend ae-role-legend' });
+    legend.appendChild(el('div', { className: 'ae-legend-heading' }, 'Roles'));
     for (const role of ALL_CREDIT_ROLES) {
       const rc = getRoleCat(role);
       const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
@@ -2095,15 +2135,22 @@ function render({ model, el: rootEl }) {
       );
       item.addEventListener('mouseenter', () => { hoveredRole = role; rerenderView(); });
       item.addEventListener('mouseleave', () => { hoveredRole = null; rerenderView(); });
+      item.addEventListener('click', () => {
+        const normalHovered = normalizeRole(role);
+        const members = new Set();
+        for (let idx = 0; idx < n; idx++) {
+          const levels = sorted[idx].credit_levels || [];
+          if (levels.some(cl => normalizeRole(cl.role) === normalHovered)) members.add(idx);
+        }
+        if (selectedGroup && selectedGroup.label === role) { selectedGroup = null; }
+        else { selectedGroup = { members, label: role }; selectedIdx = null; }
+        rerenderView();
+      });
       legend.appendChild(item);
     }
     wrap.appendChild(legend);
 
     // Legend — Institutions
-    const INST_COLORS = [
-      '#4c6ef5', '#10b981', '#f59e0b', '#e11d48', '#8b5cf6', '#0ea5e9',
-      '#d97706', '#059669', '#7c3aed', '#ec4899', '#14b8a6', '#f43f5e',
-    ];
     function iKey(aff) { return typeof aff === 'string' ? aff : (aff.name || aff.id || JSON.stringify(aff)); }
     function iName(aff) { return typeof aff === 'string' ? aff : (aff.name || aff.id || '?'); }
     const instMap = new Map();
@@ -2124,34 +2171,16 @@ function render({ model, el: rootEl }) {
     if (instEntries.length > 0) {
       const instLegend = el('div', { className: 'ae-network-legend ae-inst-legend' });
       instLegend.appendChild(el('div', { className: 'ae-legend-heading' }, 'Institutions'));
-      instEntries.forEach(([, inst], ci) => {
-        const color = INST_COLORS[ci % INST_COLORS.length];
+      instEntries.forEach(([, inst]) => {
         const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
-          el('span', { className: 'ae-legend-dot', style: { backgroundColor: color } }),
           el('span', { className: 'ae-legend-label' }, inst.name),
         );
-        item.addEventListener('mouseenter', () => {
-          const svgEl = graphWrap.querySelector('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            gEl.style.opacity = inst.members.has(gIdx) ? '1' : '0.15';
-          });
-        });
-        item.addEventListener('mouseleave', () => {
-          const svgEl = graphWrap.querySelector('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            let opacity = 1;
-            if (selectedIdx !== null && gIdx !== selectedIdx) {
-              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
-            }
-            gEl.style.opacity = String(opacity);
-          });
+        item.addEventListener('mouseenter', () => legendHoverEnter(inst.members));
+        item.addEventListener('mouseleave', () => legendHoverLeave());
+        item.addEventListener('click', () => {
+          if (selectedGroup && selectedGroup.label === inst.name) { selectedGroup = null; }
+          else { selectedGroup = { members: inst.members, label: inst.name }; selectedIdx = null; }
+          rerenderView();
         });
         instLegend.appendChild(item);
       });
@@ -2159,11 +2188,6 @@ function render({ model, el: rootEl }) {
     }
 
     // Legend — Sections & Figures
-    const SECTION_COLORS = [
-      '#6366f1', '#8b5cf6', '#a855f7', '#d946ef', '#ec4899', '#f43f5e',
-      '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e',
-    ];
-    const FIGURE_COLORS = ['#f59e0b', '#fbbf24', '#f97316', '#fb923c', '#fca5a1'];
     const secMap = new Map();
     for (let i = 0; i < n; i++) {
       const secs = sorted[i].section_contributions || [];
@@ -2185,42 +2209,25 @@ function render({ model, el: rootEl }) {
     if (secEntries.length > 0 || figEntries.length > 0) {
       const secLegend = el('div', { className: 'ae-network-legend ae-sec-legend' });
       secLegend.appendChild(el('div', { className: 'ae-legend-heading' }, 'Sections & Figures'));
-      const buildSecItem = (label, members, color) => {
+      const buildSecItem = (label, members) => {
         const item = el('div', { className: 'ae-legend-item', style: { cursor: 'pointer' } },
-          el('span', { className: 'ae-legend-dot', style: { backgroundColor: color } }),
           el('span', { className: 'ae-legend-label' }, label),
         );
-        item.addEventListener('mouseenter', () => {
-          const svgEl = graphWrap.querySelector('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            gEl.style.opacity = members.has(gIdx) ? '1' : '0.15';
-          });
-        });
-        item.addEventListener('mouseleave', () => {
-          const svgEl = graphWrap.querySelector('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            let opacity = 1;
-            if (selectedIdx !== null && gIdx !== selectedIdx) {
-              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
-            }
-            gEl.style.opacity = String(opacity);
-          });
+        item.addEventListener('mouseenter', () => legendHoverEnter(members));
+        item.addEventListener('mouseleave', () => legendHoverLeave());
+        item.addEventListener('click', () => {
+          if (selectedGroup && selectedGroup.label === label) { selectedGroup = null; }
+          else { selectedGroup = { members, label }; selectedIdx = null; }
+          rerenderView();
         });
         return item;
       };
-      secEntries.forEach(([secId, members], ci) => {
-        secLegend.appendChild(buildSecItem(sectionLabel(secId), members, SECTION_COLORS[ci % SECTION_COLORS.length]));
+      secEntries.forEach(([secId, members]) => {
+        secLegend.appendChild(buildSecItem(sectionLabel(secId), members));
       });
-      figEntries.forEach(([figId, members], ci) => {
+      figEntries.forEach(([figId, members]) => {
         const label = '📊 ' + figId.replace(/^fig-/, '').replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        secLegend.appendChild(buildSecItem(label, members, FIGURE_COLORS[ci % FIGURE_COLORS.length]));
+        secLegend.appendChild(buildSecItem(label, members));
       });
       wrap.appendChild(secLegend);
     }
@@ -2251,7 +2258,7 @@ function render({ model, el: rootEl }) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
       return wrap;
     }
-    wrap.appendChild(buildNetworkModeToggle());
+
 
     // Compute per-author roles with colors
     const authorRoles = sorted.map(a => {
@@ -2945,7 +2952,7 @@ function render({ model, el: rootEl }) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
       return wrap;
     }
-    wrap.appendChild(buildNetworkModeToggle());
+
 
     const nGroups = groups.length;
 
