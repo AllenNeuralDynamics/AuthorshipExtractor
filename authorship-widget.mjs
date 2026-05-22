@@ -1323,68 +1323,72 @@ function render({ model, el: rootEl }) {
       }
       const maxCollab = Math.max(1, ...collabWeights);
 
-      // Place selected at center
-      nodes[selectedIdx].x = CX;
-      nodes[selectedIdx].y = CY;
-
-      // Group others into concentric rings by collaboration strength
-      const others = [];
+      // Initialize positions: selected at center, others at base positions shifted toward center
+      const posX = new Float64Array(n);
+      const posY = new Float64Array(n);
       for (let i = 0; i < n; i++) {
-        if (i === selectedIdx) continue;
-        others.push({ idx: i, weight: collabWeights[i] });
+        posX[i] = basePositions[i].x;
+        posY[i] = basePositions[i].y;
       }
-      others.sort((a, b) => b.weight - a.weight);
+      posX[selectedIdx] = CX;
+      posY[selectedIdx] = CY;
 
-      // Split into rings: strong collaborators (inner), weak (middle), unconnected (outer)
-      const rings = [];
-      const strong = others.filter(o => o.weight > maxCollab * 0.4);
-      const moderate = others.filter(o => o.weight > 0 && o.weight <= maxCollab * 0.4);
-      const unconnected = others.filter(o => o.weight === 0);
-      if (strong.length > 0) rings.push(strong);
-      if (moderate.length > 0) rings.push(moderate);
-      if (unconnected.length > 0) rings.push(unconnected);
+      // Force-directed simulation
+      const ITERATIONS = 200;
+      const repulsionStrength = 800;
+      const attractionStrength = 0.005;
+      const centerGravity = 0.002; // gentle pull toward center for unconnected nodes
 
-      // Compute ring radii based on node sizes to avoid overlap
-      const selectedR = nodes[selectedIdx].radius;
-      let currentR = selectedR + 30; // gap from center node
+      for (let iter = 0; iter < ITERATIONS; iter++) {
+        const cooling = 1 - iter / ITERATIONS; // reduce forces over time
+        const dt = cooling * 2;
 
-      for (let ri = 0; ri < rings.length; ri++) {
-        const ring = rings[ri];
-        // Find the max node radius in this ring for spacing
-        const maxNodeR = Math.max(...ring.map(o => nodes[o.idx].radius));
-        // Minimum ring radius: enough circumference to fit all nodes without overlap
-        const minSpacing = maxNodeR * 2 + 25; // diameter + padding for labels
-        const minCircumference = ring.length * minSpacing;
-        const minRingR = Math.max(currentR + maxNodeR + 15, minCircumference / (2 * Math.PI));
-
-        const ringR = minRingR;
-        for (let oi = 0; oi < ring.length; oi++) {
-          const { idx } = ring[oi];
-          const angle = (2 * Math.PI * oi) / ring.length - Math.PI / 2;
-          nodes[idx].x = CX + ringR * Math.cos(angle);
-          nodes[idx].y = CY + ringR * Math.sin(angle);
-        }
-        currentR = ringR + maxNodeR + 20; // gap before next ring
-      }
-
-      // Collision resolution (more passes, label-aware spacing)
-      for (let pass = 0; pass < 15; pass++) {
         for (let i = 0; i < n; i++) {
           if (i === selectedIdx) continue;
-          for (let j = i + 1; j < n; j++) {
-            if (j === selectedIdx) continue;
-            const dx = nodes[j].x - nodes[i].x;
-            const dy = nodes[j].y - nodes[i].y;
-            const dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+          let fx = 0, fy = 0;
+
+          // Repulsion from all other nodes
+          for (let j = 0; j < n; j++) {
+            if (j === i) continue;
+            const dx = posX[i] - posX[j];
+            const dy = posY[i] - posY[j];
+            const distSq = dx * dx + dy * dy;
             const minDist = nodes[i].radius + nodes[j].radius + 20;
-            if (dist < minDist) {
-              const overlap = (minDist - dist) / 2;
-              const ux = dx / dist, uy = dy / dist;
-              nodes[i].x -= ux * overlap; nodes[i].y -= uy * overlap;
-              nodes[j].x += ux * overlap; nodes[j].y += uy * overlap;
-            }
+            const dist = Math.sqrt(distSq) || 0.1;
+            // Stronger repulsion when close
+            const repForce = repulsionStrength / Math.max(distSq, minDist * minDist * 0.25);
+            fx += (dx / dist) * repForce;
+            fy += (dy / dist) * repForce;
           }
+
+          // Attraction toward selected person (proportional to collaboration)
+          const w = collabWeights[i] / maxCollab;
+          if (w > 0) {
+            const dx = CX - posX[i];
+            const dy = CY - posY[i];
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+            // Target distance: closer for stronger collaborators
+            const targetDist = (nodes[selectedIdx].radius + nodes[i].radius + 30) + (1 - w) * 120;
+            const force = (dist - targetDist) * attractionStrength * (0.5 + w);
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
+          } else {
+            // Unconnected: gentle gravity toward center so they don't fly away
+            const dx = CX - posX[i];
+            const dy = CY - posY[i];
+            fx += dx * centerGravity;
+            fy += dy * centerGravity;
+          }
+
+          posX[i] += fx * dt;
+          posY[i] += fy * dt;
         }
+      }
+
+      // Apply final positions
+      for (let i = 0; i < n; i++) {
+        nodes[i].x = posX[i];
+        nodes[i].y = posY[i];
       }
     }
 
