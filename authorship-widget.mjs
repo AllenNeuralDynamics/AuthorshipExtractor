@@ -1334,9 +1334,9 @@ function render({ model, el: rootEl }) {
       posY[selectedIdx] = CY;
 
       // Force-directed simulation
-      const ITERATIONS = 200;
-      const repulsionStrength = 2000;
-      const attractionStrength = 0.02;
+      const ITERATIONS = 250;
+      const repulsionStrength = 4000;
+      const attractionStrength = 0.012;
       const centerGravity = 0.001; // gentle pull toward center for unconnected nodes
 
       for (let iter = 0; iter < ITERATIONS; iter++) {
@@ -1353,7 +1353,7 @@ function render({ model, el: rootEl }) {
             const dx = posX[i] - posX[j];
             const dy = posY[i] - posY[j];
             const distSq = dx * dx + dy * dy;
-            const minDist = nodes[i].radius + nodes[j].radius + 40;
+            const minDist = nodes[i].radius + nodes[j].radius + 50;
             const dist = Math.sqrt(distSq) || 0.1;
             // Stronger repulsion when close
             const repForce = repulsionStrength / Math.max(distSq, minDist * minDist * 0.25);
@@ -1367,9 +1367,9 @@ function render({ model, el: rootEl }) {
             const dx = CX - posX[i];
             const dy = CY - posY[i];
             const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
-            // Target distance: closer for stronger collaborators
-            const targetDist = (nodes[selectedIdx].radius + nodes[i].radius + 25) + (1 - w * w) * 150;
-            const force = (dist - targetDist) * attractionStrength * (1 + w * 2);
+            // Target distance: closer for stronger collaborators but with generous minimum
+            const targetDist = (nodes[selectedIdx].radius + nodes[i].radius + 60) + (1 - w * w) * 180;
+            const force = (dist - targetDist) * attractionStrength * (1 + w);
             fx += (dx / dist) * force;
             fy += (dy / dist) * force;
           } else {
