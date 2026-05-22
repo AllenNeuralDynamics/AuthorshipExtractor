@@ -1284,8 +1284,121 @@ function render({ model, el: rootEl }) {
 
     // ── Ego-centric layout: reposition nodes around a selected author ──
     function applyEgoLayout() {
-      if (selectedIdx === null || selectedIdx < 0 || selectedIdx >= n) {
+      if (selectedIdx === null && selectedGroup === null) {
         // Restore base positions and radii
+        for (let i = 0; i < n; i++) {
+          nodes[i].x = basePositions[i].x;
+          nodes[i].y = basePositions[i].y;
+          nodes[i].radius = basePositions[i].radius;
+        }
+        return;
+      }
+
+      // Group selection layout: members centered, non-members on periphery
+      if (selectedGroup !== null && selectedIdx === null) {
+        const CX = W / 2, CY = H / 2;
+        const members = selectedGroup.members;
+        for (let i = 0; i < n; i++) nodes[i].radius = basePositions[i].radius;
+
+        // Force simulation: members attract to center, repel each other; non-members pushed out
+        const posX = new Float64Array(n);
+        const posY = new Float64Array(n);
+        for (let i = 0; i < n; i++) {
+          posX[i] = basePositions[i].x;
+          posY[i] = basePositions[i].y;
+        }
+
+        const ITERATIONS = 200;
+        const repulsionStrength = 3000;
+
+        for (let iter = 0; iter < ITERATIONS; iter++) {
+          const cooling = 1 - iter / ITERATIONS;
+          const dt = cooling * 2;
+
+          for (let i = 0; i < n; i++) {
+            let fx = 0, fy = 0;
+
+            // Repulsion from all other nodes
+            for (let j = 0; j < n; j++) {
+              if (j === i) continue;
+              const dx = posX[i] - posX[j];
+              const dy = posY[i] - posY[j];
+              const distSq = dx * dx + dy * dy;
+              const minDist = nodes[i].radius + nodes[j].radius + 40;
+              const dist = Math.sqrt(distSq) || 0.1;
+              const repForce = repulsionStrength / Math.max(distSq, minDist * minDist * 0.25);
+              fx += (dx / dist) * repForce;
+              fy += (dy / dist) * repForce;
+            }
+
+            if (members.has(i)) {
+              // Members: pull toward center
+              const dx = CX - posX[i];
+              const dy = CY - posY[i];
+              const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+              const targetDist = Math.min(W, H) * 0.15;
+              const force = (dist - targetDist) * 0.015;
+              fx += (dx / dist) * force;
+              fy += (dy / dist) * force;
+            } else {
+              // Non-members: push to outer periphery
+              const dx = posX[i] - CX;
+              const dy = posY[i] - CY;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+              const outerTargetDist = Math.min(W, H) * 0.42;
+              const force = (outerTargetDist - dist) * 0.02;
+              fx += (dx / dist) * force;
+              fy += (dy / dist) * force;
+            }
+
+            posX[i] += fx * dt;
+            posY[i] += fy * dt;
+          }
+        }
+
+        for (let i = 0; i < n; i++) {
+          nodes[i].x = posX[i];
+          nodes[i].y = posY[i];
+        }
+
+        // Normalize: scale members to fill center
+        const pad = 60;
+        let eMinX = Infinity, eMinY = Infinity, eMaxX = -Infinity, eMaxY = -Infinity;
+        for (let i = 0; i < n; i++) {
+          if (!members.has(i)) continue;
+          eMinX = Math.min(eMinX, nodes[i].x - nodes[i].radius);
+          eMinY = Math.min(eMinY, nodes[i].y - nodes[i].radius);
+          eMaxX = Math.max(eMaxX, nodes[i].x + nodes[i].radius);
+          eMaxY = Math.max(eMaxY, nodes[i].y + nodes[i].radius);
+        }
+        const eDataW = (eMaxX - eMinX) || 1, eDataH = (eMaxY - eMinY) || 1;
+        const eScaleX = (W - 2 * pad) / eDataW, eScaleY = (H - 2 * pad) / eDataH;
+        const eScale = Math.min(eScaleX, eScaleY, 1.5); // cap scale to avoid over-zoom
+        const eCX = (eMinX + eMaxX) / 2, eCY = (eMinY + eMaxY) / 2;
+        for (let i = 0; i < n; i++) {
+          if (!members.has(i)) continue;
+          nodes[i].x = W / 2 + (nodes[i].x - eCX) * eScale;
+          nodes[i].y = H / 2 + (nodes[i].y - eCY) * eScale;
+        }
+
+        // Place non-members on outer ring
+        const nonMembers = [];
+        for (let i = 0; i < n; i++) {
+          if (!members.has(i)) nonMembers.push(i);
+        }
+        if (nonMembers.length > 0) {
+          const outerR = Math.min(W, H) / 2 - pad * 0.5;
+          for (let k = 0; k < nonMembers.length; k++) {
+            const angle = (2 * Math.PI * k) / nonMembers.length - Math.PI / 2;
+            const idx = nonMembers[k];
+            nodes[idx].x = W / 2 + outerR * Math.cos(angle);
+            nodes[idx].y = H / 2 + outerR * Math.sin(angle);
+          }
+        }
+        return;
+      }
+
+      if (selectedIdx < 0 || selectedIdx >= n) {
         for (let i = 0; i < n; i++) {
           nodes[i].x = basePositions[i].x;
           nodes[i].y = basePositions[i].y;
