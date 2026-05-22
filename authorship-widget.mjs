@@ -1378,11 +1378,14 @@ function render({ model, el: rootEl }) {
             fx += (dx / dist) * force;
             fy += (dy / dist) * force;
           } else {
-            // Unconnected: gentle gravity toward center so they don't fly away
-            const dx = CX - posX[i];
-            const dy = CY - posY[i];
-            fx += dx * centerGravity;
-            fy += dy * centerGravity;
+            // Unconnected: push them to the outer periphery
+            const dx = posX[i] - CX;
+            const dy = posY[i] - CY;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+            const outerTargetDist = Math.min(W, H) * 0.42;
+            const force = (outerTargetDist - dist) * 0.02;
+            fx += (dx / dist) * force;
+            fy += (dy / dist) * force;
           }
 
           posX[i] += fx * dt;
@@ -1396,10 +1399,11 @@ function render({ model, el: rootEl }) {
         nodes[i].y = posY[i];
       }
 
-      // Normalize: scale ego positions to fill the SVG canvas with padding
+      // Normalize: scale only connected nodes to fill the SVG canvas with padding
       const pad = 60;
       let eMinX = Infinity, eMinY = Infinity, eMaxX = -Infinity, eMaxY = -Infinity;
       for (let i = 0; i < n; i++) {
+        if (i !== selectedIdx && collabWeights[i] === 0) continue; // skip unconnected
         eMinX = Math.min(eMinX, nodes[i].x - nodes[i].radius);
         eMinY = Math.min(eMinY, nodes[i].y - nodes[i].radius);
         eMaxX = Math.max(eMaxX, nodes[i].x + nodes[i].radius);
@@ -1408,11 +1412,27 @@ function render({ model, el: rootEl }) {
       const eDataW = (eMaxX - eMinX) || 1, eDataH = (eMaxY - eMinY) || 1;
       const eScaleX = (W - 2 * pad) / eDataW, eScaleY = (H - 2 * pad) / eDataH;
       const eScale = Math.min(eScaleX, eScaleY);
-      // Always normalize: scale and recenter to fill the canvas
+      // Scale connected nodes to fill center area
       const eCX = (eMinX + eMaxX) / 2, eCY = (eMinY + eMaxY) / 2;
       for (let i = 0; i < n; i++) {
+        if (i !== selectedIdx && collabWeights[i] === 0) continue;
         nodes[i].x = W / 2 + (nodes[i].x - eCX) * eScale;
         nodes[i].y = H / 2 + (nodes[i].y - eCY) * eScale;
+      }
+
+      // Place unconnected nodes on an outer ring beyond the connected cluster
+      const unconnected = [];
+      for (let i = 0; i < n; i++) {
+        if (i !== selectedIdx && collabWeights[i] === 0) unconnected.push(i);
+      }
+      if (unconnected.length > 0) {
+        const outerR = Math.min(W, H) / 2 - pad * 0.5;
+        for (let k = 0; k < unconnected.length; k++) {
+          const angle = (2 * Math.PI * k) / unconnected.length - Math.PI / 2;
+          const idx = unconnected[k];
+          nodes[idx].x = W / 2 + outerR * Math.cos(angle);
+          nodes[idx].y = H / 2 + outerR * Math.sin(angle);
+        }
       }
     }
 
