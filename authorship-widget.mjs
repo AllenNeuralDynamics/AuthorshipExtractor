@@ -1302,15 +1302,16 @@ function render({ model, el: rootEl }) {
     }
 
     // Save base positions (before any ego override) for restoration
-    const basePositions = nodes.map(nd => ({ x: nd.x, y: nd.y }));
+    const basePositions = nodes.map(nd => ({ x: nd.x, y: nd.y, radius: nd.radius }));
 
     // ── Ego-centric layout: reposition nodes around a selected author ──
     function applyEgoLayout() {
       if (selectedIdx === null || selectedIdx < 0 || selectedIdx >= n) {
-        // Restore base positions
+        // Restore base positions and radii
         for (let i = 0; i < n; i++) {
           nodes[i].x = basePositions[i].x;
           nodes[i].y = basePositions[i].y;
+          nodes[i].radius = basePositions[i].radius;
         }
         return;
       }
@@ -1322,6 +1323,10 @@ function render({ model, el: rootEl }) {
         else if (link.j === selectedIdx) collabWeights[link.i] = link.weight;
       }
       const maxCollab = Math.max(1, ...collabWeights);
+
+      // Restore all radii first then enlarge the selected node
+      for (let i = 0; i < n; i++) nodes[i].radius = basePositions[i].radius;
+      nodes[selectedIdx].radius = basePositions[selectedIdx].radius * 1.5;
 
       // Initialize positions: selected at center, others at base positions shifted toward center
       const posX = new Float64Array(n);
