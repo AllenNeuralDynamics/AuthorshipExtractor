@@ -1400,9 +1400,6 @@ function render({ model, el: rootEl }) {
       const pad = 60;
       let eMinX = Infinity, eMinY = Infinity, eMaxX = -Infinity, eMaxY = -Infinity;
       for (let i = 0; i < n; i++) {
-        // Only consider visible nodes (connected to selected)
-        const hasLink = i === selectedIdx || collabWeights[i] > 0;
-        if (!hasLink) continue;
         eMinX = Math.min(eMinX, nodes[i].x - nodes[i].radius);
         eMinY = Math.min(eMinY, nodes[i].y - nodes[i].radius);
         eMaxX = Math.max(eMaxX, nodes[i].x + nodes[i].radius);
@@ -1637,16 +1634,13 @@ function render({ model, el: rootEl }) {
         const isConnected = isHovering && highlightedNodes.has(idx);
         const isDim = isHovering && !isHovered && !isConnected;
         const isSearchDim = highlightSet && !highlightSet.has(idx);
-        // In ego mode, hide unconnected nodes entirely
+        // In ego mode, dim unconnected nodes
         let egoOpacity = 1;
         if (selectedIdx !== null && !isSelected) {
           const w = links.find(l => (l.i === selectedIdx && l.j === idx) || (l.j === selectedIdx && l.i === idx));
-          egoOpacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0;
+          egoOpacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
         }
         const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : egoOpacity;
-
-        // Skip rendering unconnected nodes in ego mode
-        if (selectedIdx !== null && egoOpacity === 0) continue;
 
         const g = document.createElementNS(ns, 'g');
         g.style.cursor = 'pointer';
@@ -1783,7 +1777,7 @@ function render({ model, el: rootEl }) {
             let opacity = 1;
             if (selectedIdx !== null && gIdx !== selectedIdx) {
               const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0;
+              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
             }
             gEl.style.opacity = String(opacity);
           });
@@ -1843,7 +1837,7 @@ function render({ model, el: rootEl }) {
             let opacity = 1;
             if (selectedIdx !== null && gIdx !== selectedIdx) {
               const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0;
+              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
             }
             gEl.style.opacity = String(opacity);
           });
