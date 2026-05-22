@@ -1405,14 +1405,12 @@ function render({ model, el: rootEl }) {
       }
       const eDataW = (eMaxX - eMinX) || 1, eDataH = (eMaxY - eMinY) || 1;
       const eScaleX = (W - 2 * pad) / eDataW, eScaleY = (H - 2 * pad) / eDataH;
-      const eScale = Math.min(eScaleX, eScaleY, 1.5); // cap at 1.5x to avoid over-scaling small groups
-      if (eScale < 1) {
-        // Only scale down if nodes overflow; recenter
-        const eCX = (eMinX + eMaxX) / 2, eCY = (eMinY + eMaxY) / 2;
-        for (let i = 0; i < n; i++) {
-          nodes[i].x = W / 2 + (nodes[i].x - eCX) * eScale;
-          nodes[i].y = H / 2 + (nodes[i].y - eCY) * eScale;
-        }
+      const eScale = Math.min(eScaleX, eScaleY);
+      // Always normalize: scale and recenter to fill the canvas
+      const eCX = (eMinX + eMaxX) / 2, eCY = (eMinY + eMaxY) / 2;
+      for (let i = 0; i < n; i++) {
+        nodes[i].x = W / 2 + (nodes[i].x - eCX) * eScale;
+        nodes[i].y = H / 2 + (nodes[i].y - eCY) * eScale;
       }
     }
 
