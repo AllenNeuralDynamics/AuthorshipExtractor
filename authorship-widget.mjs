@@ -1335,9 +1335,9 @@ function render({ model, el: rootEl }) {
 
       // Force-directed simulation
       const ITERATIONS = 200;
-      const repulsionStrength = 800;
-      const attractionStrength = 0.005;
-      const centerGravity = 0.002; // gentle pull toward center for unconnected nodes
+      const repulsionStrength = 2000;
+      const attractionStrength = 0.004;
+      const centerGravity = 0.001; // gentle pull toward center for unconnected nodes
 
       for (let iter = 0; iter < ITERATIONS; iter++) {
         const cooling = 1 - iter / ITERATIONS; // reduce forces over time
@@ -1353,7 +1353,7 @@ function render({ model, el: rootEl }) {
             const dx = posX[i] - posX[j];
             const dy = posY[i] - posY[j];
             const distSq = dx * dx + dy * dy;
-            const minDist = nodes[i].radius + nodes[j].radius + 20;
+            const minDist = nodes[i].radius + nodes[j].radius + 40;
             const dist = Math.sqrt(distSq) || 0.1;
             // Stronger repulsion when close
             const repForce = repulsionStrength / Math.max(distSq, minDist * minDist * 0.25);
