@@ -16,9 +16,9 @@ abstract: >
   contributions, project timelines, and rich author profiles. Critically,
   we reject the premise that any single author ordering is definitive. Instead,
   the reader can explore an interactive collaboration network that reveals
-  shared-role connections between contributors, dynamically re-sort by
-  alphabetical order, CRediT roles, number of roles, project join date,
-  or institution, and drill into individual profiles. This paper
+  shared-role connections between contributors, dynamically change 
+  visualizations or authorship order by CRediT roles and institution. 
+  Critically, the views can be centered around each individual. This paper
   simultaneously describes the framework and serves as a live
   demonstration: the interactive authorship display illustrates how
   rethinking author display can bring transparency, reduce conflict, and
@@ -42,9 +42,9 @@ This compression of multi-dimensional contributions into a one-dimensional seque
 
 The consequences are not merely symbolic. Authorship disputes are among the leading causes of research misconduct complaints {cite}`rennie1997`. Junior researchers report delaying publications and avoiding collaborations to protect their authorship position {cite}`sauermann2017`. The incentive structures that flow from linear author lists actively hinder the collaborative, interdisciplinary team science that modern challenges demand {cite}`wuchty2007`.
 
-We propose a fundamentally different approach. Rather than compressing contributions into a single ordered list, we present a multi-dimensional authorship framework that allows readers, institutions, and metrics systems to explore contributions along multiple axes simultaneously. This framework builds on the CRediT (Contributor Roles Taxonomy) standard while extending it with section-level contributions, project timelines, and rich author profiles. Critically, we reject the premise that any single ordering of authors is definitive. Using our tool, the reader can dynamically re-sort the author list by alphabetical order, number of CRediT roles, specific role contributions, project join date, or institution.
+We propose a fundamentally different approach. Rather than flattening contributions into a single ranking, we offer an interactive explorer that surfaces the full dimensionality of each person's role. The tool leverages the CRediT (Contributor Roles Taxonomy) standard and augments it with per-section attribution, project timelines, and detailed author profiles. No fixed ordering is privileged: readers can re-sort by alphabetical order, number of CRediT roles, specific role contributions, project join date, or institutional affiliation, and can center the collaboration network around any individual.
 
-This paper serves simultaneously as a description of the framework and as a live demonstration. Built with MyST (Markedly Structured Text), the interactive authorship display above illustrates how rethinking author display can bring transparency, reduce conflict, and credit the diverse contributions that make modern science possible.
+This paper doubles as a live demonstration. Built with MyST (Markedly Structured Text), the interactive widget above shows how replacing the static byline with a navigable, multi-view display can foster transparency, reduce authorship conflict, and properly acknowledge the breadth of contributions behind modern research.
 
 ## The CRediT taxonomy
 
