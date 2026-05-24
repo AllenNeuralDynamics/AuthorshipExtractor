@@ -9,7 +9,7 @@ The traditional author list compresses complex, multi-dimensional contributions 
 - **CRediT roles** — 14 standardized contributor roles with effort levels (lead / equal / supporting)
 - **Section & figure attribution** — who contributed to the work described in each section and figure
 - **Dynamic sorting** — re-order authors by name, CRediT role, number of roles, join date, or institution
-- **Collaboration views** — force-directed collaboration layout (proximity = shared work) and circle-of-circles views by institution, role, or section
+- **Collaboration network** — force-directed layout where proximity reflects collaboration strength, with per-role edge visualization and ego-centric views on click
 - **Timeline** — when each contributor joined the project
 - **Rich profiles** — ORCID, affiliations, CRediT roles, and optional profile photos
 - **Dataset switcher** — switch between a small simulated team, a large simulated team (50 authors), and real contributors
