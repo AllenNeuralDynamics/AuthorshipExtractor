@@ -44,7 +44,7 @@ The consequences are not merely symbolic. Authorship disputes are among the lead
 
 We propose a fundamentally different approach. Rather than flattening contributions into a single ranking, we offer an interactive explorer that surfaces the full dimensionality of each person's role. The tool leverages the CRediT (Contributor Roles Taxonomy) standard and augments it with per-section attribution, project timelines, and detailed author profiles. Six complementary views let readers examine contributions from different angles: a force-directed collaboration network where spatial proximity reflects shared roles, clicking a node reveals that person's ego-centric connections, and clicking a role or institution in the legend highlights the corresponding subgroup; a CRediT matrix showing contribution levels across all roles; section and timeline maps; a dynamically sortable author list that reinforces how no single ordering captures the full picture; and individual author profiles.
 
-This paper doubles as a live demonstration: the interactive widget above shows how replacing the static byline with a navigable, multi-view display can foster transparency, reduce authorship conflict, and properly acknowledge the breadth of contributions behind modern research.
+This paper doubles as a live demonstration: the interactive widget above shows how replacing the static byline with a navigable, multi-view display can foster transparency and properly acknowledge the breadth of contributions behind modern research.
 
 ## The CRediT taxonomy
 
