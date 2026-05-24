@@ -57,6 +57,20 @@ function normalizeRole(r) {
   return r.toLowerCase().replace(/\s+/g, ' ').replace(/—/g, '–').trim();
 }
 
+// ─── SVG helper ─────────────────────────────────────────────────
+
+const _svgNS = 'http://www.w3.org/2000/svg';
+
+/** Create an SVG element with attributes in one call. */
+function svgEl(tag, attrs, text) {
+  const e = document.createElementNS(_svgNS, tag);
+  if (attrs) for (const [k, v] of Object.entries(attrs)) {
+    if (v != null) e.setAttribute(k, String(v));
+  }
+  if (text != null) e.textContent = text;
+  return e;
+}
+
 // ─── Avatar helpers (photo or initials fallback) ────────────────
 
 let _avatarClipCounter = 0;
@@ -67,45 +81,32 @@ let _avatarClipCounter = 0;
  * existing colored circle so initials show through if the image fails.
  * Otherwise draws initials text.
  */
-function appendSvgAvatar(svg, g, ns, x, y, radius, author, fontSize) {
+function appendSvgAvatar(svg, g, x, y, radius, author, fontSize) {
   if (author.avatar_url) {
     let defs = svg.querySelector('defs');
     if (!defs) {
-      defs = document.createElementNS(ns, 'defs');
+      defs = svgEl('defs');
       svg.insertBefore(defs, svg.firstChild);
     }
     const clipId = `ae-av-${_avatarClipCounter++}`;
-    const clipPath = document.createElementNS(ns, 'clipPath');
-    clipPath.setAttribute('id', clipId);
-    const clipCircle = document.createElementNS(ns, 'circle');
-    clipCircle.setAttribute('cx', String(x));
-    clipCircle.setAttribute('cy', String(y));
-    clipCircle.setAttribute('r', String(radius));
-    clipPath.appendChild(clipCircle);
+    const clipPath = svgEl('clipPath', { id: clipId });
+    clipPath.appendChild(svgEl('circle', { cx: x, cy: y, r: radius }));
     defs.appendChild(clipPath);
 
-    const img = document.createElementNS(ns, 'image');
-    img.setAttribute('href', author.avatar_url);
-    img.setAttribute('x', String(x - radius));
-    img.setAttribute('y', String(y - radius));
-    img.setAttribute('width', String(radius * 2));
-    img.setAttribute('height', String(radius * 2));
-    img.setAttribute('clip-path', `url(#${clipId})`);
-    img.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+    const img = svgEl('image', {
+      href: author.avatar_url, x: x - radius, y: y - radius,
+      width: radius * 2, height: radius * 2,
+      'clip-path': `url(#${clipId})`, preserveAspectRatio: 'xMidYMid slice',
+    });
     img.style.pointerEvents = 'none';
     g.appendChild(img);
   } else {
-    const init = document.createElementNS(ns, 'text');
-    init.setAttribute('x', String(x));
-    init.setAttribute('y', String(y + 1));
-    init.setAttribute('text-anchor', 'middle');
-    init.setAttribute('dominant-baseline', 'central');
-    init.setAttribute('fill', '#fff');
-    init.setAttribute('font-size', String(fontSize || (radius * 0.55)));
-    init.setAttribute('font-weight', '700');
-    init.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+    const init = svgEl('text', {
+      x, y: y + 1, 'text-anchor': 'middle', 'dominant-baseline': 'central',
+      fill: '#fff', 'font-size': fontSize || (radius * 0.55),
+      'font-weight': '700', 'font-family': 'Inter, system-ui, sans-serif',
+    }, getInitials(author.name));
     init.style.pointerEvents = 'none';
-    init.textContent = getInitials(author.name);
     g.appendChild(init);
   }
 }
@@ -1177,7 +1178,7 @@ function render({ model, el: rootEl }) {
   function buildScatterView(sorted, highlightSet, positionFn) {
     const n = sorted.length;
     const wrap = el('div', { className: 'ae-network' });
-    const ns = 'http://www.w3.org/2000/svg';
+
     if (n === 0) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No author data available.'));
       return wrap;
@@ -1283,6 +1284,15 @@ function render({ model, el: rootEl }) {
     const basePositions = nodes.map(nd => ({ x: nd.x, y: nd.y, radius: nd.radius }));
 
     // ── Ego-centric layout: reposition nodes around a selected author ──
+    /** Place a list of node indices evenly on a ring */
+    function placeOnRing(indices, radius) {
+      for (let k = 0; k < indices.length; k++) {
+        const angle = (2 * Math.PI * k) / indices.length - Math.PI / 2;
+        nodes[indices[k]].x = W / 2 + radius * Math.cos(angle);
+        nodes[indices[k]].y = H / 2 + radius * Math.sin(angle);
+      }
+    }
+
     function applyEgoLayout() {
       if (selectedIdx === null && selectedGroup === null) {
         // Restore base positions and radii
@@ -1387,13 +1397,7 @@ function render({ model, el: rootEl }) {
           if (!members.has(i)) nonMembers.push(i);
         }
         if (nonMembers.length > 0) {
-          const outerR = Math.min(W, H) / 2 - pad * 0.5;
-          for (let k = 0; k < nonMembers.length; k++) {
-            const angle = (2 * Math.PI * k) / nonMembers.length - Math.PI / 2;
-            const idx = nonMembers[k];
-            nodes[idx].x = W / 2 + outerR * Math.cos(angle);
-            nodes[idx].y = H / 2 + outerR * Math.sin(angle);
-          }
+          placeOnRing(nonMembers, Math.min(W, H) / 2 - pad * 0.5);
         }
         return;
       }
@@ -1520,13 +1524,7 @@ function render({ model, el: rootEl }) {
         if (i !== selectedIdx && collabWeights[i] === 0) unconnected.push(i);
       }
       if (unconnected.length > 0) {
-        const outerR = Math.min(W, H) / 2 - pad * 0.5;
-        for (let k = 0; k < unconnected.length; k++) {
-          const angle = (2 * Math.PI * k) / unconnected.length - Math.PI / 2;
-          const idx = unconnected[k];
-          nodes[idx].x = W / 2 + outerR * Math.cos(angle);
-          nodes[idx].y = H / 2 + outerR * Math.sin(angle);
-        }
+        placeOnRing(unconnected, Math.min(W, H) / 2 - pad * 0.5);
       }
     }
 
@@ -1554,19 +1552,46 @@ function render({ model, el: rootEl }) {
     let hoveredIdx = null;
     let hoveredRole = null;
 
+    /** Restore node opacities based on current selection state */
+    function restoreNodeOpacities(svgRoot) {
+      if (!svgRoot) return;
+      svgRoot.querySelectorAll('g[data-node-idx]').forEach(gEl => {
+        const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+        let opacity = 1;
+        if (selectedIdx !== null && gIdx !== selectedIdx) {
+          const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
+          opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
+        }
+        if (selectedGroup && selectedIdx === null) {
+          opacity = selectedGroup.members.has(gIdx) ? 1 : 0.15;
+        }
+        gEl.style.opacity = String(opacity);
+      });
+    }
+
+    /** Highlight hovered node and its direct connections, dim others */
+    function highlightConnectedNodes(svgRoot, idx) {
+      if (!svgRoot) return;
+      const connectedSet = new Set([idx]);
+      for (const link of links) {
+        if (link.i === idx) connectedSet.add(link.j);
+        if (link.j === idx) connectedSet.add(link.i);
+      }
+      svgRoot.querySelectorAll('g[data-node-idx]').forEach(gEl => {
+        const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
+        if (gIdx === idx) gEl.style.opacity = '1';
+        else if (connectedSet.has(gIdx)) gEl.style.opacity = '0.85';
+        else gEl.style.opacity = '0.2';
+      });
+    }
+
     function renderSVG() {
-      const svg = document.createElementNS(ns, 'svg');
-      svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-      svg.setAttribute('class', 'ae-network-svg');
-      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      const svg = svgEl('svg', { viewBox: `0 0 ${W} ${H}`, class: 'ae-network-svg', preserveAspectRatio: 'xMidYMid meet' });
       svg.style.display = 'block';
 
       // Background click to deselect
       if (selectedIdx !== null || selectedGroup !== null) {
-        const bg = document.createElementNS(ns, 'rect');
-        bg.setAttribute('x', '0'); bg.setAttribute('y', '0');
-        bg.setAttribute('width', String(W)); bg.setAttribute('height', String(H));
-        bg.setAttribute('fill', 'transparent');
+        const bg = svgEl('rect', { x: 0, y: 0, width: W, height: H, fill: 'transparent' });
         bg.style.cursor = 'pointer';
         bg.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); });
         bg.addEventListener('pointerup', () => { selectedIdx = null; selectedGroup = null; rerenderView(); updateLegendStyles(); });
@@ -1705,20 +1730,14 @@ function render({ model, el: rootEl }) {
           // Stroke width by contribution level: lead=6, equal=3.5, supporting=1.5
           const strandW = e.level === 'lead' ? 6.0 : e.level === 'equal' ? 3.5 : 1.5;
           const ox = nx * offset, oy = ny * offset;
-          const path = document.createElementNS(ns, 'path');
-          path.setAttribute('d', `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`);
-          path.setAttribute('fill', 'none');
-          path.setAttribute('stroke', e.color);
-          path.setAttribute('stroke-width', String(strandW));
-          path.setAttribute('stroke-opacity', String(baseOpacity));
-          path.setAttribute('stroke-linecap', 'round');
-          path.setAttribute('vector-effect', 'non-scaling-stroke');
-          const title = document.createElementNS(ns, 'title');
-          title.textContent = `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role} (${e.level})`;
-          path.setAttribute('class', 'ae-edge-path');
-          path.setAttribute('data-edge-i', String(i));
-          path.setAttribute('data-edge-j', String(j));
-          path.appendChild(title);
+          const path = svgEl('path', {
+            d: `M${sx + ox},${sy + oy} L${tx + ox},${ty + oy}`,
+            fill: 'none', stroke: e.color, 'stroke-width': strandW,
+            'stroke-opacity': baseOpacity, 'stroke-linecap': 'round',
+            'vector-effect': 'non-scaling-stroke',
+            class: 'ae-edge-path', 'data-edge-i': i, 'data-edge-j': j,
+          });
+          path.appendChild(svgEl('title', null, `${sorted[i].name} ↔ ${sorted[j].name}\n${e.role} (${e.level})`));
           svg.appendChild(path);
           offset += strandGap;
         }
@@ -1767,9 +1786,8 @@ function render({ model, el: rootEl }) {
         }
         const groupOpacity = isDim ? 0.15 : isSearchDim ? 0.25 : grpOpacity;
 
-        const g = document.createElementNS(ns, 'g');
+        const g = svgEl('g', { 'data-node-idx': idx });
         g.style.cursor = 'pointer';
-        g.setAttribute('data-node-idx', String(idx));
         g.style.opacity = String(groupOpacity);
         g.style.transition = 'opacity 0.2s';
 
@@ -1785,66 +1803,46 @@ function render({ model, el: rootEl }) {
           const arcS = { x: nd.x + ringR * Math.cos(startA), y: nd.y + ringR * Math.sin(startA) };
           const arcE = { x: nd.x + ringR * Math.cos(endA), y: nd.y + ringR * Math.sin(endA) };
           const largeArc = (endA - startA) > Math.PI ? 1 : 0;
-          const arc = document.createElementNS(ns, 'path');
-          arc.setAttribute('d', `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`);
-          arc.setAttribute('stroke', roles[ri].color);
-          arc.setAttribute('stroke-width', '4'); arc.setAttribute('stroke-linecap', 'round');
-          arc.setAttribute('fill', 'none'); arc.setAttribute('opacity', String(roles[ri].opacity));
-          arc.setAttribute('vector-effect', 'non-scaling-stroke');
-          g.appendChild(arc);
+          g.appendChild(svgEl('path', {
+            d: `M ${arcS.x} ${arcS.y} A ${ringR} ${ringR} 0 ${largeArc} 1 ${arcE.x} ${arcE.y}`,
+            stroke: roles[ri].color, 'stroke-width': 4, 'stroke-linecap': 'round',
+            fill: 'none', opacity: roles[ri].opacity, 'vector-effect': 'non-scaling-stroke',
+          }));
         }
 
         // Shadow + main circle
-        const shadow = document.createElementNS(ns, 'circle');
-        shadow.setAttribute('cx', String(nd.x)); shadow.setAttribute('cy', String(nd.y + 2));
-        shadow.setAttribute('r', String(nd.radius));
-        shadow.setAttribute('fill', 'black'); shadow.setAttribute('opacity', '0.08');
-        g.appendChild(shadow);
-
-        const circle = document.createElementNS(ns, 'circle');
-        circle.setAttribute('cx', String(nd.x)); circle.setAttribute('cy', String(nd.y));
-        circle.setAttribute('r', String(nd.radius));
-        circle.setAttribute('fill', nd.color);
-        circle.setAttribute('stroke', isDark ? '#374151' : 'white'); circle.setAttribute('stroke-width', '3');
-        circle.setAttribute('vector-effect', 'non-scaling-stroke');
-        g.appendChild(circle);
+        g.appendChild(svgEl('circle', { cx: nd.x, cy: nd.y + 2, r: nd.radius, fill: 'black', opacity: 0.08 }));
+        g.appendChild(svgEl('circle', {
+          cx: nd.x, cy: nd.y, r: nd.radius, fill: nd.color,
+          stroke: isDark ? '#374151' : 'white', 'stroke-width': 3, 'vector-effect': 'non-scaling-stroke',
+        }));
 
         if (isHovered) {
-          const hRing = document.createElementNS(ns, 'circle');
-          hRing.setAttribute('cx', String(nd.x)); hRing.setAttribute('cy', String(nd.y));
-          hRing.setAttribute('r', String(nd.radius + 2));
-          hRing.setAttribute('fill', 'none');
-          hRing.setAttribute('stroke', nd.color); hRing.setAttribute('stroke-width', '2');
-          hRing.setAttribute('opacity', '0.4');
-          hRing.setAttribute('vector-effect', 'non-scaling-stroke');
-          g.appendChild(hRing);
+          g.appendChild(svgEl('circle', {
+            cx: nd.x, cy: nd.y, r: nd.radius + 2, fill: 'none',
+            stroke: nd.color, 'stroke-width': 2, opacity: 0.4, 'vector-effect': 'non-scaling-stroke',
+          }));
         }
 
         if (isSelected) {
-          const sRing = document.createElementNS(ns, 'circle');
-          sRing.setAttribute('cx', String(nd.x)); sRing.setAttribute('cy', String(nd.y));
-          sRing.setAttribute('r', String(nd.radius + 6));
-          sRing.setAttribute('fill', 'none');
-          sRing.setAttribute('stroke', '#4338ca'); sRing.setAttribute('stroke-width', '3');
-          sRing.setAttribute('stroke-dasharray', '6 3');
-          sRing.setAttribute('opacity', '0.8');
-          sRing.setAttribute('vector-effect', 'non-scaling-stroke');
-          g.appendChild(sRing);
+          g.appendChild(svgEl('circle', {
+            cx: nd.x, cy: nd.y, r: nd.radius + 6, fill: 'none',
+            stroke: '#4338ca', 'stroke-width': 3, 'stroke-dasharray': '6 3',
+            opacity: 0.8, 'vector-effect': 'non-scaling-stroke',
+          }));
         }
 
-        appendSvgAvatar(svg, g, ns, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
+        appendSvgAvatar(svg, g, nd.x, nd.y, nd.radius, sorted[idx], nd.radius * 0.55);
 
         const isSearchMatch = highlightSet && highlightSet.has(idx);
-        const label = document.createElementNS(ns, 'text');
-        label.setAttribute('x', String(nd.x));
-        label.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 16 : 18)));
-        label.setAttribute('text-anchor', 'middle');
-        label.setAttribute('fill', isSelected ? (isDark ? '#a5b4fc' : '#4338ca') : isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#e2e8f0' : '#1f2937'));
-        label.setAttribute('font-size', isSelected ? (isLarge ? '22' : '17') : isLarge ? '19' : '15');
-        label.setAttribute('font-weight', isSelected || isHovered || isSearchMatch ? '700' : '500');
-        label.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+        const labelFill = isSelected ? (isDark ? '#a5b4fc' : '#4338ca') : isHovered ? (isDark ? '#e2e8f0' : '#1e3a5f') : isSearchMatch ? (isDark ? '#a5b4fc' : '#4338ca') : (isDark ? '#e2e8f0' : '#1f2937');
+        const label = svgEl('text', {
+          x: nd.x, y: nd.y + nd.radius + (isLarge ? 16 : 18), 'text-anchor': 'middle',
+          fill: labelFill, 'font-size': isSelected ? (isLarge ? 22 : 17) : isLarge ? 19 : 15,
+          'font-weight': isSelected || isHovered || isSearchMatch ? 700 : 500,
+          'font-family': 'Inter, system-ui, sans-serif',
+        }, isSelected ? nd.name : nd.lastName);
         label.style.pointerEvents = 'none';
-        label.textContent = isSelected ? nd.name : nd.lastName;
         g.appendChild(label);
 
         // In ego-centric mode, show collaboration score under non-selected nodes
@@ -1852,63 +1850,24 @@ function render({ model, el: rootEl }) {
           const collabLink = links.find(l => (l.i === selectedIdx && l.j === idx) || (l.j === selectedIdx && l.i === idx));
           const score = collabLink ? collabLink.sharedRoles.length : 0;
           if (score > 0) {
-            const scoreLabel = document.createElementNS(ns, 'text');
-            scoreLabel.setAttribute('x', String(nd.x));
-            scoreLabel.setAttribute('y', String(nd.y + nd.radius + (isLarge ? 30 : 32)));
-            scoreLabel.setAttribute('text-anchor', 'middle');
-            scoreLabel.setAttribute('fill', isDark ? '#9ca3af' : '#6b7280');
-            scoreLabel.setAttribute('font-size', isLarge ? '14' : '11');
-            scoreLabel.setAttribute('font-weight', '400');
-            scoreLabel.setAttribute('font-family', 'Inter, system-ui, sans-serif');
+            const scoreLabel = svgEl('text', {
+              x: nd.x, y: nd.y + nd.radius + (isLarge ? 30 : 32), 'text-anchor': 'middle',
+              fill: isDark ? '#9ca3af' : '#6b7280', 'font-size': isLarge ? 14 : 11,
+              'font-weight': 400, 'font-family': 'Inter, system-ui, sans-serif',
+            }, `${score} shared role${score > 1 ? 's' : ''}`);
             scoreLabel.style.pointerEvents = 'none';
-            scoreLabel.textContent = `${score} shared role${score > 1 ? 's' : ''}`;
             g.appendChild(scoreLabel);
           }
         }
 
         g.addEventListener('mouseenter', () => {
           hoveredIdx = idx;
-          // Lightweight hover: update opacity on existing <g> elements without replacing SVG
-          const svgEl = g.closest('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          // Build set of connected node indices for this hovered node
-          const connectedSet = new Set([idx]);
-          for (const link of links) {
-            if (link.i === idx) connectedSet.add(link.j);
-            if (link.j === idx) connectedSet.add(link.i);
-          }
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            if (gIdx === idx) {
-              gEl.style.opacity = '1';
-            } else if (connectedSet.has(gIdx)) {
-              gEl.style.opacity = '0.85';
-            } else {
-              gEl.style.opacity = '0.2';
-            }
-          });
+          highlightConnectedNodes(g.closest('svg'), idx);
           updateInfoCard();
         });
         g.addEventListener('mouseleave', () => {
           hoveredIdx = null;
-          // Restore all node opacities
-          const svgEl = g.closest('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            // Restore ego opacity if in ego mode
-            let opacity = 1;
-            if (selectedIdx !== null && gIdx !== selectedIdx) {
-              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
-            }
-            if (selectedGroup && selectedIdx === null) {
-              opacity = selectedGroup.members.has(gIdx) ? 1 : 0.15;
-            }
-            gEl.style.opacity = String(opacity);
-          });
+          restoreNodeOpacities(g.closest('svg'));
           updateInfoCard();
         });
         g.addEventListener('pointerdown', (e) => {
@@ -1942,35 +1901,11 @@ function render({ model, el: rootEl }) {
         });
         g.addEventListener('focus', () => {
           hoveredIdx = idx;
-          const svgEl = g.closest('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          const connectedSet = new Set([idx]);
-          for (const link of links) {
-            if (link.i === idx) connectedSet.add(link.j);
-            if (link.j === idx) connectedSet.add(link.i);
-          }
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            if (gIdx === idx) gEl.style.opacity = '1';
-            else if (connectedSet.has(gIdx)) gEl.style.opacity = '0.85';
-            else gEl.style.opacity = '0.2';
-          });
+          highlightConnectedNodes(g.closest('svg'), idx);
         });
         g.addEventListener('blur', () => {
           hoveredIdx = null;
-          const svgEl = g.closest('svg');
-          if (!svgEl) return;
-          const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-          allGs.forEach(gEl => {
-            const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-            let opacity = 1;
-            if (selectedIdx !== null && gIdx !== selectedIdx) {
-              const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-              opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
-            }
-            gEl.style.opacity = String(opacity);
-          });
+          restoreNodeOpacities(g.closest('svg'));
         });
 
         svg.appendChild(g);
@@ -2214,22 +2149,10 @@ function render({ model, el: rootEl }) {
       });
     }
     function legendHoverLeave() {
-      const svgEl = graphWrap.querySelector('svg');
-      if (!svgEl) return;
-      const allGs = svgEl.querySelectorAll('g[data-node-idx]');
-      allGs.forEach(gEl => {
-        const gIdx = parseInt(gEl.getAttribute('data-node-idx'));
-        let opacity = 1;
-        if (selectedIdx !== null && gIdx !== selectedIdx) {
-          const w = links.find(l => (l.i === selectedIdx && l.j === gIdx) || (l.j === selectedIdx && l.i === gIdx));
-          opacity = w ? 0.5 + 0.5 * (w.weight / maxWeight) : 0.25;
-        }
-        if (selectedGroup && selectedIdx === null) {
-          opacity = selectedGroup.members.has(gIdx) ? 1 : 0.15;
-        }
-        gEl.style.opacity = String(opacity);
-      });
-      const allEdges = svgEl.querySelectorAll('.ae-edge-path');
+      const svgRoot = graphWrap.querySelector('svg');
+      if (!svgRoot) return;
+      restoreNodeOpacities(svgRoot);
+      const allEdges = svgRoot.querySelectorAll('.ae-edge-path');
       allEdges.forEach(edge => {
         if (selectedGroup && selectedIdx === null) {
           const ei = parseInt(edge.getAttribute('data-edge-i'));
