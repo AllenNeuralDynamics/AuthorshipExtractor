@@ -751,6 +751,22 @@
   overflow-x: auto;
   max-width: 100%;
   position: relative;
+  scrollbar-width: thin;
+}
+
+.ae-matrix-wrap::-webkit-scrollbar {
+  height: 8px;
+  -webkit-appearance: none;
+}
+
+.ae-matrix-wrap::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 4px;
+}
+
+.ae-matrix-wrap::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
 }
 
 .ae-matrix {
@@ -1603,6 +1619,8 @@
 
 /* CRediT Matrix */
 .ae-dark .ae-matrix-corner { background: #1f2937; border-right-color: #374151; }
+.ae-dark .ae-matrix-wrap::-webkit-scrollbar-thumb { background: #6b7280; }
+.ae-dark .ae-matrix-wrap::-webkit-scrollbar-track { background: #1f2937; }
 .ae-dark .ae-matrix-author-name { color: #d1d5db; }
 .ae-dark .ae-matrix-role {
   background: #1f2937;
