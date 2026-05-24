@@ -748,25 +748,28 @@
 
 /* ─── CRediT Matrix ─── */
 .ae-matrix-wrap {
-  overflow-x: auto;
+  overflow-x: scroll;
   max-width: 100%;
   position: relative;
   scrollbar-width: thin;
 }
 
 .ae-matrix-wrap::-webkit-scrollbar {
-  height: 8px;
+  height: 12px;
   -webkit-appearance: none;
+  display: block;
 }
 
 .ae-matrix-wrap::-webkit-scrollbar-thumb {
   background: #9ca3af;
-  border-radius: 4px;
+  border-radius: 6px;
+  border: 2px solid #f3f4f6;
+  min-width: 40px;
 }
 
 .ae-matrix-wrap::-webkit-scrollbar-track {
   background: #f3f4f6;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 
 .ae-matrix {
@@ -784,6 +787,7 @@
 }
 
 .ae-matrix-author-th {
+  min-width: 56px;
   padding: 8px;
   text-align: center;
   cursor: pointer;
@@ -1619,7 +1623,7 @@
 
 /* CRediT Matrix */
 .ae-dark .ae-matrix-corner { background: #1f2937; border-right-color: #374151; }
-.ae-dark .ae-matrix-wrap::-webkit-scrollbar-thumb { background: #6b7280; }
+.ae-dark .ae-matrix-wrap::-webkit-scrollbar-thumb { background: #6b7280; border-color: #1f2937; }
 .ae-dark .ae-matrix-wrap::-webkit-scrollbar-track { background: #1f2937; }
 .ae-dark .ae-matrix-author-name { color: #d1d5db; }
 .ae-dark .ae-matrix-role {
