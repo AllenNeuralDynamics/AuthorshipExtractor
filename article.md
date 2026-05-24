@@ -15,12 +15,14 @@ abstract: >
   standard, our framework extends attribution with section-level
   contributions, project timelines, and rich author profiles. Critically,
   we reject the premise that any single author ordering is definitive. Instead,
-  the reader can dynamically re-sort by alphabetical order, CRediT roles,
-  number of roles, project join date, or institution. This paper simultaneously describes the framework
-  and serves as a live demonstration: the interactive authorship display
-  illustrates how rethinking author display can bring transparency,
-  reduce conflict, and credit the diverse contributions that make modern
-  science possible.
+  the reader can explore an interactive collaboration network that reveals
+  shared-role connections between contributors, dynamically re-sort by
+  alphabetical order, CRediT roles, number of roles, project join date,
+  or institution, and drill into individual profiles. This paper
+  simultaneously describes the framework and serves as a live
+  demonstration: the interactive authorship display illustrates how
+  rethinking author display can bring transparency, reduce conflict, and
+  credit the diverse contributions that make modern science possible.
 ---
 
 ```{authorship-explorer}
