@@ -1434,6 +1434,9 @@ function render({ model, el: rootEl }) {
       const repulsionStrength = 4000;
       const attractionStrength = 0.012;
       const centerGravity = 0.001; // gentle pull toward center for unconnected nodes
+      // For small teams, increase spacing to prevent label/circle overlap
+      const connectedCount = collabWeights.filter(w => w > 0).length;
+      const smallTeamBoost = connectedCount < 15 ? 40 : 0;
 
       for (let iter = 0; iter < ITERATIONS; iter++) {
         const cooling = 1 - iter / ITERATIONS; // reduce forces over time
@@ -1443,13 +1446,13 @@ function render({ model, el: rootEl }) {
           if (i === selectedIdx) continue;
           let fx = 0, fy = 0;
 
-          // Repulsion from all other nodes
+          // Repulsion from all other nodes (include label height in spacing)
           for (let j = 0; j < n; j++) {
             if (j === i) continue;
             const dx = posX[i] - posX[j];
             const dy = posY[i] - posY[j];
             const distSq = dx * dx + dy * dy;
-            const minDist = nodes[i].radius + nodes[j].radius + 50;
+            const minDist = nodes[i].radius + nodes[j].radius + 80 + smallTeamBoost;
             const dist = Math.sqrt(distSq) || 0.1;
             // Stronger repulsion when close
             const repForce = repulsionStrength / Math.max(distSq, minDist * minDist * 0.25);
@@ -1464,10 +1467,9 @@ function render({ model, el: rootEl }) {
             const dy = CY - posY[i];
             const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
             // Target distance: closer for stronger collaborators but with generous minimum
-            const targetDist = (nodes[selectedIdx].radius + nodes[i].radius + 60) + (1 - w * w) * 180;
+            const targetDist = (nodes[selectedIdx].radius + nodes[i].radius + 80 + smallTeamBoost) + (1 - w * w) * 180;
             const force = (dist - targetDist) * attractionStrength * (1 + w);
             fx += (dx / dist) * force;
-            fy += (dy / dist) * force;
           } else {
             // Unconnected: push them to the outer periphery
             const dx = posX[i] - CX;
