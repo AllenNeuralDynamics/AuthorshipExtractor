@@ -1493,16 +1493,17 @@ function render({ model, el: rootEl }) {
       // Normalize: scale only connected nodes to fill the SVG canvas with padding
       const pad = 60;
       let eMinX = Infinity, eMinY = Infinity, eMaxX = -Infinity, eMaxY = -Infinity;
+      const labelExtra = isLarge ? 34 : 36; // space for name label + shared-roles text below node
       for (let i = 0; i < n; i++) {
         if (i !== selectedIdx && collabWeights[i] === 0) continue; // skip unconnected
         eMinX = Math.min(eMinX, nodes[i].x - nodes[i].radius);
         eMinY = Math.min(eMinY, nodes[i].y - nodes[i].radius);
         eMaxX = Math.max(eMaxX, nodes[i].x + nodes[i].radius);
-        eMaxY = Math.max(eMaxY, nodes[i].y + nodes[i].radius);
+        eMaxY = Math.max(eMaxY, nodes[i].y + nodes[i].radius + labelExtra);
       }
       const eDataW = (eMaxX - eMinX) || 1, eDataH = (eMaxY - eMinY) || 1;
       const eScaleX = (W - 2 * pad) / eDataW, eScaleY = (H - 2 * pad) / eDataH;
-      const eScale = Math.min(eScaleX, eScaleY);
+      const eScale = Math.min(eScaleX, eScaleY, 1.5); // cap scale to avoid over-zoom causing overlap
       // Scale connected nodes to fill center area
       const eCX = (eMinX + eMaxX) / 2, eCY = (eMinY + eMaxY) / 2;
       for (let i = 0; i < n; i++) {
