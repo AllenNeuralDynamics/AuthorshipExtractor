@@ -46,20 +46,6 @@ We propose a fundamentally different approach. Rather than flattening contributi
 
 This paper doubles as a live demonstration: the interactive widget above shows how replacing the static byline with a navigable, multi-view display can foster transparency and properly acknowledge the breadth of contributions behind modern research.
 
-## The CRediT taxonomy
-
-The Contributor Roles Taxonomy (CRediT), developed by the Consortia Advancing Standards in Research Administration Information (CASRAI) and first published in 2015 {cite}`brand2015`, defines fourteen distinct contributor roles: Conceptualization, Methodology, Software, Validation, Formal Analysis, Investigation, Resources, Data Curation, Writing—Original Draft, Writing—Review & Editing, Visualization, Supervision, Project Administration, and Funding Acquisition. For each role, contributors can be assigned a degree of contribution: lead, equal, or supporting.
-
-CRediT has gained nominal adoption. Many submission platforms now include CRediT fields {cite}`mcnutt2018`, and publishers such as Elsevier encourage authors to provide a CRediT author statement. In practice, however, these statements typically appear as a brief, unstructured paragraph at the end of the paper. They list role names per author without indicating contribution levels, without machine-readable structure, and without any prominence in the article layout. Some publishers, including Springer Nature, do not use CRediT at all, relying instead on free-text author contribution statements. The gap between the taxonomy's potential and its current implementation underscores the need for richer, reader-facing attribution tools {cite}`allen2014,lariviere2016`.
-
-## Limitations of current approaches
-
-Current authorship display suffers from several interconnected limitations. First, the linear ordering implies a ranking that may not exist. In team science, contributions are often orthogonal: the person who built the data infrastructure, the person who designed the experiments, the person who wrote the theoretical framework, and the person who led the experimental work each contribute indispensably but along entirely different dimensions. Compressing these into positions 1 through N forces a false hierarchy.
-
-Second, the convention of "first author did most work" and "last author is the PI" is not universal. In high-energy physics, for example, collaborations involving hundreds or thousands of researchers have stretched the traditional authorship model to the point where author position conveys little about individual contributions {cite}`birnholtz2006`. In mathematics and economics, authors are traditionally listed alphabetically.
-
-Third, the static nature of the author list conceals the temporal dynamics of contributions. Projects increasingly involve contributors who participate intensely during one phase but not others. A publication often begins with a key conceptual insight, followed by intensive experimental design and execution, and later by data curation and analysis: each phase potentially led by different people. The byline flattens this rich temporal structure into a single snapshot, hiding who contributed when and to what phase of the work.
-
 ## Team science and rising author lists
 
 The average number of authors per paper has grown steadily across virtually all scientific fields {cite}`wuchty2007`. In biomedicine, papers with more than fifty authors are no longer unusual, and in fields like particle physics and climate science, author lists routinely exceed one thousand names. Even in traditionally small-team fields like psychology and economics, the median author count has roughly doubled in the past two decades.
@@ -88,6 +74,20 @@ Mean number of authors per paper in biomedical sciences (2003–2025). Data from
 This growth reflects a genuine change in how research happens. Modern scientific problems, from understanding complex systems to building research infrastructure, require deep specialization in design, analysis, engineering, data management, and domain knowledge that no individual or small group possesses. The question is not whether to do team science but how to credit it fairly.
 
 Current systems fail team science in specific, quantifiable ways: middle authors, who often include infrastructure contributors such as engineers and data curators, contribute to fewer documented tasks and occupy positions associated with less credit than first or last authors {cite}`lariviere2016`. Trainees who make crucial but bounded contributions face pressure to negotiate for first-author status {cite}`sauermann2017`. The proliferation of workarounds (co-first authors, co-second authors, co-senior authors, equal-contribution footnotes) reveals how strained the linear model has become: teams are inventing ad hoc mechanisms to inject dimensionality into a format that was never designed for it. A richer attribution framework would reduce these tensions by making the nature and extent of each contribution transparent {cite}`rennie1997,holcombe2019`.
+
+## The CRediT taxonomy
+
+The Contributor Roles Taxonomy (CRediT), developed by the Consortia Advancing Standards in Research Administration Information (CASRAI) and first published in 2015 {cite}`brand2015`, defines fourteen distinct contributor roles: Conceptualization, Methodology, Software, Validation, Formal Analysis, Investigation, Resources, Data Curation, Writing—Original Draft, Writing—Review & Editing, Visualization, Supervision, Project Administration, and Funding Acquisition. For each role, contributors can be assigned a degree of contribution: lead, equal, or supporting.
+
+CRediT has gained nominal adoption. Many submission platforms now include CRediT fields {cite}`mcnutt2018`, and publishers such as Elsevier encourage authors to provide a CRediT author statement. In practice, however, these statements typically appear as a brief, unstructured paragraph at the end of the paper. They list role names per author without indicating contribution levels, without machine-readable structure, and without any prominence in the article layout. Some publishers, including Springer Nature, do not use CRediT at all, relying instead on free-text author contribution statements. The gap between the taxonomy's potential and its current implementation underscores the need for richer, reader-facing attribution tools {cite}`allen2014,lariviere2016`.
+
+## Limitations of current approaches
+
+Current authorship display suffers from several interconnected limitations. First, the linear ordering implies a ranking that may not exist. In team science, contributions are often orthogonal: the person who built the data infrastructure, the person who designed the experiments, the person who wrote the theoretical framework, and the person who led the experimental work each contribute indispensably but along entirely different dimensions. Compressing these into positions 1 through N forces a false hierarchy.
+
+Second, the convention of "first author did most work" and "last author is the PI" is not universal. In high-energy physics, for example, collaborations involving hundreds or thousands of researchers have stretched the traditional authorship model to the point where author position conveys little about individual contributions {cite}`birnholtz2006`. In mathematics and economics, authors are traditionally listed alphabetically.
+
+Third, the static nature of the author list conceals the temporal dynamics of contributions. Projects increasingly involve contributors who participate intensely during one phase but not others. A publication often begins with a key conceptual insight, followed by intensive experimental design and execution, and later by data curation and analysis: each phase potentially led by different people. The byline flattens this rich temporal structure into a single snapshot, hiding who contributed when and to what phase of the work.
 
 ## Data model
 
