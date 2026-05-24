@@ -749,24 +749,28 @@
 /* ─── CRediT Matrix ─── */
 .ae-matrix-wrap {
   overflow-x: auto;
+  max-width: 100%;
+  position: relative;
 }
 
 .ae-matrix {
-  width: 100%;
   border-collapse: collapse;
+  width: max-content;
 }
 
 .ae-matrix-corner {
   min-width: 180px;
   position: sticky;
   left: 0;
-  z-index: 10;
+  z-index: 12;
   background: #fff;
+  border-right: 1px solid #e5e7eb;
 }
 
 .ae-matrix-author-th {
   padding: 8px;
   text-align: center;
+  cursor: pointer;
 }
 
 .ae-matrix-avatar {
@@ -806,6 +810,7 @@
   font-weight: 500;
   white-space: nowrap;
   border-bottom: 1px solid #f9fafb;
+  border-right: 1px solid #e5e7eb;
 }
 
 .ae-matrix-role-icon {
@@ -1597,12 +1602,13 @@
 .ae-dark .ae-role-more { background: #374151; color: #9ca3af; }
 
 /* CRediT Matrix */
-.ae-dark .ae-matrix-corner { background: #1f2937; }
+.ae-dark .ae-matrix-corner { background: #1f2937; border-right-color: #374151; }
 .ae-dark .ae-matrix-author-name { color: #d1d5db; }
 .ae-dark .ae-matrix-role {
   background: #1f2937;
   color: #d1d5db;
   border-bottom-color: #374151;
+  border-right-color: #374151;
 }
 .ae-dark .ae-matrix-cell { border-bottom-color: #374151; }
 .ae-dark .ae-dot-lead { background: #6366f1; }

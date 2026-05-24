@@ -1036,8 +1036,9 @@ function render({ model, el: rootEl }) {
       const th = el('th', { className: 'ae-matrix-author-th' });
       if (isDimmed) th.style.opacity = '0.3';
       th.appendChild(buildHtmlAvatar(author, 'ae-matrix-avatar'));
-      const matrixName = el('div', { className: 'ae-matrix-author-name' }, author.name);
-      attachAuthorPopover(matrixName, author);
+      const lastName = author.name.split(/\s+/).pop();
+      const matrixName = el('div', { className: 'ae-matrix-author-name' }, lastName);
+      attachAuthorPopover(th, author);
       th.appendChild(matrixName);
       headerRow.appendChild(th);
     }
