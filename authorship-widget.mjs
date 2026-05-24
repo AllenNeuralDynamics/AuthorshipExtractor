@@ -2007,7 +2007,11 @@ function render({ model, el: rootEl }) {
     // Touch support for mobile: single-finger pan, two-finger pinch-to-zoom
     let touchStartDist = 0, touchStartVbW = 0, touchStartVbH = 0;
     let touchStartMidX = 0, touchStartMidY = 0;
+    let touchNodeTap = false; // track if touch started on an interactive node
     graphWrap.addEventListener('touchstart', (e) => {
+      // Check if touch started on an author node (let pointer events handle it)
+      const target = e.target.closest('[role="button"]');
+      touchNodeTap = !!target;
       if (e.touches.length === 1) {
         isPanning = true; hasPanned = false;
         panStartX = e.touches[0].clientX; panStartY = e.touches[0].clientY;
@@ -2025,10 +2029,10 @@ function render({ model, el: rootEl }) {
     }, { passive: true });
     graphWrap.addEventListener('touchmove', (e) => {
       if (e.touches.length === 1 && isPanning) {
-        e.preventDefault();
         const dx = e.touches[0].clientX - panStartX, dy = e.touches[0].clientY - panStartY;
         if (!hasPanned && Math.abs(dx) < PAN_THRESHOLD && Math.abs(dy) < PAN_THRESHOLD) return;
         hasPanned = true;
+        e.preventDefault();
         const rect = graphWrap.getBoundingClientRect();
         vbX = panStartVbX - dx * (vbW / rect.width);
         vbY = panStartVbY - dy * (vbH / rect.height);
@@ -2047,7 +2051,15 @@ function render({ model, el: rootEl }) {
       }
     }, { passive: false });
     graphWrap.addEventListener('touchend', (e) => {
-      if (e.touches.length === 0) { isPanning = false; }
+      if (e.touches.length === 0) {
+        // If didn't pan and not on a node, treat as background tap → deselect
+        if (!hasPanned && !touchNodeTap && (selectedIdx !== null || selectedGroup !== null)) {
+          selectedIdx = null; selectedGroup = null;
+          rerenderView(); updateLegendStyles();
+        }
+        isPanning = false;
+        touchNodeTap = false;
+      }
     }, { passive: true });
 
     // Zoom controls
