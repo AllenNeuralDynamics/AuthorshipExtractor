@@ -54,7 +54,7 @@ CONTRIBUTING.md            # How to add yourself as a contributor
 
 ## Adding yourself as a contributor
 
-This project practices what it preaches — you can become a real contributor by adding your profile to `authors-real.yml` and opening a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
+You can become a real contributor by adding your profile to `authors-real.yml` and opening a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full guide.
 
 ## Tech stack
 
