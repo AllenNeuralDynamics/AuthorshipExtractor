@@ -2004,6 +2004,52 @@ function render({ model, el: rootEl }) {
     graphWrap.addEventListener('mouseup', stopPan);
     graphWrap.addEventListener('mouseleave', stopPan);
 
+    // Touch support for mobile: single-finger pan, two-finger pinch-to-zoom
+    let touchStartDist = 0, touchStartVbW = 0, touchStartVbH = 0;
+    let touchStartMidX = 0, touchStartMidY = 0;
+    graphWrap.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isPanning = true; hasPanned = false;
+        panStartX = e.touches[0].clientX; panStartY = e.touches[0].clientY;
+        panStartVbX = vbX; panStartVbY = vbY;
+      } else if (e.touches.length === 2) {
+        isPanning = false;
+        const t0 = e.touches[0], t1 = e.touches[1];
+        touchStartDist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+        touchStartVbW = vbW; touchStartVbH = vbH;
+        const rect = graphWrap.getBoundingClientRect();
+        touchStartMidX = ((t0.clientX + t1.clientX) / 2 - rect.left) / rect.width;
+        touchStartMidY = ((t0.clientY + t1.clientY) / 2 - rect.top) / rect.height;
+        panStartVbX = vbX; panStartVbY = vbY;
+      }
+    }, { passive: true });
+    graphWrap.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && isPanning) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - panStartX, dy = e.touches[0].clientY - panStartY;
+        if (!hasPanned && Math.abs(dx) < PAN_THRESHOLD && Math.abs(dy) < PAN_THRESHOLD) return;
+        hasPanned = true;
+        const rect = graphWrap.getBoundingClientRect();
+        vbX = panStartVbX - dx * (vbW / rect.width);
+        vbY = panStartVbY - dy * (vbH / rect.height);
+        applyViewBox();
+      } else if (e.touches.length === 2) {
+        e.preventDefault();
+        const t0 = e.touches[0], t1 = e.touches[1];
+        const dist = Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY);
+        const scale = touchStartDist / dist;
+        const newW = Math.max(initVbW * 0.2, Math.min(initVbW * 3, touchStartVbW * scale));
+        const newH = Math.max(initVbH * 0.2, Math.min(initVbH * 3, touchStartVbH * scale));
+        vbX = panStartVbX + (touchStartVbW - newW) * touchStartMidX;
+        vbY = panStartVbY + (touchStartVbH - newH) * touchStartMidY;
+        vbW = newW; vbH = newH;
+        applyViewBox();
+      }
+    }, { passive: false });
+    graphWrap.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0) { isPanning = false; }
+    }, { passive: true });
+
     // Zoom controls
     const zoomControls = el('div', { className: 'ae-zoom-controls' });
     zoomControls.appendChild(el('button', { className: 'ae-zoom-btn',

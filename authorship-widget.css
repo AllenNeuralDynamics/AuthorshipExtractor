@@ -1111,6 +1111,7 @@
   overflow: hidden;
   cursor: grab;
   height: 550px;
+  touch-action: none;
 }
 
 .ae-network-svg {
