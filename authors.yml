@@ -249,7 +249,6 @@ project:
 
       first_name: Isabella
       last_name: Santos-Rivera
-      avatar_url: https://i.pravatar.cc/150?img=4
       career_stage: Research Scientist
       credit_levels:
         - role: Investigation
@@ -350,7 +349,6 @@ project:
 
       first_name: Alexei
       last_name: Petrov
-      avatar_url: https://i.pravatar.cc/150?img=6
       career_stage: Graduate Student
       credit_levels:
         - role: Resources
@@ -399,7 +397,6 @@ project:
 
       first_name: Diane
       last_name: Williams
-      avatar_url: https://i.pravatar.cc/150?img=7
       career_stage: Full Professor
       credit_levels:
         - role: Conceptualization
