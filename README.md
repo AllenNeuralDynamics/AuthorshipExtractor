@@ -12,7 +12,7 @@ The traditional author list compresses complex, multi-dimensional contributions 
 - **Collaboration network** — force-directed layout where proximity reflects collaboration strength, with per-role edge visualization and ego-centric views on click
 - **Timeline** — when each contributor joined the project
 - **Rich profiles** — ORCID, affiliations, CRediT roles, and optional profile photos
-- **Dataset switcher** — switch between a small simulated team, a large simulated team (50 authors), and real contributors
+- **Dataset switcher** — optionally configure multiple author lists (e.g. different teams or project phases) and switch between them
 
 The site renders a real academic paper about this framework while simultaneously demonstrating it via an interactive anywidget plugin.
 
