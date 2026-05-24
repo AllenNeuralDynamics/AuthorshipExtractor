@@ -19,8 +19,8 @@ const ROLE_ICONS = {
 };
 
 const AVATAR_COLORS = [
-  '#4f46e5', '#0d9488', '#7c3aed', '#d97706',
-  '#e11d48', '#059669', '#1e40af', '#4338ca',
+  '#6b7280', '#4b5563', '#78716c', '#57534e',
+  '#64748b', '#475569', '#71717a', '#52525b',
 ];
 
 const LEVEL_RANK = { lead: 3, equal: 2, supporting: 1 };
