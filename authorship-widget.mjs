@@ -129,13 +129,19 @@ function buildHtmlAvatar(author, className, extraStyle) {
       wrapper.textContent = getInitials(author.name);
       wrapper.style.backgroundColor = color;
       wrapper.style.overflow = '';
+      wrapper.style.display = 'flex';
+      wrapper.style.alignItems = 'center';
+      wrapper.style.justifyContent = 'center';
+      wrapper.style.color = 'white';
+      wrapper.style.fontWeight = '600';
+      wrapper.style.fontSize = '14px';
     };
     wrapper.appendChild(img);
     return wrapper;
   }
   return el('div', {
     className: className,
-    style: { backgroundColor: color, ...extraStyle },
+    style: { backgroundColor: color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '600', fontSize: '14px', ...extraStyle },
   }, getInitials(author.name));
 }
 
