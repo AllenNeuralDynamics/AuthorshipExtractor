@@ -249,6 +249,7 @@ project:
 
       first_name: Isabella
       last_name: Santos-Rivera
+      avatar_url: https://i.pravatar.cc/150?img=4
       career_stage: Research Scientist
       credit_levels:
         - role: Investigation

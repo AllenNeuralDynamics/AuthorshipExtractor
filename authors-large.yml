@@ -17,7 +17,6 @@ project:
     - ucl-neuro
     first_name: Amara
     last_name: Osei-Mensah
-    avatar_url: https://i.pravatar.cc/150?img=8
     career_stage: Professor
     credit_levels:
     - role: Conceptualization
@@ -171,7 +170,6 @@ project:
     - karolinska-neuro
     first_name: Lars
     last_name: Eriksson
-    avatar_url: https://i.pravatar.cc/150?img=11
     career_stage: Associate Professor
     credit_levels:
     - role: Writing – original draft
@@ -460,7 +458,6 @@ project:
     - utokyo-neuro
     first_name: Yuki
     last_name: Morimoto
-    avatar_url: https://i.pravatar.cc/150?img=17
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Software
@@ -824,7 +821,6 @@ project:
     - karolinska-neuro
     first_name: Nadia
     last_name: El-Amin
-    avatar_url: https://i.pravatar.cc/150?img=25
     career_stage: Postdoctoral Researcher
     credit_levels:
     - role: Writing – original draft
@@ -1509,7 +1505,6 @@ project:
     - mit-neuro
     first_name: Marcus
     last_name: Jensen
-    avatar_url: https://i.pravatar.cc/150?img=41
     career_stage: Research Engineer
     credit_levels:
     - role: Formal analysis
