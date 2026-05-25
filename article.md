@@ -123,7 +123,7 @@ The plugin and widget code were developed with the assistance of Claude Opus 4.6
 
 The framework presented here addresses a structural problem in scholarly communication that has been recognized for decades. As early as 1997, the proposal to replace traditional authorship with explicit contributorship appeared in JAMA {cite}`rennie1997`. The core insight — that a single byline cannot meaningfully represent the diverse roles within a research team — remains as urgent today as it was then, perhaps more so given the continued growth of team science {cite}`wuchty2007`.
 
-Institutional momentum has been building. A Nature call to move "beyond authorship" toward transparent attribution {cite}`allen2014`, a cross-publisher consensus statement on CRediT adoption {cite}`mcnutt2018`, and the argument that CRediT should replace traditional authorship entirely {cite}`holcombe2019` have established a clear direction. Yet none of these efforts have changed what the reader actually sees.
+Institutional momentum has been building. Calls to move "beyond authorship" toward transparent attribution {cite}`allen2014`, cross-publisher consensus on CRediT adoption {cite}`mcnutt2018`, and the argument that CRediT should replace traditional authorship entirely {cite}`holcombe2019` have established a clear direction. Yet none of these efforts have changed what the reader actually sees.
 
 On the technical side, several tools and standards have advanced structured contributorship, but each addresses only part of the problem. A feature-by-feature comparison clarifies what remains missing.
 
