@@ -97,6 +97,8 @@ The interactive panel also supports an optional dataset switcher, allowing the r
 
 ## Data model
 
+CRediT was designed for standardization across papers: a fixed vocabulary that lets any reader compare contribution profiles between publications. What it does not provide is paper-specific transparency — the granular record of who did what, where, and when within a single project. Our data model adds this layer.
+
 Our framework extends the CRediT vocabulary {cite}`brand2015` with three additional layers of contribution information. The first layer is section-level contributions: for each section of the manuscript, we record which authors contributed to the work described in that section and in what capacity. This goes beyond documenting who wrote the text: it captures who performed the research, designed the methodology, built the tools, or generated the results that a given section reports. A section on data infrastructure, for instance, credits the engineers who built the pipeline, not merely the person who drafted the prose.
 
 The second layer is figure-level contributions, documenting who generated data, created visualizations, or designed the presentation for each figure and table. Figures often represent the most labor-intensive elements of a paper and the elements most often reused and cited. Attributing them individually adds significant granularity to the contribution record.
