@@ -956,9 +956,6 @@ function render({ model, el: rootEl }) {
 
       // Avatar
       const avatar = buildHtmlAvatar(author, 'ae-avatar');
-      if (author.corresponding) {
-        avatar.appendChild(el('span', { className: 'ae-avatar-badge' }, '✉'));
-      }
       card.appendChild(avatar);
 
       // Info
@@ -979,6 +976,10 @@ function render({ model, el: rootEl }) {
         nameRow.appendChild(orcidLink);
       }
       info.appendChild(nameRow);
+
+      if (author.corresponding) {
+        info.appendChild(el('p', { className: 'ae-profile-corresponding' }, '✉ Corresponding author'));
+      }
 
       // Affiliations
       if (author.affiliations?.length) {
