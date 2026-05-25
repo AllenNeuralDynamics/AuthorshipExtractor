@@ -18,8 +18,8 @@ project:
       roles:
         - Conceptualization
         - Supervision
-        - Funding Acquisition
-        - Project Administration
+        - Funding acquisition
+        - Project administration
         - Writing – review & editing
         - Methodology
         - Writing – original draft
@@ -126,7 +126,7 @@ project:
           description: Built the inline contribution highlighting system; Built the interactive CRediT contribution matrix; Developed the project timeline visualization
           effort: lead
         - section: interactive-display
-          description: Designed the four-view visualization architecture
+          description: Designed the six-view visualization architecture
           effort: lead
         - section: data-model
           description: Implemented the multi-dimensional sort system
@@ -262,7 +262,7 @@ project:
           level: supporting
       section_contributions:
         - section: interactive-display
-          description: Designed the four complementary views and their interaction patterns
+          description: Designed the six complementary views and their interaction patterns
           effort: lead
         - section: methods
           description: Designed the inline contribution highlighting visual treatment
@@ -391,7 +391,7 @@ project:
         - Methodology
         - Writing – review & editing
         - Supervision
-        - Funding Acquisition
+        - Funding acquisition
       affiliations:
         - columbia-is
         - rori

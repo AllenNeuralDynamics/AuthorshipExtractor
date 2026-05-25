@@ -7,7 +7,7 @@ const ALL_CREDIT_ROLES = [
   'Conceptualization', 'Methodology', 'Software', 'Validation',
   'Formal analysis', 'Investigation', 'Resources', 'Data curation',
   'Writing – original draft', 'Writing – review & editing',
-  'Visualization', 'Supervision', 'Project Administration', 'Funding Acquisition',
+  'Visualization', 'Supervision', 'Project administration', 'Funding acquisition',
 ];
 
 const ROLE_ICONS = {
@@ -15,7 +15,7 @@ const ROLE_ICONS = {
   'Validation': '✅', 'Formal analysis': '📊', 'Investigation': '🔍',
   'Resources': '🧰', 'Data curation': '🗄️', 'Writing – original draft': '✍️',
   'Writing – review & editing': '📝', 'Visualization': '📈',
-  'Supervision': '👥', 'Project Administration': '📋', 'Funding Acquisition': '💰',
+  'Supervision': '👥', 'Project administration': '📋', 'Funding acquisition': '💰',
 };
 
 const AVATAR_COLORS = [
@@ -1569,6 +1569,16 @@ function render({ model, el: rootEl }) {
         }
         gEl.style.opacity = String(opacity);
       });
+      // Restore edge opacities
+      svgRoot.querySelectorAll('.ae-edge-path').forEach(edge => {
+        if (selectedGroup && selectedIdx === null) {
+          const ei = parseInt(edge.getAttribute('data-edge-i'));
+          const ej = parseInt(edge.getAttribute('data-edge-j'));
+          edge.style.opacity = (selectedGroup.members.has(ei) && selectedGroup.members.has(ej)) ? '' : '0.05';
+        } else {
+          edge.style.opacity = '';
+        }
+      });
     }
 
     /** Highlight hovered node and its direct connections, dim others */
@@ -1584,6 +1594,12 @@ function render({ model, el: rootEl }) {
         if (gIdx === idx) gEl.style.opacity = '1';
         else if (connectedSet.has(gIdx)) gEl.style.opacity = '0.85';
         else gEl.style.opacity = '0.2';
+      });
+      // Dim edges not connected to the hovered node
+      svgRoot.querySelectorAll('.ae-edge-path').forEach(edge => {
+        const ei = parseInt(edge.getAttribute('data-edge-i'));
+        const ej = parseInt(edge.getAttribute('data-edge-j'));
+        edge.style.opacity = (ei === idx || ej === idx) ? '' : '0.05';
       });
     }
 

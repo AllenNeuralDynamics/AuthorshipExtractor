@@ -21,8 +21,8 @@ project:
         - Writing – original draft
         - Writing – review & editing
         - Visualization
-        - Project Administration
-        - Data Curation
+        - Project administration
+        - Data curation
       affiliations:
         - allen-nd
 
@@ -40,15 +40,15 @@ project:
           level: lead
         - role: Validation
           level: lead
-        - role: "Writing – Original Draft"
+        - role: Writing – original draft
           level: lead
-        - role: "Writing – Review & Editing"
+        - role: Writing – review & editing
           level: lead
         - role: Visualization
           level: lead
-        - role: Project Administration
+        - role: Project administration
           level: lead
-        - role: Data Curation
+        - role: Data curation
           level: lead
       section_contributions:
         - section: introduction
@@ -74,9 +74,6 @@ project:
           effort: lead
         - section: discussion
           description: Wrote the discussion section
-          effort: lead
-        - section: references
-          description: Compiled and formatted all references
           effort: lead
       figure_contributions:
         - figure: fig-author-growth
