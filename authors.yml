@@ -51,7 +51,7 @@ project:
         - section: introduction
           description: Framed the authorship crisis argument and wrote the initial introduction
           effort: lead
-        - section: the-credit-taxonomy
+        - section: the-credit-taxonomy-and-its-limits
           description: Provided historical context on CRediT adoption and its limitations
           effort: supporting
         - section: data-model
@@ -131,7 +131,7 @@ project:
         - section: data-model
           description: Implemented the multi-dimensional sort system
           effort: lead
-        - section: limitations-of-current-approaches
+        - section: discussion
           description: Surveyed existing authorship display limitations
           effort: lead
         - section: introduction
@@ -411,7 +411,7 @@ project:
         - role: Funding Acquisition
           level: supporting
       section_contributions:
-        - section: the-credit-taxonomy
+        - section: the-credit-taxonomy-and-its-limits
           description: Provided expertise on CRediT taxonomy history and adoption
           effort: supporting
         - section: team-science-and-rising-author-lists

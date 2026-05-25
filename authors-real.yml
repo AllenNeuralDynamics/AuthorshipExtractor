@@ -54,10 +54,10 @@ project:
         - section: introduction
           description: Conceived the project and wrote the introduction
           effort: lead
-        - section: the-credit-taxonomy
+        - section: the-credit-taxonomy-and-its-limits
           description: Wrote the CRediT taxonomy background section
           effort: lead
-        - section: limitations-of-current-approaches
+        - section: discussion
           description: Wrote the limitations of current approaches section
           effort: lead
         - section: team-science-and-rising-author-lists

@@ -187,7 +187,7 @@ project:
     - section: discussion
       description: Contributed to discussion
       effort: lead
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: lead
     figure_contributions:
@@ -230,7 +230,7 @@ project:
     - role: Writing – original draft
       level: supporting
     section_contributions:
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: lead
     - section: team-science-and-rising-author-lists
@@ -327,10 +327,10 @@ project:
     - role: Data curation
       level: equal
     section_contributions:
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: lead
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: lead
     - section: data-model
@@ -568,7 +568,7 @@ project:
     - section: data-model
       description: Contributed to data model
       effort: lead
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: lead
     figure_contributions: []
@@ -658,10 +658,10 @@ project:
     - role: Validation
       level: supporting
     section_contributions:
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: equal
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: equal
     - section: data-model
@@ -838,7 +838,7 @@ project:
     - section: discussion
       description: Contributed to discussion
       effort: equal
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: equal
     figure_contributions: []
@@ -1006,7 +1006,7 @@ project:
     - role: Writing – original draft
       level: supporting
     section_contributions:
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: equal
     - section: team-science-and-rising-author-lists
@@ -1049,10 +1049,10 @@ project:
     - role: Resources
       level: equal
     section_contributions:
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: supporting
     figure_contributions: []
@@ -1183,7 +1183,7 @@ project:
     - section: data-model
       description: Contributed to data model
       effort: equal
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: equal
     figure_contributions: []
@@ -1355,7 +1355,7 @@ project:
     - section: discussion
       description: Contributed to discussion
       effort: supporting
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
     figure_contributions: []
@@ -1393,7 +1393,7 @@ project:
     - role: Validation
       level: supporting
     section_contributions:
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: supporting
     - section: team-science-and-rising-author-lists
@@ -1436,10 +1436,10 @@ project:
     - role: Resources
       level: equal
     section_contributions:
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: supporting
     figure_contributions: []
@@ -1600,10 +1600,10 @@ project:
     - role: Resources
       level: supporting
     section_contributions:
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: supporting
     figure_contributions: []
@@ -1773,7 +1773,7 @@ project:
     - section: data-model
       description: Contributed to data model
       effort: supporting
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
     figure_contributions:
@@ -1819,7 +1819,7 @@ project:
     - section: discussion
       description: Contributed to discussion
       effort: supporting
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
     figure_contributions: []
@@ -1857,10 +1857,10 @@ project:
     - role: Resources
       level: supporting
     section_contributions:
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: supporting
     figure_contributions: []
@@ -1898,7 +1898,7 @@ project:
     - role: Validation
       level: supporting
     section_contributions:
-    - section: limitations-of-current-approaches
+    - section: discussion
       description: Contributed to limitations of current approaches
       effort: supporting
     - section: team-science-and-rising-author-lists
@@ -1985,7 +1985,7 @@ project:
     - section: data-model
       description: Contributed to data model
       effort: supporting
-    - section: the-credit-taxonomy
+    - section: the-credit-taxonomy-and-its-limits
       description: Contributed to the credit taxonomy
       effort: supporting
     figure_contributions: []
