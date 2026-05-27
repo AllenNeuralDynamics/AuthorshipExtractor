@@ -6,7 +6,7 @@ version: 1
 project:
   contributors:
     # ──────────────────────────────────────────────────
-    # Jérôme Lecoq — Sole Author
+    # Jérôme Lecoq — Primary Author
     # ──────────────────────────────────────────────────
     - id: author-lecoq
       name: Jérôme Lecoq
@@ -100,6 +100,40 @@ project:
           url: https://scholar.google.com/citations?hl=en&user=qEadPMEAAAAJ&view_op=list_works&sortby=pubdate
         - platform: email
           url: mailto:jeromel@alleninstitute.org
+
+    # ──────────────────────────────────────────────────
+    # Carter Peene — Contributor
+    # ──────────────────────────────────────────────────
+    - id: author-peene
+      name: R. Carter Peene
+      orcid: 0009-0000-6660-2264
+      email: carter.peene@alleninstitute.org
+      corresponding: true
+      roles:
+        - Conceptualization
+        - Writing – review & editing
+      affiliations:
+        - allen-nd
+
+      # --- Extended fields (read by our plugin) ---
+      first_name: Carter
+      last_name: Peene
+      career_stage: Data Analyst
+      credit_levels:
+        - role: Conceptualization
+          level: equal
+        - role: Writing – review & editing
+          level: equal
+      contribution_statement: >
+        Helped concieve the project. Designed and implemented prototypes of the concept before project began.
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0009-0000-6660-2264
+        - platform: github
+          url: https://github.com/rcpeene
+        - platform: email
+          url: mailto:carter.peene@alleninstitute.org
+
 
   affiliations:
     - id: allen-nd
