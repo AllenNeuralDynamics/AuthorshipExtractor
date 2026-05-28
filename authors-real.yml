@@ -122,7 +122,7 @@ project:
         - role: Writing – review & editing
           level: equal
       contribution_statement: >
-        Helped concieve the project. Designed and implemented prototypes of the concept before project began.
+        Helped conceive the project. Designed and implemented prototypes of the concept before project began.
       social_links:
         - platform: orcid
           url: https://orcid.org/0009-0000-6660-2264
@@ -130,7 +130,6 @@ project:
           url: https://github.com/rcpeene
         - platform: email
           url: mailto:carter.peene@alleninstitute.org
-
 
   affiliations:
     - id: allen-nd
