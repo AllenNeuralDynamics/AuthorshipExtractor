@@ -1221,17 +1221,16 @@ function render({ model, el: rootEl }) {
     const W = isLarge ? Math.min(2400, 900 + n * 24) : 700;
     const H = Math.round(W / 1.5);
 
-    // Node sizes — keep nodes legible even for large teams
+    // Node sizes — fixed radius for all nodes
     const maxRoles = Math.max(1, ...sorted.map((_, i) => authorRoles[i].length));
-    const minR = isLarge ? 24 : 18;
-    const maxR = isLarge ? 44 : 38;
+    const nodeRadius = isLarge ? 30 : 28;
 
     // Build node objects with metadata
     const nodes = sorted.map((a, i) => {
       const roles = authorRoles[i];
       const secCount = (a.section_contributions || []).length;
       const weight = roles.length + secCount;
-      const radius = minR + ((weight / (maxRoles + 10)) * (maxR - minR));
+      const radius = nodeRadius;
       return {
         x: 0, y: 0,
         radius, roles,
