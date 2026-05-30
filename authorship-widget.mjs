@@ -437,6 +437,7 @@ function render({ model, el: rootEl }) {
   let expanded = false;
   let activeTab = 'network';
   let showCreditMenu = false;
+  let colorblindMode = false; // accessibility: colorblind-safe palette
   let authorMode = 'simulated'; // 'simulated' or 'real'
   let searchQuery = ''; // search/filter across all views
   let cachedLayout = null; // { key, positions: [{x,y}] } — reused across ego-mode transitions
@@ -567,6 +568,13 @@ function render({ model, el: rootEl }) {
     const titleBar = el('div', { className: 'ae-title-bar' },
       el('h3', { className: 'ae-title' }, 'Contributors'),
       el('span', { className: 'ae-title-count' }, countLabel),
+      el('button', {
+        className: `ae-a11y-btn ${colorblindMode ? 'ae-a11y-active' : ''}`,
+        onClick: () => { colorblindMode = !colorblindMode; cachedLayout = null; rerender(); },
+        title: colorblindMode ? 'Switch to default palette' : 'Switch to colorblind-safe palette',
+        'aria-label': 'Toggle colorblind-safe palette',
+        'aria-pressed': String(colorblindMode),
+      }, '\u{1F441}'),
       el('button', {
         className: 'ae-collapse-btn',
         onClick: () => { expanded = false; rerender(); },
@@ -1150,7 +1158,7 @@ function render({ model, el: rootEl }) {
   // Infrastructure: teals
   // Communication: ambers/oranges/reds
   // Leadership: purples/pinks
-  const ROLE_CAT = {
+  const ROLE_CAT_NORMAL = {
     'conceptualization':          { color: '#3b5bdb' },  // deep blue
     'methodology':                { color: '#4c8bf5' },  // mid blue
     'software':                   { color: '#15803d' },  // forest green
@@ -1166,11 +1174,30 @@ function render({ model, el: rootEl }) {
     'project administration':     { color: '#a855f7' },  // purple
     'funding acquisition':        { color: '#ec4899' },  // pink
   };
+  // Colorblind-safe palette — maximally distinct for deuteranopia/protanopia
+  // Based on Wong (2011) Nature Methods + extended with varied lightness
+  const ROLE_CAT_COLORBLIND = {
+    'conceptualization':          { color: '#0072B2' },  // blue
+    'methodology':                { color: '#56B4E9' },  // sky blue
+    'software':                   { color: '#009E73' },  // bluish green
+    'validation':                 { color: '#F0E442' },  // yellow
+    'formal analysis':            { color: '#E69F00' },  // orange
+    'investigation':              { color: '#D55E00' },  // vermillion
+    'resources':                  { color: '#CC79A7' },  // reddish purple
+    'data curation':              { color: '#332288' },  // indigo
+    'writing – original draft':   { color: '#882255' },  // wine
+    'writing – review & editing': { color: '#44AA99' },  // teal
+    'visualization':              { color: '#AA4499' },  // purple
+    'supervision':                { color: '#117733' },  // dark green
+    'project administration':     { color: '#999933' },  // olive
+    'funding acquisition':        { color: '#661100' },  // dark red
+  };
   const LEVEL_OPACITY = { lead: 1.0, equal: 0.7, supporting: 0.4 };
 
   function getRoleCat(roleName) {
     const key = normalizeRole(roleName);
-    return ROLE_CAT[key] || { color: '#94a3b8' };
+    const palette = colorblindMode ? ROLE_CAT_COLORBLIND : ROLE_CAT_NORMAL;
+    return palette[key] || { color: '#94a3b8' };
   }
 
   function buildNetworkTab(sorted, highlightSet) {
