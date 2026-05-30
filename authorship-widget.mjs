@@ -1256,7 +1256,7 @@ function render({ model, el: rootEl }) {
       positionFn(nodes, links, n, W, H, isLarge);
 
       // Normalize positions to fit within the SVG with padding
-      const pad = maxR + 30;
+      const pad = nodeRadius + 30;
       let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
       for (const nd of nodes) {
         minX = Math.min(minX, nd.x - nd.radius);
