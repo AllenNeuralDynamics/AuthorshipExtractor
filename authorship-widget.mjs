@@ -437,7 +437,6 @@ function render({ model, el: rootEl }) {
   let expanded = false;
   let activeTab = 'network';
   let showCreditMenu = false;
-  let colorblindMode = false; // accessibility: colorblind-safe palette
   let authorMode = 'simulated'; // 'simulated' or 'real'
   let searchQuery = ''; // search/filter across all views
   let cachedLayout = null; // { key, positions: [{x,y}] } — reused across ego-mode transitions
@@ -568,13 +567,6 @@ function render({ model, el: rootEl }) {
     const titleBar = el('div', { className: 'ae-title-bar' },
       el('h3', { className: 'ae-title' }, 'Contributors'),
       el('span', { className: 'ae-title-count' }, countLabel),
-      el('button', {
-        className: `ae-a11y-btn ${colorblindMode ? 'ae-a11y-active' : ''}`,
-        onClick: () => { colorblindMode = !colorblindMode; cachedLayout = null; rerender(); },
-        title: colorblindMode ? 'Switch to default palette' : 'Switch to colorblind-safe palette',
-        'aria-label': 'Toggle colorblind-safe palette',
-        'aria-pressed': String(colorblindMode),
-      }, '\u{1F441}'),
       el('button', {
         className: 'ae-collapse-btn',
         onClick: () => { expanded = false; rerender(); },
@@ -1152,35 +1144,14 @@ function render({ model, el: rootEl }) {
   }
 
   // ──── Network / Chord diagram tab ────
-  // Per-role colors — grouped by purpose so related roles share a hue family
-  // Thinking/Planning: blues
-  // Technical/Execution: greens
-  // Infrastructure: teals
-  // Communication: ambers/oranges/reds
-  // Leadership: purples/pinks
-  const ROLE_CAT_NORMAL = {
-    'conceptualization':          { color: '#3b5bdb' },  // deep blue
-    'methodology':                { color: '#4c8bf5' },  // mid blue
-    'software':                   { color: '#15803d' },  // forest green
-    'validation':                 { color: '#16a34a' },  // green
-    'formal analysis':            { color: '#22c55e' },  // light green
-    'investigation':              { color: '#4ade80' },  // pale green
-    'resources':                  { color: '#0d9488' },  // teal
-    'data curation':              { color: '#06b6d4' },  // cyan
-    'writing – original draft':   { color: '#d97706' },  // amber
-    'writing – review & editing': { color: '#ea580c' },  // orange
-    'visualization':              { color: '#dc2626' },  // red
-    'supervision':                { color: '#7c3aed' },  // violet
-    'project administration':     { color: '#a855f7' },  // purple
-    'funding acquisition':        { color: '#ec4899' },  // pink
-  };
-  // Colorblind-safe palette — maximally distinct for deuteranopia/protanopia
+  // Per-role colors — colorblind-safe palette
   // Based on Wong (2011) Nature Methods + extended with varied lightness
-  const ROLE_CAT_COLORBLIND = {
+  // Maximally distinct for deuteranopia/protanopia
+  const ROLE_CAT = {
     'conceptualization':          { color: '#0072B2' },  // blue
     'methodology':                { color: '#56B4E9' },  // sky blue
     'software':                   { color: '#009E73' },  // bluish green
-    'validation':                 { color: '#F0E442' },  // yellow
+    'validation':                 { color: '#B8A000' },  // dark gold (readable with white text)
     'formal analysis':            { color: '#E69F00' },  // orange
     'investigation':              { color: '#D55E00' },  // vermillion
     'resources':                  { color: '#CC79A7' },  // reddish purple
@@ -1196,8 +1167,7 @@ function render({ model, el: rootEl }) {
 
   function getRoleCat(roleName) {
     const key = normalizeRole(roleName);
-    const palette = colorblindMode ? ROLE_CAT_COLORBLIND : ROLE_CAT_NORMAL;
-    return palette[key] || { color: '#94a3b8' };
+    return ROLE_CAT[key] || { color: '#94a3b8' };
   }
 
   function buildNetworkTab(sorted, highlightSet) {
