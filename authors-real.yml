@@ -132,6 +132,46 @@ project:
         - platform: email
           url: mailto:carter.peene@alleninstitute.org
 
+    # ──────────────────────────────────────────────────
+    # Daniel Birman — Visualization
+    # ──────────────────────────────────────────────────
+    - id: author-birman
+      name: Daniel Birman
+      orcid: 0000-0003-3748-6289
+      avatar_url: https://cdn.prod.website-files.com/69a0ca6ef8ecfacbc1d10e9b/69c594c4764660cff00a87ba_Daniel_Birman_SQ.webp
+      roles:
+        - Conceptualization
+        - Visualization
+      affiliations:
+        - allen-nd
+
+      # --- Extended fields (read by our plugin) ---
+      first_name: Daniel
+      last_name: Birman
+      career_stage: Software Engineer III
+      credit_levels:
+        - role: Conceptualization
+          level: equal
+        - role: Visualization
+          level: equal
+      section_contributions:
+        - section: interactive-display
+          description: Contributed ideas on how to visualize authorship roles
+          effort: equal
+      figure_contributions: []
+      contribution_statement: >
+        Contributed ideas on how to visualize authorship roles.
+      timeline:
+        joined: "2026-03-15"
+        milestones:
+          - date: "2026-03-15"
+            event: Joined project with visualization expertise
+      social_links:
+        - platform: orcid
+          url: https://orcid.org/0000-0003-3748-6289
+        - platform: github
+          url: https://github.com/dbirman
+
   affiliations:
     - id: allen-nd
       name: Allen Institute for Neural Dynamics
