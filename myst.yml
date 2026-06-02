@@ -23,6 +23,7 @@ project:
     - authorship-plugin.mjs
   bibliography:
     - references.bib
+  github: https://github.com/AllenNeuralDynamics/AuthorshipExtractor
   toc:
     - file: article.md
 site:
