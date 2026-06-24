@@ -513,22 +513,12 @@ function render({ model, el: rootEl }) {
       // Shuffle authors deterministically to avoid implying ordering
       const shuffled = [...sorted].sort((a, b) => hashStr(a.name + 'x') - hashStr(b.name + 'x'));
 
-      // Limit visible avatars; show overflow indicator
-      const maxVisible = Math.min(shuffled.length, 30);
-      const visible = shuffled.slice(0, maxVisible);
-      const overflow = shuffled.length - maxVisible;
-
-      visible.forEach((author) => {
+      shuffled.forEach((author) => {
         const avatar = buildHtmlAvatar(author, 'ae-cloud-avatar', {});
         avatar.title = author.name;
         attachAuthorPopover(avatar, author);
         cloud.appendChild(avatar);
       });
-
-      // Overflow indicator
-      if (overflow > 0) {
-        cloud.appendChild(el('div', { className: 'ae-cloud-overflow' }, `+${overflow}`));
-      }
 
       wrapper.appendChild(cloud);
 
