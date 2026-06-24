@@ -503,61 +503,31 @@ function render({ model, el: rootEl }) {
 
     const container = el('div', { className: `ae-widget ${expanded ? '' : 'ae-collapsed'} ${isDark ? 'ae-dark' : ''}` });
 
-    // ──── Collapsed state: circular avatar cloud ────
+    // ──── Collapsed state: compact avatar cloud ────
     if (!expanded) {
       const wrapper = el('div', { className: 'ae-collapsed-wrapper' });
 
-      // Avatar cloud arranged in a circle
+      // Avatar cloud as a compact wrapped flow
       const cloud = el('div', { className: 'ae-avatar-cloud' });
 
       // Shuffle authors deterministically to avoid implying ordering
       const shuffled = [...sorted].sort((a, b) => hashStr(a.name + 'x') - hashStr(b.name + 'x'));
 
       // Limit visible avatars; show overflow indicator
-      const maxVisible = Math.min(shuffled.length, 20);
+      const maxVisible = Math.min(shuffled.length, 30);
       const visible = shuffled.slice(0, maxVisible);
       const overflow = shuffled.length - maxVisible;
 
-      // Calculate circle layout
-      const radius = Math.min(60 + visible.length * 2, 90); // responsive radius
-      const avatarSize = visible.length > 12 ? 28 : 32;
-      const cloudSize = radius * 2 + avatarSize + 8;
-
-      cloud.style.width = cloudSize + 'px';
-      cloud.style.height = cloudSize + 'px';
-
-      const cx = cloudSize / 2;
-      const cy = cloudSize / 2;
-
-      visible.forEach((author, i) => {
-        const angle = (2 * Math.PI * i) / visible.length - Math.PI / 2;
-        const x = cx + radius * Math.cos(angle) - avatarSize / 2;
-        const y = cy + radius * Math.sin(angle) - avatarSize / 2;
-
-        const avatar = buildHtmlAvatar(author, 'ae-cloud-avatar', {
-          width: avatarSize + 'px',
-          height: avatarSize + 'px',
-          fontSize: (avatarSize * 0.4) + 'px',
-          position: 'absolute',
-          left: x + 'px',
-          top: y + 'px',
-        });
+      visible.forEach((author) => {
+        const avatar = buildHtmlAvatar(author, 'ae-cloud-avatar', {});
         avatar.title = author.name;
         attachAuthorPopover(avatar, author);
         cloud.appendChild(avatar);
       });
 
-      // Overflow indicator in center
+      // Overflow indicator
       if (overflow > 0) {
-        const more = el('div', {
-          className: 'ae-cloud-overflow',
-          style: {
-            position: 'absolute',
-            left: (cx - 16) + 'px',
-            top: (cy - 16) + 'px',
-          },
-        }, `+${overflow}`);
-        cloud.appendChild(more);
+        cloud.appendChild(el('div', { className: 'ae-cloud-overflow' }, `+${overflow}`));
       }
 
       wrapper.appendChild(cloud);
