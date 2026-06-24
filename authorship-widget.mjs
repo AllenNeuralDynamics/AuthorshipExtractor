@@ -507,17 +507,34 @@ function render({ model, el: rootEl }) {
     if (!expanded) {
       const wrapper = el('div', { className: 'ae-collapsed-wrapper' });
 
-      // Avatar cloud as a compact wrapped flow
+      // Avatar cloud as centered rows
       const cloud = el('div', { className: 'ae-avatar-cloud' });
 
       // Shuffle authors deterministically to avoid implying ordering
       const shuffled = [...sorted].sort((a, b) => hashStr(a.name + 'x') - hashStr(b.name + 'x'));
 
-      shuffled.forEach((author) => {
-        const avatar = buildHtmlAvatar(author, 'ae-cloud-avatar', {});
-        avatar.title = author.name;
-        attachAuthorPopover(avatar, author);
-        cloud.appendChild(avatar);
+      // Distribute into centered rows: row width ≈ ceil(sqrt(n))
+      const n = shuffled.length;
+      const rowWidth = Math.ceil(Math.sqrt(n));
+      const rows = [];
+      let idx = 0;
+      while (idx < n) {
+        const remaining = n - idx;
+        const rowsLeft = Math.ceil(remaining / rowWidth);
+        const thisRow = Math.ceil(remaining / rowsLeft);
+        rows.push(shuffled.slice(idx, idx + thisRow));
+        idx += thisRow;
+      }
+
+      rows.forEach((rowAuthors) => {
+        const row = el('div', { className: 'ae-cloud-row' });
+        rowAuthors.forEach((author) => {
+          const avatar = buildHtmlAvatar(author, 'ae-cloud-avatar', {});
+          avatar.title = author.name;
+          attachAuthorPopover(avatar, author);
+          row.appendChild(avatar);
+        });
+        cloud.appendChild(row);
       });
 
       wrapper.appendChild(cloud);
