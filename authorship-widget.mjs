@@ -119,12 +119,14 @@ function buildHtmlAvatar(author, className, extraStyle) {
   if (author.avatar_url) {
     const wrapper = el('div', {
       className: className,
-      style: { ...extraStyle, padding: '0', overflow: 'hidden' },
+      style: { ...extraStyle, padding: '0', overflow: 'hidden', maxWidth: '100%', maxHeight: '100%' },
     });
     const img = el('img', {
       src: author.avatar_url,
       alt: author.name,
-      style: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block' },
+      width: '28',
+      height: '28',
+      style: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block', maxWidth: 'inherit', maxHeight: 'inherit' },
     });
     img.onerror = () => {
       wrapper.textContent = getInitials(author.name);
