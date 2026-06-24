@@ -63,6 +63,54 @@
   border-color: #a5b4fc;
 }
 
+/* ─── Collapsed avatar cloud ─── */
+.ae-collapsed-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 20px;
+}
+
+.ae-avatar-cloud {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.ae-cloud-avatar {
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+}
+.ae-cloud-avatar:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.ae-cloud-overflow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.ae-collapsed-footer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
 .ae-collapse-btn {
   margin-left: auto;
   padding: 4px 12px;
