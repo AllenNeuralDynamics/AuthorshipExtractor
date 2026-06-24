@@ -73,18 +73,11 @@
 
 .ae-avatar-cloud {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 22px);
+  grid-template-columns: repeat(auto-fill, 24px);
   justify-content: center;
-  gap: 2px 2px;
-  max-width: 300px;
+  gap: 3px;
+  max-width: 320px;
   margin: 0 auto;
-}
-/* Offset every other row for honeycomb feel */
-.ae-cloud-avatar:nth-child(even) {
-  transform: translateX(6px);
-}
-.ae-cloud-avatar:nth-child(even):hover {
-  transform: translateX(6px) scale(1.3);
 }
 
 .ae-cloud-avatar {
