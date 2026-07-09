@@ -1121,54 +1121,104 @@ function render({ model, el: rootEl }) {
   }
 
   // ──── Section Map tab ────
+  // Mirrors the CRediT matrix: authors as columns, sections as rows,
+  // effort level (lead / equal / supporting) shown as a coloured dot.
   function buildSectionsTab(sorted) {
-    const wrap = el('div', { className: 'ae-sections' });
+    const wrap = el('div', { className: 'ae-matrix-wrap' });
 
-    // Collect all sections
-    const sectionMap = new Map();
-    for (const author of sorted) {
+    // Collect efforts per section, keyed by section then author index.
+    // Row order follows document order (sectionLabels keys), with any extra
+    // sections appended in the order they are first encountered.
+    const sectionEfforts = new Map(); // sectionId -> Map(authorIndex -> contribution)
+    const sectionOrder = [];
+    function ensureSection(id) {
+      if (!sectionEfforts.has(id)) {
+        sectionEfforts.set(id, new Map());
+        sectionOrder.push(id);
+      }
+    }
+    for (const id of Object.keys(sectionLabels)) ensureSection(id);
+    for (let ai = 0; ai < sorted.length; ai++) {
+      const author = sorted[ai];
       if (!author.section_contributions) continue;
       for (const sc of author.section_contributions) {
-        if (!sectionMap.has(sc.section)) sectionMap.set(sc.section, []);
-        sectionMap.get(sc.section).push({ author, ...sc });
+        ensureSection(sc.section);
+        sectionEfforts.get(sc.section).set(ai, sc);
       }
     }
 
-    let sectionIdx = 0;
-    for (const [sectionId, contribs] of sectionMap) {
-      contribs.sort((a, b) => (LEVEL_RANK[b.effort] || 0) - (LEVEL_RANK[a.effort] || 0));
+    // Keep only sections that actually have contributors.
+    const activeSections = sectionOrder.filter(id => sectionEfforts.get(id).size > 0);
 
-      const section = el('div', { className: 'ae-section-block' });
-      section.style.setProperty('--i', String(sectionIdx++));
-      section.appendChild(el('div', { className: 'ae-section-id' }, sectionLabel(sectionId)));
-
-      const contributors = el('div', { className: 'ae-section-contributors' });
-      for (const c of contribs) {
-        const color = getColor(c.author.name);
-        const isDimmed = searchQuery && !matchesSearch(c.author, searchQuery);
-        const chip = el('div', { className: 'ae-section-chip' });
-        if (isDimmed) chip.style.opacity = '0.3';
-        chip.appendChild(buildHtmlAvatar(c.author, 'ae-section-avatar'));
-        const info = el('div', { className: 'ae-section-chip-info' });
-        const chipName = el('span', { className: 'ae-section-chip-name' }, c.author.name);
-        attachAuthorPopover(chipName, c.author);
-        info.appendChild(chipName);
-        if (c.effort) {
-          info.appendChild(el('span', { className: `ae-effort ae-effort-${c.effort}` }, c.effort));
-        }
-        if (c.description) {
-          info.appendChild(el('p', { className: 'ae-section-chip-desc' }, c.description));
-        }
-        chip.appendChild(info);
-        contributors.appendChild(chip);
-      }
-      section.appendChild(contributors);
-      wrap.appendChild(section);
-    }
-
-    if (sectionMap.size === 0) {
+    if (activeSections.length === 0) {
       wrap.appendChild(el('p', { className: 'ae-empty' }, 'No section contribution data available.'));
+      return wrap;
     }
+
+    const table = el('table', { className: 'ae-matrix' });
+
+    // Header row with author avatars
+    const thead = el('thead');
+    const headerRow = el('tr');
+    headerRow.appendChild(el('th', { className: 'ae-matrix-corner' }));
+    for (let ai = 0; ai < sorted.length; ai++) {
+      const author = sorted[ai];
+      const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
+      const th = el('th', { className: 'ae-matrix-author-th' });
+      if (isDimmed) th.style.opacity = '0.3';
+      th.appendChild(buildHtmlAvatar(author, 'ae-matrix-avatar'));
+      const lastName = author.name.split(/\s+/).pop();
+      const matrixName = el('div', { className: 'ae-matrix-author-name' }, lastName);
+      attachAuthorPopover(th, author);
+      th.appendChild(matrixName);
+      headerRow.appendChild(th);
+    }
+    thead.appendChild(headerRow);
+    table.appendChild(thead);
+
+    // Section rows
+    const tbody = el('tbody');
+    for (const sectionId of activeSections) {
+      const efforts = sectionEfforts.get(sectionId);
+      const row = el('tr');
+      row.appendChild(el('td', { className: 'ae-matrix-role' },
+        el('span', { className: 'ae-matrix-role-icon' }, '📄'),
+        el('span', {}, sectionLabel(sectionId)),
+      ));
+
+      for (let ai = 0; ai < sorted.length; ai++) {
+        const author = sorted[ai];
+        const sc = efforts.get(ai);
+        const level = sc?.effort;
+        const isDimmed = searchQuery && !matchesSearch(author, searchQuery);
+        const td = el('td', { className: 'ae-matrix-cell' });
+        if (isDimmed) td.style.opacity = '0.3';
+        if (level) {
+          const dot = el('div', {
+            className: `ae-dot ae-dot-${level}`,
+            title: sc.description
+              ? `${author.name}: ${level} — ${sc.description}`
+              : `${author.name}: ${level}`,
+          });
+          td.appendChild(dot);
+        }
+        row.appendChild(td);
+      }
+      tbody.appendChild(row);
+    }
+    table.appendChild(tbody);
+    wrap.appendChild(table);
+
+    // Legend
+    const legend = el('div', { className: 'ae-matrix-legend' });
+    legend.appendChild(el('span', { className: 'ae-legend-label' }, 'Legend:'));
+    legend.appendChild(el('span', { className: 'ae-legend-dot ae-dot-lead' }));
+    legend.appendChild(document.createTextNode(' Lead  '));
+    legend.appendChild(el('span', { className: 'ae-legend-dot ae-dot-equal' }));
+    legend.appendChild(document.createTextNode(' Equal  '));
+    legend.appendChild(el('span', { className: 'ae-legend-dot ae-dot-supporting' }));
+    legend.appendChild(document.createTextNode(' Supporting'));
+    wrap.appendChild(legend);
 
     return wrap;
   }
