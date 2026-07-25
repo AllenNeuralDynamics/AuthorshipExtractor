@@ -1,0 +1,41 @@
+name: Release plugin
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify release version
+        run: |
+          package_version=$(node -p "require('./package.json').version")
+          test "$GITHUB_REF_NAME" = "v$package_version"
+
+      - name: Build and test plugin bundle
+        run: npm run test:plugin
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh release create "$GITHUB_REF_NAME"
+          dist/authorship-plugin.mjs
+          --verify-tag
+          --generate-notes
+          --title "AuthorshipExtractor $GITHUB_REF_NAME"

@@ -21,6 +21,45 @@ The site renders a real academic paper about this framework while simultaneously
 Deployed via GitHub Pages:
 **https://AllenNeuralDynamics.github.io/AuthorshipExtractor/**
 
+## Use the plugin in another MyST project
+
+Downstream projects can load the standalone plugin directly from the latest
+GitHub release. No plugin fork, copied JavaScript, CSS, or npm dependency is
+required.
+
+```yaml
+# myst.yml
+project:
+	plugins:
+		- https://github.com/AllenNeuralDynamics/AuthorshipExtractor/releases/latest/download/authorship-plugin.mjs
+```
+
+Add the directive to a MyST Markdown document and keep the project-specific
+author data in that repository:
+
+````markdown
+:::{authorship-explorer}
+:authors: ./authors.yml
+:height: 800px
+:::
+````
+
+The `authors` path is relative to the Markdown document. The alternate dataset
+options `authors-alt`, `alt-label`, `authors-alt2`, and `alt2-label` are also
+available, as shown in [article.md](article.md). For reproducible builds, replace
+`latest` with a release tag, for example:
+
+```yaml
+- https://github.com/AllenNeuralDynamics/AuthorshipExtractor/releases/download/v0.1.0/authorship-plugin.mjs
+```
+
+MyST downloads and executes the remote plugin during the build, so builds using
+the URL require network access.
+
+The release bundle and its emitted browser assets carry the full MIT notice, so
+consuming repositories do not need a separate third-party notice file solely for
+AuthorshipExtractor.
+
 ## Quick start
 
 ```bash
@@ -34,6 +73,25 @@ myst start
 myst build
 ```
 
+## Publishing a plugin release
+
+The release bundle contains the plugin, widget JavaScript, stylesheet, and YAML
+parser in one file. Build and test it locally with:
+
+```bash
+npm ci
+npm run test:plugin
+```
+
+To publish a new version, update the package version and push its matching tag.
+The release workflow builds, tests, and attaches `authorship-plugin.mjs` to the
+GitHub release automatically.
+
+```bash
+npm version patch
+git push --follow-tags
+```
+
 ## Project structure
 
 ```
@@ -45,6 +103,7 @@ authors-real.yml           # Real contributor data
 authorship-plugin.mjs      # MyST plugin: directive + transform
 authorship-widget.mjs      # Interactive widget (vanilla JS, anywidget)
 authorship-widget.css      # Widget styles
+scripts/                   # Build and standalone-bundle tests
 references.bib             # Bibliography
 gen_figure.py              # Script to regenerate the author-count figure
 author-count-growth.yaml   # Source data for the figure

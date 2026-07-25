@@ -1,5 +1,20 @@
 {
+  "name": "authorship-extractor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A reusable MyST plugin for interactive, multidimensional authorship attribution.",
+  "type": "module",
+  "scripts": {
+    "build:plugin": "node scripts/build-plugin.mjs",
+    "test:plugin": "npm run build:plugin && node scripts/test-plugin-bundle.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.1"
   }
 }

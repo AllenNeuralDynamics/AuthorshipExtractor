@@ -1,11 +1,36 @@
 // authorship-plugin.mjs — MyST plugin: directive + transform
 // Creates an anywidget node with author data baked in.
 
-import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { createRequire } from 'node:module';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { resolve, dirname, join, relative } from 'node:path';
+import { createHash } from 'node:crypto';
+import { parse } from 'yaml';
 
-const require = createRequire(import.meta.url);
+const widgetEsm = typeof __AUTHORSHIP_WIDGET_ESM__ === 'string'
+  ? __AUTHORSHIP_WIDGET_ESM__
+  : readFileSync(new URL('./authorship-widget.mjs', import.meta.url), 'utf8');
+const widgetCss = typeof __AUTHORSHIP_WIDGET_CSS__ === 'string'
+  ? __AUTHORSHIP_WIDGET_CSS__
+  : readFileSync(new URL('./authorship-widget.css', import.meta.url), 'utf8');
+
+const assetHash = createHash('sha256')
+  .update(widgetEsm)
+  .update(widgetCss)
+  .digest('hex')
+  .slice(0, 12);
+
+function materializeWidgetAssets(projectDir) {
+  const assetDir = join(projectDir, '_build', '.authorship-extractor', assetHash);
+  const esmPath = join(assetDir, 'authorship-widget.mjs');
+  const cssPath = join(assetDir, 'authorship-widget.css');
+  mkdirSync(assetDir, { recursive: true });
+  writeFileSync(esmPath, widgetEsm);
+  writeFileSync(cssPath, widgetCss);
+  return {
+    esm: `./${relative(projectDir, esmPath)}`,
+    css: `./${relative(projectDir, cssPath)}`,
+  };
+}
 
 const authorshipDirective = {
   name: 'authorship-explorer',
@@ -75,11 +100,11 @@ const authorshipTransform = {
 
       if (node.type === 'authorship-explorer') {
         const docDir = vfile?.path ? dirname(vfile.path) : process.cwd();
+        const projectDir = vfile?.cwd || process.cwd();
         const yamlPath = resolve(docDir, node.authorsPath || './authors.yml');
 
         try {
           const raw = readFileSync(yamlPath, 'utf-8');
-          const { parse } = require('yaml');
           const fullData = parse(raw);
 
           // Helper: resolve affiliation ID strings to full objects
@@ -145,10 +170,11 @@ const authorshipTransform = {
           }
 
           // Convert to anywidget node
+          const widgetAssets = materializeWidgetAssets(projectDir);
           node.type = 'anywidget';
           node.id = `authorship-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-          node.esm = './authorship-widget.mjs';
-          node.css = './authorship-widget.css';
+          node.esm = widgetAssets.esm;
+          node.css = widgetAssets.css;
           node.model = {
             authors: JSON.stringify(envelope),
             sectionLabels: JSON.stringify(sectionLabels),

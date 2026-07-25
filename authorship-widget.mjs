@@ -437,7 +437,7 @@ function render({ model, el: rootEl }) {
   // State
   let sortKey = 'alpha';
   let expanded = false;
-  let activeTab = 'network';
+  let activeTab = 'matrix';
   let showCreditMenu = false;
   let authorMode = 'simulated'; // 'simulated' or 'real'
   let searchQuery = ''; // search/filter across all views
@@ -611,9 +611,9 @@ function render({ model, el: rootEl }) {
     // Tabs
     const tabs = el('div', { className: 'ae-tabs', role: 'tablist', 'aria-label': 'Authorship views' });
     const tabDefs = [
-      { id: 'network', label: 'Collaboration' },
       { id: 'matrix', label: 'CRediT' },
       { id: 'sections', label: 'Sections' },
+      { id: 'network', label: 'Collaboration' },
       { id: 'timeline', label: 'Timeline' },
       { id: 'authors', label: 'Sorted List' },
       { id: 'profiles', label: 'Profiles' },

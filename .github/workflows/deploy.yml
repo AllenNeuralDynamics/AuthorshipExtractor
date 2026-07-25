@@ -37,7 +37,7 @@ jobs:
         run: npm install -g mystmd
 
       - name: Install plugin dependencies
-        run: npm install yaml
+        run: npm ci
 
       - name: Build HTML Assets
         run: myst build --html
