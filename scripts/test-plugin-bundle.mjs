@@ -28,6 +28,18 @@ try {
     readFile(resolve(rootDir, node.esm), 'utf8'),
     readFile(resolve(rootDir, node.css), 'utf8'),
   ]);
+  const { resolveSourceUrl } = await import(pathToFileURL(resolve(rootDir, node.esm)));
+
+  const editUrl = 'https://github.com/AllenNeuralDynamics/Example/edit/main/content/article.md';
+  assert.equal(
+    resolveSourceUrl(editUrl, './authors.yml'),
+    'https://github.com/AllenNeuralDynamics/Example/blob/main/content/authors.yml',
+  );
+  assert.equal(
+    resolveSourceUrl(editUrl, '../authors.yml'),
+    'https://github.com/AllenNeuralDynamics/Example/blob/main/authors.yml',
+  );
+  assert.equal(resolveSourceUrl(null, './authors.yml'), null);
 
   const creditIndex = widgetEsm.indexOf("{ id: 'matrix', label: 'CRediT' }");
   const sectionsIndex = widgetEsm.indexOf("{ id: 'sections', label: 'Sections' }");

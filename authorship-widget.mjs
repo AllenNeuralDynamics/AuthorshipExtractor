@@ -57,6 +57,18 @@ function normalizeRole(r) {
   return r.toLowerCase().replace(/\s+/g, ' ').replace(/—/g, '–').trim();
 }
 
+export function resolveSourceUrl(editHref, sourceFile) {
+  if (!editHref || !sourceFile || sourceFile.startsWith('/')) return null;
+  try {
+    const sourceUrl = new URL(sourceFile, editHref);
+    if (!sourceUrl.pathname.includes('/edit/')) return null;
+    sourceUrl.pathname = sourceUrl.pathname.replace('/edit/', '/blob/');
+    return sourceUrl.href;
+  } catch {
+    return null;
+  }
+}
+
 // ─── SVG helper ─────────────────────────────────────────────────
 
 const _svgNS = 'http://www.w3.org/2000/svg';
@@ -495,9 +507,6 @@ function render({ model, el: rootEl }) {
     return authors;
   }
 
-  // GitHub source URL base (derive from repo)
-  const REPO_URL = 'https://github.com/AllenNeuralDynamics/AuthorshipExtractor';
-
   function buildWidget() {
     const activeAuthors = getActiveAuthors();
     const sorted = sortAuthors(activeAuthors, sortKey);
@@ -711,14 +720,18 @@ function render({ model, el: rootEl }) {
     if (sourceFiles.length) {
       const srcRow = el('div', { className: 'ae-source-links ae-source-links-expanded' });
       srcRow.appendChild(el('span', { className: 'ae-source-label' }, '📄 Config:'));
+      const editLink = hostDoc.querySelector('a[href*="/edit/"]');
       for (const f of sourceFiles) {
-        const name = f.replace('./', '');
-        srcRow.appendChild(el('a', {
-          href: `${REPO_URL}/blob/main/${name}`,
-          target: '_blank',
-          rel: 'noopener noreferrer',
-          className: 'ae-source-link',
-        }, name));
+        const name = f.replace(/^\.\//, '');
+        const sourceUrl = resolveSourceUrl(editLink?.href, f);
+        srcRow.appendChild(sourceUrl
+          ? el('a', {
+            href: sourceUrl,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            className: 'ae-source-link',
+          }, name)
+          : el('span', { className: 'ae-source-label' }, name));
       }
       container.appendChild(srcRow);
     }
