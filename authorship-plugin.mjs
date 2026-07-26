@@ -19,7 +19,12 @@ const assetHash = createHash('sha256')
   .digest('hex')
   .slice(0, 12);
 
-function materializeWidgetAssets(projectDir) {
+function toRelativeAssetPath(fromDir, targetPath) {
+  const path = relative(fromDir, targetPath).replace(/\\/g, '/');
+  return path.startsWith('.') ? path : `./${path}`;
+}
+
+function materializeWidgetAssets(projectDir, docDir) {
   const assetDir = join(projectDir, '_build', '.authorship-extractor', assetHash);
   const esmPath = join(assetDir, 'authorship-widget.mjs');
   const cssPath = join(assetDir, 'authorship-widget.css');
@@ -27,8 +32,8 @@ function materializeWidgetAssets(projectDir) {
   writeFileSync(esmPath, widgetEsm);
   writeFileSync(cssPath, widgetCss);
   return {
-    esm: `./${relative(projectDir, esmPath)}`,
-    css: `./${relative(projectDir, cssPath)}`,
+    esm: toRelativeAssetPath(docDir, esmPath),
+    css: toRelativeAssetPath(docDir, cssPath),
   };
 }
 
@@ -170,7 +175,7 @@ const authorshipTransform = {
           }
 
           // Convert to anywidget node
-          const widgetAssets = materializeWidgetAssets(projectDir);
+          const widgetAssets = materializeWidgetAssets(projectDir, docDir);
           node.type = 'anywidget';
           node.id = `authorship-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
           node.esm = widgetAssets.esm;

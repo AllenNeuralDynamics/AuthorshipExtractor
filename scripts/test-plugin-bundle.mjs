@@ -40,6 +40,25 @@ try {
     assert.match(content, /Copyright \(c\) 2026 Jerome Lecoq/);
     assert.match(content, /Permission is hereby granted/);
   }
+
+  const nestedNode = plugin.directives[0].run({
+    options: { authors: '../authors.yml' },
+  })[0];
+  const nestedTree = { type: 'root', children: [nestedNode] };
+  const nestedDir = resolve(rootDir, 'content');
+
+  plugin.transforms[0].plugin({}, {})(nestedTree, {
+    path: resolve(nestedDir, 'article.md'),
+    cwd: rootDir,
+  });
+
+  assert.equal(nestedNode.type, 'anywidget');
+  assert.match(nestedNode.esm, /^\.\.\/_build\/\.authorship-extractor\//);
+  assert.match(nestedNode.css, /^\.\.\/_build\/\.authorship-extractor\//);
+  await Promise.all([
+    readFile(resolve(nestedDir, nestedNode.esm), 'utf8'),
+    readFile(resolve(nestedDir, nestedNode.css), 'utf8'),
+  ]);
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

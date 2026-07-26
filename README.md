@@ -50,7 +50,7 @@ available, as shown in [article.md](article.md). For reproducible builds, replac
 `latest` with a release tag, for example:
 
 ```yaml
-- https://github.com/AllenNeuralDynamics/AuthorshipExtractor/releases/download/v0.1.0/authorship-plugin.mjs
+- https://github.com/AllenNeuralDynamics/AuthorshipExtractor/releases/download/v0.1.1/authorship-plugin.mjs
 ```
 
 MyST downloads and executes the remote plugin during the build, so builds using
