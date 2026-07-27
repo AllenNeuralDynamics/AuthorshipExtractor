@@ -139,6 +139,28 @@ Writing – Original Draft, Writing – Review & Editing,
 Visualization, Supervision, Project Administration,
 Funding Acquisition
 
+## Publishing a plugin release
+
+This procedure is for project maintainers. The release bundle contains the
+plugin, widget JavaScript, stylesheet, and YAML parser in one file. Build and
+test it locally from a clean working tree:
+
+```bash
+npm ci
+npm run test:plugin
+```
+
+To publish a new version, update the package version and push its matching tag:
+
+```bash
+npm version patch
+git push --follow-tags
+```
+
+The release workflow builds, tests, creates the GitHub release, and attaches
+`authorship-plugin.mjs` automatically. Do not create the GitHub release
+manually first, because that conflicts with the workflow.
+
 ## Questions?
 
 Open an issue or reach out to the project maintainers.

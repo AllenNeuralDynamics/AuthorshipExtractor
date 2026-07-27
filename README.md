@@ -75,22 +75,9 @@ myst build
 
 ## Publishing a plugin release
 
-The release bundle contains the plugin, widget JavaScript, stylesheet, and YAML
-parser in one file. Build and test it locally with:
-
-```bash
-npm ci
-npm run test:plugin
-```
-
-To publish a new version, update the package version and push its matching tag.
-The release workflow builds, tests, and attaches `authorship-plugin.mjs` to the
-GitHub release automatically.
-
-```bash
-npm version patch
-git push --follow-tags
-```
+Maintainers: see
+[CONTRIBUTING.md](CONTRIBUTING.md#publishing-a-plugin-release) for the release
+procedure.
 
 ## Project structure
 
