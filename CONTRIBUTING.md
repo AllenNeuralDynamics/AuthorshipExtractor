@@ -157,6 +157,10 @@ npm version patch
 git push --follow-tags
 ```
 
+Before tagging, ensure that the creators in `.zenodo.json` match the real
+contributors in `authors-real.yml`. Zenodo uses this explicit metadata instead
+of inferring the release creators from GitHub contributor statistics.
+
 The release workflow builds, tests, creates the GitHub release, and attaches
 `authorship-plugin.mjs` automatically. Do not create the GitHub release
 manually first, because that conflicts with the workflow.

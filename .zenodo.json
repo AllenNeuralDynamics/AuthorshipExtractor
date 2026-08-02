@@ -1,0 +1,28 @@
+{
+  "title": "AuthorshipExtractor: An interactive authorship viewer for team science",
+  "creators": [
+    {
+      "name": "Lecoq, Jérôme",
+      "affiliation": "Allen Institute for Neural Dynamics",
+      "orcid": "0000-0002-0131-0938"
+    },
+    {
+      "name": "Peene, R. Carter",
+      "affiliation": "Allen Institute for Neural Dynamics",
+      "orcid": "0009-0000-6660-2264"
+    },
+    {
+      "name": "Birman, Daniel",
+      "affiliation": "Allen Institute for Neural Dynamics",
+      "orcid": "0000-0003-3748-6289"
+    }
+  ],
+  "license": "MIT",
+  "keywords": [
+    "scientific authorship",
+    "CRediT taxonomy",
+    "team science",
+    "MyST",
+    "research software"
+  ]
+}
