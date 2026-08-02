@@ -25,6 +25,24 @@ const AVATAR_COLORS = [
 
 const LEVEL_RANK = { lead: 3, equal: 2, supporting: 1 };
 
+export const CRITICAL_AVATAR_CSS = `
+.ae-widget { display:block; max-width:100%; overflow:hidden; }
+.ae-collapsed-wrapper { display:flex; flex-direction:column; align-items:center; padding:12px 16px; }
+.ae-avatar-cloud { display:flex; flex-direction:column; align-items:center; gap:3px; }
+.ae-cloud-row { display:flex; justify-content:center; gap:3px; }
+.ae-cloud-avatar { width:28px; height:28px; border-radius:50%; overflow:hidden; flex:0 0 28px; }
+.ae-cloud-avatar img { display:block; width:28px; height:28px; max-width:28px; max-height:28px; object-fit:cover; border-radius:50%; }
+.ae-collapsed-footer { display:flex; align-items:center; gap:12px; margin-top:12px; }
+`;
+
+function ensureCriticalAvatarStyles(rootEl) {
+  if (rootEl.querySelector('style[data-ae-critical-avatar]')) return;
+  const style = document.createElement('style');
+  style.dataset.aeCriticalAvatar = '';
+  style.textContent = CRITICAL_AVATAR_CSS;
+  rootEl.prepend(style);
+}
+
 // ─── Utilities ──────────────────────────────────────────────────
 
 function hashStr(s) {
@@ -41,6 +59,64 @@ function getInitials(name) {
   const parts = name.split(/\s+/);
   if (parts.length === 1) return parts[0][0].toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+const HTML_AVATAR_SIZES = Object.freeze({
+  'ae-cloud-avatar': '28px',
+  'ae-avatar': '38px',
+  'ae-matrix-avatar': '28px',
+  'ae-popover-avatar': '32px',
+  'ae-info-avatar': '40px',
+});
+
+function htmlDimension(value, fallback) {
+  const match = String(value).match(/^(\d+(?:\.\d+)?)px$/);
+  return match ? match[1] : String(fallback).replace(/px$/, '');
+}
+
+/**
+ * Return fixed avatar geometry that is safe before the asynchronously linked
+ * widget stylesheet loads. Without inline wrapper dimensions, a 100%-sized
+ * image can briefly render at its intrinsic portrait dimensions.
+ */
+export function getHtmlAvatarLayout(className, extraStyle = {}) {
+  const defaultSize = HTML_AVATAR_SIZES[className] || '28px';
+  const width = extraStyle.width || defaultSize;
+  const height = extraStyle.height || defaultSize;
+  return {
+    wrapperStyle: {
+      ...extraStyle,
+      width,
+      height,
+      minWidth: width,
+      minHeight: height,
+      maxWidth: width,
+      maxHeight: height,
+      flexShrink: '0',
+      boxSizing: 'border-box',
+      contain: 'size layout paint',
+      borderRadius: '50%',
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    imageWidth: htmlDimension(width, defaultSize),
+    imageHeight: htmlDimension(height, defaultSize),
+    imageStyle: {
+      width,
+      height,
+      minWidth: width,
+      minHeight: height,
+      maxWidth: width,
+      maxHeight: height,
+      objectFit: 'cover',
+      borderRadius: '50%',
+      display: 'block',
+      position: 'absolute',
+      inset: '0',
+    },
+  };
 }
 
 function getLastName(name) {
@@ -128,35 +204,39 @@ function appendSvgAvatar(svg, g, x, y, radius, author, fontSize) {
  */
 function buildHtmlAvatar(author, className, extraStyle) {
   const color = getColor(author.name);
+  const layout = getHtmlAvatarLayout(className, extraStyle);
   if (author.avatar_url) {
     const wrapper = el('div', {
       className: className,
-      style: { ...extraStyle, padding: '0', overflow: 'hidden', maxWidth: '100%', maxHeight: '100%' },
-    });
+      style: {
+        ...layout.wrapperStyle,
+        padding: '0',
+        overflow: 'hidden',
+        backgroundColor: color,
+        color: 'white',
+        fontWeight: '600',
+        fontSize: '14px',
+      },
+    }, el('span', {
+      'aria-hidden': 'true',
+      style: { lineHeight: '1', pointerEvents: 'none' },
+    }, getInitials(author.name)));
     const img = el('img', {
       src: author.avatar_url,
       alt: author.name,
-      width: '28',
-      height: '28',
-      style: { width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', display: 'block', maxWidth: 'inherit', maxHeight: 'inherit' },
+      width: layout.imageWidth,
+      height: layout.imageHeight,
+      style: layout.imageStyle,
     });
     img.onerror = () => {
-      wrapper.textContent = getInitials(author.name);
-      wrapper.style.backgroundColor = color;
-      wrapper.style.overflow = '';
-      wrapper.style.display = 'flex';
-      wrapper.style.alignItems = 'center';
-      wrapper.style.justifyContent = 'center';
-      wrapper.style.color = 'white';
-      wrapper.style.fontWeight = '600';
-      wrapper.style.fontSize = '14px';
+      img.remove();
     };
     wrapper.appendChild(img);
     return wrapper;
   }
   return el('div', {
     className: className,
-    style: { backgroundColor: color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '600', fontSize: '14px', ...extraStyle },
+    style: { ...layout.wrapperStyle, backgroundColor: color, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: '600', fontSize: '14px' },
   }, getInitials(author.name));
 }
 
@@ -359,6 +439,7 @@ function sortAuthors(authors, sortKey) {
 // ─── Main render ────────────────────────────────────────────────
 
 function render({ model, el: rootEl }) {
+  ensureCriticalAvatarStyles(rootEl);
   const authorsRaw = model.get('authors');
   const parsed = typeof authorsRaw === 'string' ? JSON.parse(authorsRaw) : authorsRaw;
 

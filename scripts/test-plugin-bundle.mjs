@@ -28,7 +28,9 @@ try {
     readFile(resolve(rootDir, node.esm), 'utf8'),
     readFile(resolve(rootDir, node.css), 'utf8'),
   ]);
-  const { resolveSourceUrl } = await import(pathToFileURL(resolve(rootDir, node.esm)));
+  const { CRITICAL_AVATAR_CSS, getHtmlAvatarLayout, resolveSourceUrl } = await import(
+    pathToFileURL(resolve(rootDir, node.esm))
+  );
 
   const editUrl = 'https://github.com/AllenNeuralDynamics/Example/edit/main/content/article.md';
   assert.equal(
@@ -40,6 +42,46 @@ try {
     'https://github.com/AllenNeuralDynamics/Example/blob/main/authors.yml',
   );
   assert.equal(resolveSourceUrl(null, './authors.yml'), null);
+
+  for (const [className, size] of [
+    ['ae-cloud-avatar', '28px'],
+    ['ae-avatar', '38px'],
+    ['ae-matrix-avatar', '28px'],
+    ['ae-popover-avatar', '32px'],
+    ['ae-info-avatar', '40px'],
+  ]) {
+    const layout = getHtmlAvatarLayout(className);
+    assert.equal(layout.wrapperStyle.width, size);
+    assert.equal(layout.wrapperStyle.height, size);
+    assert.equal(layout.wrapperStyle.minWidth, size);
+    assert.equal(layout.wrapperStyle.minHeight, size);
+    assert.equal(layout.wrapperStyle.maxWidth, size);
+    assert.equal(layout.wrapperStyle.maxHeight, size);
+    assert.equal(layout.wrapperStyle.contain, 'size layout paint');
+    assert.equal(layout.wrapperStyle.borderRadius, '50%');
+    assert.equal(layout.wrapperStyle.position, 'relative');
+    assert.equal(layout.wrapperStyle.display, 'flex');
+    assert.equal(layout.imageStyle.width, size);
+    assert.equal(layout.imageStyle.height, size);
+    assert.equal(layout.imageStyle.maxWidth, size);
+    assert.equal(layout.imageStyle.maxHeight, size);
+    assert.equal(layout.imageStyle.position, 'absolute');
+    assert.equal(layout.imageStyle.inset, '0');
+    assert.equal(layout.imageWidth, size.replace('px', ''));
+    assert.equal(layout.imageHeight, size.replace('px', ''));
+  }
+
+  const customLayout = getHtmlAvatarLayout('ae-info-avatar', {
+    width: '48px',
+    height: '36px',
+  });
+  assert.equal(customLayout.wrapperStyle.width, '48px');
+  assert.equal(customLayout.wrapperStyle.height, '36px');
+  assert.equal(customLayout.imageWidth, '48');
+  assert.equal(customLayout.imageHeight, '36');
+  assert.match(CRITICAL_AVATAR_CSS, /\.ae-cloud-avatar \{[^}]*width:28px;/s);
+  assert.match(CRITICAL_AVATAR_CSS, /\.ae-cloud-avatar img \{[^}]*max-width:28px;/s);
+  assert.match(CRITICAL_AVATAR_CSS, /\.ae-cloud-row \{[^}]*display:flex;/s);
 
   const creditIndex = widgetEsm.indexOf("{ id: 'matrix', label: 'CRediT' }");
   const sectionsIndex = widgetEsm.indexOf("{ id: 'sections', label: 'Sections' }");
