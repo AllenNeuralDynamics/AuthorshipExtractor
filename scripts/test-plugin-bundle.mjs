@@ -28,9 +28,14 @@ try {
     readFile(resolve(rootDir, node.esm), 'utf8'),
     readFile(resolve(rootDir, node.css), 'utf8'),
   ]);
-  const { CRITICAL_AVATAR_CSS, getHtmlAvatarLayout, resolveSourceUrl } = await import(
-    pathToFileURL(resolve(rootDir, node.esm))
-  );
+  const {
+    CRITICAL_AVATAR_CSS,
+    getCollaborationLayoutConfig,
+    getHtmlAvatarLayout,
+    normalizeCollaborationPositions,
+    resolveSourceUrl,
+    simulateCollaborationPositions,
+  } = await import(pathToFileURL(resolve(rootDir, node.esm)));
 
   const editUrl = 'https://github.com/AllenNeuralDynamics/Example/edit/main/content/article.md';
   assert.equal(
@@ -82,6 +87,57 @@ try {
   assert.match(CRITICAL_AVATAR_CSS, /\.ae-cloud-avatar \{[^}]*width:28px;/s);
   assert.match(CRITICAL_AVATAR_CSS, /\.ae-cloud-avatar img \{[^}]*max-width:28px;/s);
   assert.match(CRITICAL_AVATAR_CSS, /\.ae-cloud-row \{[^}]*display:flex;/s);
+
+  const smallLayout = getCollaborationLayoutConfig(7, 19);
+  const sparseNineteenLayout = getCollaborationLayoutConfig(19, 18);
+  const denseNineteenLayout = getCollaborationLayoutConfig(19, 109);
+  const twentyLayout = getCollaborationLayoutConfig(20, 120);
+  const twentyOneLayout = getCollaborationLayoutConfig(21, 132);
+  const largeLayout = getCollaborationLayoutConfig(50, 757);
+  assert.equal(smallLayout.width, 700);
+  assert.ok(denseNineteenLayout.width > sparseNineteenLayout.width);
+  assert.ok(denseNineteenLayout.width >= 1100);
+  assert.ok(twentyOneLayout.width > twentyLayout.width);
+  assert.ok(twentyOneLayout.width - twentyLayout.width < 60);
+  assert.ok(largeLayout.width > twentyOneLayout.width);
+  assert.ok(largeLayout.width <= 2400);
+
+  function fixtureLinks(authorCount, connectionCount) {
+    const pairs = [];
+    for (let i = 0; i < authorCount; i += 1) {
+      for (let j = i + 1; j < authorCount; j += 1) {
+        pairs.push({
+          i,
+          j,
+          score: ((i + 1) * 37 + (j + 1) * 101) % 997,
+          weight: 2 + ((i * 7 + j * 11) % 24),
+        });
+      }
+    }
+    pairs.sort((a, b) => a.score - b.score || a.i - b.i || a.j - b.j);
+    return pairs.slice(0, connectionCount);
+  }
+
+  const denseNodes = Array.from(
+    { length: 19 },
+    () => ({ radius: denseNineteenLayout.nodeRadius }),
+  );
+  const denseLinks = fixtureLinks(19, 109);
+  simulateCollaborationPositions(denseNodes, denseLinks, denseNineteenLayout);
+  normalizeCollaborationPositions(denseNodes, denseNineteenLayout);
+  let minimumCenterDistance = Infinity;
+  for (let i = 0; i < denseNodes.length; i += 1) {
+    for (let j = i + 1; j < denseNodes.length; j += 1) {
+      minimumCenterDistance = Math.min(
+        minimumCenterDistance,
+        Math.hypot(denseNodes[i].x - denseNodes[j].x, denseNodes[i].y - denseNodes[j].y),
+      );
+    }
+  }
+  assert.ok(minimumCenterDistance > 100);
+  assert.ok(
+    minimumCenterDistance - 2 * (denseNineteenLayout.nodeRadius + 5) > 30,
+  );
 
   const creditIndex = widgetEsm.indexOf("{ id: 'matrix', label: 'CRediT' }");
   const sectionsIndex = widgetEsm.indexOf("{ id: 'sections', label: 'Sections' }");
