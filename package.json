@@ -1,6 +1,6 @@
 {
   "name": "authorship-extractor",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "A reusable MyST plugin for interactive, multidimensional authorship attribution.",
   "type": "module",
