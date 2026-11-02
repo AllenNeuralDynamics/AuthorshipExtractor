@@ -1,10 +1,13 @@
 // authorship-plugin.mjs — MyST plugin: directive + transform
 // Creates an anywidget node with author data baked in.
 
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, join, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { parse } from 'yaml';
+import { createContributionTables, layoutContributionTable, renderContributionSvg } from './authorship-static.mjs';
+
+export { createContributionTables, layoutContributionTable, renderContributionSvg } from './authorship-static.mjs';
 
 const widgetEsm = typeof __AUTHORSHIP_WIDGET_ESM__ === 'string'
   ? __AUTHORSHIP_WIDGET_ESM__
@@ -65,6 +68,14 @@ const authorshipDirective = {
       type: String,
       doc: 'Widget height, e.g. "800px"',
     },
+    'print-tables': {
+      type: String,
+      doc: 'Optional static print tables: credit, sections, or credit,sections. Disabled by default.',
+    },
+    'print-authors-per-block': {
+      type: Number,
+      doc: 'Maximum authors in each static table block (default: 17).',
+    },
   },
   run(data) {
     return [
@@ -76,10 +87,52 @@ const authorshipDirective = {
         authorsAlt2Path: data.options?.['authors-alt2'] || null,
         alt2Label: data.options?.['alt2-label'] || 'Large team',
         height: data.options?.height || '800px',
+        printTables: data.options?.['print-tables'] || '',
+        printAuthorsPerBlock: data.options?.['print-authors-per-block'] ?? 17,
       },
     ];
   },
 };
+
+const staticDirective = {
+  name: 'authorship-tables',
+  doc: 'Render native static contribution figures for HTML and PDF export.',
+  options: {
+    authors: authorshipDirective.options.authors,
+    tables: {type: String, doc: 'credit, sections, or credit,sections (default).'},
+    'authors-per-block': authorshipDirective.options['print-authors-per-block'],
+  },
+  run(data) {
+    const node = authorshipDirective.run({options: {
+      authors: data.options?.authors,
+      'print-tables': data.options?.tables || 'credit,sections',
+      'print-authors-per-block': data.options?.['authors-per-block'] ?? 17,
+    }})[0];
+    return [{...node, staticOnly: true}];
+  },
+};
+
+function staticFigures(data, node, projectDir, docDir) {
+  const tables = createContributionTables(data, {
+    tables: node.printTables.split(',').map((kind) => kind.trim()),
+    authorsPerBlock: node.printAuthorsPerBlock,
+  });
+  const directory = join(projectDir, '_build', '.authorship-extractor', 'static');
+  mkdirSync(directory, {recursive: true});
+  return tables.map((table) => {
+    const layout = layoutContributionTable(table);
+    const svg = renderContributionSvg(layout);
+    const hash = createHash('sha256').update(svg).digest('hex').slice(0, 20);
+    const path = join(directory, `${table.kind}-${hash}.svg`);
+    writeFileSync(path, svg);
+    return {
+      url: toRelativeAssetPath(docDir, path), kind: table.kind,
+      title: table.title, block: table.block, blockCount: table.blockCount,
+      width: layout.width, height: layout.height,
+      alt: `${table.title}, block ${table.block} of ${table.blockCount}. Blank means not recorded.`,
+    };
+  });
+}
 
 const authorshipTransform = {
   name: 'authorship-data-loader',
@@ -129,6 +182,28 @@ const authorshipTransform = {
           }
 
           const contributors = resolveAffiliations(fullData);
+          if (!node.printTables) {
+            const configPath = [projectDir, process.cwd()]
+              .map((directory) => join(directory, 'authorship-extractor.json'))
+              .find((path) => existsSync(path));
+            if (configPath) {
+              const settings = JSON.parse(readFileSync(configPath, 'utf8')).print;
+              if (settings) {
+                if (!Array.isArray(settings.tables)) throw new Error('Print configuration requires a tables array.');
+                node.printTables = settings.tables.join(',');
+                node.printAuthorsPerBlock = settings.authorsPerBlock ?? 17;
+              }
+            }
+          }
+          const figures = node.printTables ? staticFigures(fullData, node, projectDir, docDir) : null;
+          if (node.staticOnly) {
+            node.type = 'div';
+            node.children = figures.map((figure) => ({
+              type: 'image', url: figure.url, alt: figure.alt, width: '100%',
+            }));
+            for (const key of ['authorsPath', 'authorsAltPath', 'authorsAlt2Path', 'altLabel', 'alt2Label', 'height', 'printTables', 'printAuthorsPerBlock', 'staticOnly']) delete node[key];
+            return;
+          }
 
           // Load alternate authors if specified
           let altContributors = null;
@@ -185,12 +260,15 @@ const authorshipTransform = {
             sectionLabels: JSON.stringify(sectionLabels),
             height: node.height || '800px',
           };
+          if (figures) node.model.staticFigures = JSON.stringify({version: 1, items: figures});
           delete node.authorsPath;
           delete node.authorsAltPath;
           delete node.altLabel;
           delete node.authorsAlt2Path;
           delete node.alt2Label;
           delete node.height;
+          delete node.printTables;
+          delete node.printAuthorsPerBlock;
         } catch (err) {
           console.warn(`authorship-plugin: Error: ${err.message}`);
           node.type = 'paragraph';
@@ -215,7 +293,7 @@ const authorshipTransform = {
 
 const plugin = {
   name: 'Authorship Explorer',
-  directives: [authorshipDirective],
+  directives: [authorshipDirective, staticDirective],
   transforms: [authorshipTransform],
 };
 

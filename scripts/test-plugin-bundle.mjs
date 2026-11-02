@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { copyFile, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -11,7 +11,7 @@ const isolatedBundlePath = join(tempDir, 'authorship-plugin.mjs');
 try {
   await copyFile(resolve(rootDir, 'dist', 'authorship-plugin.mjs'), isolatedBundlePath);
   const bundle = await readFile(isolatedBundlePath, 'utf8');
-  const { default: plugin } = await import(pathToFileURL(isolatedBundlePath));
+  const { default: plugin, createContributionTables } = await import(pathToFileURL(isolatedBundlePath));
 
   const node = plugin.directives[0].run({
     options: { authors: './authors.yml' },
@@ -24,6 +24,7 @@ try {
   });
 
   assert.equal(node.type, 'anywidget');
+  assert.equal(node.model.staticFigures, undefined);
   const [widgetEsm, widgetCss] = await Promise.all([
     readFile(resolve(rootDir, node.esm), 'utf8'),
     readFile(resolve(rootDir, node.css), 'utf8'),
@@ -169,6 +170,85 @@ try {
     readFile(resolve(nestedDir, nestedNode.esm), 'utf8'),
     readFile(resolve(nestedDir, nestedNode.css), 'utf8'),
   ]);
+
+  const fixture = {
+    portal: {sections: ['Methods & validation']},
+    project: {contributors: [
+      {id: 'first', name: 'First Author', credit_levels: [{role: 'Software', level: 'lead'}],
+        section_contributions: [{section: 'Methods & validation', effort: 'equal'}]},
+      {id: 'second', name: 'Second Author', roles: ['Data curation']},
+    ]},
+  };
+  const fixturePath = join(tempDir, 'authors.yml');
+  await writeFile(fixturePath, JSON.stringify(fixture));
+  const printNode = plugin.directives[0].run({options: {
+    authors: fixturePath, 'print-tables': 'credit,sections', 'print-authors-per-block': 1,
+  }})[0];
+  plugin.transforms[0].plugin({}, {})({children: [printNode]}, {
+    path: join(tempDir, 'article.md'), cwd: tempDir,
+  });
+  assert.equal(printNode.type, 'anywidget');
+  assert.equal(JSON.parse(printNode.model.authors).primary.length, 2);
+  const figures = JSON.parse(printNode.model.staticFigures);
+  assert.equal(figures.version, 1);
+  assert.equal(figures.items.length, 4);
+  const creditSvg = await readFile(resolve(tempDir, figures.items[0].url), 'utf8');
+  const sectionSvg = await readFile(resolve(tempDir, figures.items[2].url), 'utf8');
+  assert.match(creditSvg, /data-label="Software" data-level="lead"/);
+  assert.match(creditSvg, /data-level="not-recorded"/);
+  assert.ok(!creditSvg.includes('#EEF1F3'));
+  assert.match(sectionSvg, /Methods &amp; validation/);
+  const nativeNode = plugin.directives.find((directive) => directive.name === 'authorship-tables')
+    .run({options: {authors: fixturePath, tables: 'credit', 'authors-per-block': 1}})[0];
+  plugin.transforms[0].plugin({}, {})({children: [nativeNode]}, {
+    path: join(tempDir, 'article.md'), cwd: tempDir,
+  });
+  assert.equal(nativeNode.type, 'div');
+  assert.equal(nativeNode.children.length, 2);
+  assert.ok(nativeNode.children.every((child) => child.type === 'image'));
+  assert.ok(!bundle.includes('PDFDocument'));
+  const profile = join(tempDir, 'pdf');
+  await mkdir(profile);
+  await writeFile(join(profile, 'authorship-extractor.json'), JSON.stringify({
+    print: {tables: ['credit', 'sections'], authorsPerBlock: 1},
+  }));
+  const profileNode = plugin.directives[0].run({options: {authors: fixturePath}})[0];
+  plugin.transforms[0].plugin({}, {})({children: [profileNode]}, {
+    path: join(tempDir, 'article.md'), cwd: profile,
+  });
+  assert.equal(profileNode.type, 'anywidget');
+  assert.equal(JSON.parse(profileNode.model.staticFigures).items.length, 4);
+  assert.ok(JSON.parse(profileNode.model.staticFigures).items.every((figure) => figure.url.startsWith('./pdf/_build/')));
+  const tables = createContributionTables(fixture, {authorsPerBlock: 1});
+  assert.equal(tables.flatMap((table) => table.cells).length, 30);
+  assert.equal(tables[1].cells.find((cell) => cell.label === 'Data curation').level, 'recorded');
+  assert.throws(() => createContributionTables(fixture, {authorsPerBlock: 0}), /authorsPerBlock/);
+  assert.throws(() => createContributionTables(fixture, {tables: ['credit', 'credit']}), /once each/);
+  const invalid = structuredClone(fixture);
+  invalid.project.contributors[0].credit_levels[0].level = 'guessed';
+  assert.throws(() => createContributionTables(invalid), /Invalid credit/);
+  invalid.project.contributors[0].credit_levels[0].level = 'lead';
+  invalid.project.contributors[0].credit_levels.push({role: 'Software', level: 'equal'});
+  assert.throws(() => createContributionTables(invalid), /Duplicate credit/);
+  const repeatedSections = structuredClone(fixture);
+  repeatedSections.project.contributors[0].section_contributions.push({
+    section: 'Methods & validation', effort: 'supporting',
+  });
+  const repeated = createContributionTables(repeatedSections, {tables: ['sections']});
+  assert.deepEqual(repeated[0].cells[0].levels, ['equal', 'supporting']);
+  assert.equal(repeated[0].cells[0].level, 'multiple');
+  const {renderContributionPdf} = await import('../authorship-static-pdf.mjs');
+  const {PDFDocument} = await import('pdf-lib');
+  const exported = await renderContributionPdf(tables);
+  const pdf = await PDFDocument.load(exported.bytes);
+  assert.equal(pdf.getPageCount(), 4);
+  assert.equal(pdf.getAuthor(), 'First Author, Second Author');
+  assert.equal(pdf.getCreator(), 'AuthorshipExtractor');
+  const serializedPdf = Buffer.from(exported.bytes).toString('latin1');
+  assert.ok(serializedPdf.includes('/Font'));
+  assert.ok(!serializedPdf.includes('/Subtype /Image'));
+  assert.equal(pdf.getPages()[0].getWidth(), exported.layouts[0].width + 24);
+  assert.deepEqual((await renderContributionPdf(tables)).bytes, exported.bytes);
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

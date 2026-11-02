@@ -6,12 +6,15 @@
   "type": "module",
   "scripts": {
     "build:plugin": "node scripts/build-plugin.mjs",
+    "export:static": "node scripts/export-static.mjs",
     "test:plugin": "npm run build:plugin && node scripts/test-plugin-bundle.mjs"
   },
   "engines": {
     "node": ">=18"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "pdf-lib": "^1.17.1",
     "yaml": "^2.9.0"
   },
   "devDependencies": {

@@ -60,6 +60,68 @@ The release bundle and its emitted browser assets carry the full MIT notice, so
 consuming repositories do not need a separate third-party notice file solely for
 AuthorshipExtractor.
 
+## Static contribution tables
+
+Static exports use the same contributor snapshot as the widget. They retain exact
+section names and recorded contribution levels without grouping or aggregation.
+Missing values are blank; a role without an effort level is marked separately.
+Repeated section records retain all reported levels as split cells, rather than
+being reduced to a highest or inferred level.
+Authors remain in source order and split into readable blocks (17 columns by default).
+
+Export vector PDF and SVG files from a checkout:
+
+```bash
+npm ci
+npm run export:static -- --authors ./authors.yml --out ./_build/authorship-static
+```
+
+Options include `--format svg|pdf|both`, `--tables credit,sections`, and
+`--authors-per-block 17`. Use `--font /path/to/font.ttf` (and optionally
+`--bold-font /path/to/bold.ttf`) for Unicode names beyond the standard PDF font.
+The PDF contains selectable text and author metadata. A provenance file records
+the input checksum and every exported cell. No browser or screenshot is required.
+
+For native static MyST figures, use:
+
+````markdown
+:::{authorship-tables}
+:authors: ./authors.yml
+:tables: credit,sections
+:authors-per-block: 17
+:::
+````
+
+The interactive directive can instead expose static figures to a print adapter
+without changing its browser UI:
+
+````markdown
+:::{authorship-explorer}
+:authors: ./authors.yml
+:print-tables: credit,sections
+:print-authors-per-block: 17
+:::
+````
+
+For PDF-only opt-in, put `authorship-extractor.json` alongside the PDF project's
+`myst.yml`, leaving the HTML project unchanged:
+
+```json
+{
+	"print": {
+		"tables": ["credit", "sections"],
+		"authorsPerBlock": 17
+	}
+}
+```
+
+The widget remains interactive. Its `model.staticFigures` JSON field contains a
+versioned `{ "version": 1, "items": [...] }` list of generated SVG paths and alt
+text for the PDF adapter. The adapter can replace its visible author block with
+those native image nodes while retaining the author names in PDF metadata.
+Static files are content-addressed under `_build/.authorship-extractor/static/`.
+Without opt-in, existing plugin behavior is unchanged.
+
 ## Quick start
 
 ```bash
