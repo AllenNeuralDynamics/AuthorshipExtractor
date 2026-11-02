@@ -28,6 +28,24 @@ function estimatedWidth(value, size) {
     ), 0) * size;
 }
 
+export function orderContributors(contributors, order = 'source') {
+  if (!['source', 'alphabetical'].includes(order)) {
+    throw new Error('authorOrder must be source or alphabetical.');
+  }
+  if (order === 'source') return [...contributors];
+  const collator = new Intl.Collator('en', {sensitivity: 'base', numeric: true});
+  const particles = new Set(['da', 'das', 'de', 'del', 'della', 'den', 'der', 'di', 'dos', 'du', 'la', 'le', 'van', 'von']);
+  function surname(person) {
+    if (person.last_name || person.family_name) return person.last_name || person.family_name;
+    const parts = person.name.trim().split(/\s+/);
+    let start = parts.length - 1;
+    while (start > 0 && particles.has(parts[start - 1].toLowerCase())) start -= 1;
+    return parts.slice(start).join(' ');
+  }
+  return [...contributors].sort((first, second) => collator.compare(surname(first), surname(second))
+    || collator.compare(first.name, second.name));
+}
+
 function assignments(contributor, kind) {
   const entries = kind === 'credit' ? contributor.credit_levels ?? []
     : contributor.section_contributions ?? [];
@@ -58,11 +76,14 @@ function assignments(contributor, kind) {
 }
 
 export function createContributionTables(data, options = {}) {
-  const contributors = data?.project?.contributors ?? data?.contributors ?? [];
-  if (!contributors.length || contributors.some((person) => !person.name?.trim())) {
+  const sourceContributors = data?.project?.contributors ?? data?.contributors ?? [];
+  if (!sourceContributors.length || sourceContributors.some((person) => !person.name?.trim())) {
     throw new Error('Static authorship tables require named contributors.');
   }
-  const authorsPerBlock = Number(options.authorsPerBlock ?? 17);
+  const layout = options.layout ?? 'columns';
+  if (!['columns', 'compact'].includes(layout)) throw new Error('layout must be columns or compact.');
+  const contributors = orderContributors(sourceContributors, options.authorOrder);
+  const authorsPerBlock = Number(options.authorsPerBlock ?? (layout === 'compact' ? 40 : 17));
   if (!Number.isInteger(authorsPerBlock) || authorsPerBlock < 1 || authorsPerBlock > 40) {
     throw new Error('authorsPerBlock must be an integer from 1 to 40.');
   }
@@ -97,6 +118,7 @@ export function createContributionTables(data, options = {}) {
       }));
       result.push({
         kind, title: kind === 'credit' ? 'CRediT contributions' : 'Section contributions',
+        layout,
         block: Math.floor(offset / authorsPerBlock) + 1,
         blockCount: Math.ceil(contributors.length / authorsPerBlock),
         contributors: people, labels, cells, allAuthorNames: contributors.map((person) => person.name),
@@ -106,6 +128,59 @@ export function createContributionTables(data, options = {}) {
   return result;
 }
 
+function layoutCompactTable(table, {width, fontSize, measure}) {
+  const padding = 10;
+  const rowHeight = fontSize + 3;
+  const nameWidth = Math.max(...table.contributors.map((person) => measure(person.name, fontSize)));
+  const gridLeft = padding + nameWidth + 12;
+  const columnWidth = (width - gridLeft - padding) / table.labels.length;
+  if (columnWidth < fontSize + 2) {
+    throw new Error('Contribution columns are too narrow; increase the static table width.');
+  }
+  const headerHeight = Math.max(...table.labels.map((label) => measure(label, fontSize))) + 14;
+  const gridTop = 34 + headerHeight;
+  const gridBottom = gridTop + table.contributors.length * rowHeight;
+  const shapes = [];
+  function text(value, x, y, extra = {}) {
+    shapes.push({type: 'text', value, x, y, size: fontSize, fill: '#20343b', ...extra});
+  }
+  const suffix = table.blockCount > 1 ? ` (${table.block}/${table.blockCount})` : '';
+  text(table.title + suffix, padding, 18, {size: 11, bold: true});
+  table.labels.forEach((label, column) => {
+    text(label, gridLeft + (column + 0.5) * columnWidth + fontSize / 3, gridTop - 8, {rotation: -90});
+  });
+  table.contributors.forEach((person, row) => {
+    text(person.name, gridLeft - 7, gridTop + row * rowHeight + fontSize + 0.5, {
+      anchor: 'end', authorId: table.cells.find((cell) => cell.column === row).authorId,
+    });
+  });
+  table.cells.forEach((cell) => {
+    const levels = cell.levels.length ? cell.levels : [null];
+    const segmentWidth = (columnWidth - 4) / levels.length;
+    levels.forEach((level, index) => {
+      shapes.push({
+        type: 'rect', x: gridLeft + cell.row * columnWidth + 2 + index * segmentWidth,
+        y: gridTop + cell.column * rowHeight + 2,
+        width: segmentWidth, height: rowHeight - 4,
+        fill: level ? COLORS[level] : 'none', cell: {...cell, level},
+      });
+    });
+  });
+  const levels = ['lead', 'equal', 'supporting'];
+  if (table.cells.some((cell) => cell.level === 'recorded')) levels.push('recorded');
+  let legendLeft = padding;
+  for (const level of levels) {
+    const title = level === 'recorded' ? 'Recorded (level not supplied)'
+      : level[0].toUpperCase() + level.slice(1);
+    shapes.push({type: 'rect', x: legendLeft, y: gridBottom + 10, width: 7, height: 7, fill: COLORS[level]});
+    text(title, legendLeft + 11, gridBottom + 17, {size: 7});
+    legendLeft += measure(title, 7) + 23;
+  }
+  const multiple = table.cells.some((cell) => cell.levels.length > 1);
+  if (multiple) text('Split cells retain multiple reported section levels.', padding, gridBottom + 31, {size: 7});
+  return {width, height: gridBottom + (multiple ? 43 : 29), shapes, table};
+}
+
 export function layoutContributionTable(table, options = {}) {
   const width = Number(options.width ?? 482);
   const fontSize = Number(options.fontSize ?? 8);
@@ -113,6 +188,9 @@ export function layoutContributionTable(table, options = {}) {
     throw new Error('Static table width must be at least 360pt and font size at least 6pt.');
   }
   const measure = options.measureText ?? estimatedWidth;
+  if ((options.layout ?? table.layout) === 'compact') {
+    return layoutCompactTable(table, {width, fontSize, measure});
+  }
   const padding = 10;
   const rowHeight = fontSize + 6;
   const labelWidth = Math.max(...table.labels.map((label) => measure(label, fontSize))) + 15;
@@ -163,7 +241,6 @@ export function layoutContributionTable(table, options = {}) {
     text(title, legendLeft + 11, gridBottom + 17, {size: 7});
     legendLeft += measure(title, 7) + 23;
   }
-  text('Blank: not recorded', legendLeft, gridBottom + 17, {size: 7});
   const multiple = table.cells.some((cell) => cell.levels.length > 1);
   if (multiple) text('Split cells retain multiple reported section levels.', padding, gridBottom + 31, {size: 7});
   return {width, height: gridBottom + (multiple ? 43 : 29), shapes, table};

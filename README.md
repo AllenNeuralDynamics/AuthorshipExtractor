@@ -67,7 +67,12 @@ section names and recorded contribution levels without grouping or aggregation.
 Missing values are blank; a role without an effort level is marked separately.
 Repeated section records retain all reported levels as split cells, rather than
 being reduced to a highest or inferred level.
-Authors remain in source order and split into readable blocks (17 columns by default).
+By default, authors remain in source order and split into readable column blocks
+(17 authors by default). `--layout compact` uses full-name author rows instead,
+allowing up to 40 authors in each table without repeated name headers.
+`--author-order alphabetical` sorts by surname without changing the source data.
+Explicit family-name fields take precedence; compound surname particles are
+retained when deriving the sort key from a full name.
 
 Export vector PDF and SVG files from a checkout:
 
@@ -81,6 +86,12 @@ Options include `--format svg|pdf|both`, `--tables credit,sections`, and
 `--bold-font /path/to/bold.ttf`) for Unicode names beyond the standard PDF font.
 The PDF contains selectable text and author metadata. A provenance file records
 the input checksum and every exported cell. No browser or screenshot is required.
+
+For a compact, alphabetically ordered paper:
+
+```bash
+npm run export:static -- --authors ./authors.yml --layout compact --author-order alphabetical
+```
 
 For native static MyST figures, use:
 
@@ -110,10 +121,16 @@ For PDF-only opt-in, put `authorship-extractor.json` alongside the PDF project's
 {
 	"print": {
 		"tables": ["credit", "sections"],
-		"authorsPerBlock": 17
+		"authorsPerBlock": 40,
+		"layout": "compact",
+		"authorOrder": "alphabetical"
 	}
 }
 ```
+
+The corresponding directive options are `layout` / `author-order` on
+`authorship-tables`, or `print-layout` / `print-author-order` on the interactive
+directive. Omit these options to retain source ordering and the column layout.
 
 The widget remains interactive. Its `model.staticFigures` JSON field contains a
 versioned `{ "version": 1, "items": [...] }` list of generated SVG paths and alt

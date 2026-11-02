@@ -11,7 +11,7 @@ const isolatedBundlePath = join(tempDir, 'authorship-plugin.mjs');
 try {
   await copyFile(resolve(rootDir, 'dist', 'authorship-plugin.mjs'), isolatedBundlePath);
   const bundle = await readFile(isolatedBundlePath, 'utf8');
-  const { default: plugin, createContributionTables } = await import(pathToFileURL(isolatedBundlePath));
+  const { default: plugin, createContributionTables, orderContributors } = await import(pathToFileURL(isolatedBundlePath));
 
   const node = plugin.directives[0].run({
     options: { authors: './authors.yml' },
@@ -249,6 +249,51 @@ try {
   assert.ok(!serializedPdf.includes('/Subtype /Image'));
   assert.equal(pdf.getPages()[0].getWidth(), exported.layouts[0].width + 24);
   assert.deepEqual((await renderContributionPdf(tables)).bytes, exported.bytes);
+  const team = {portal: {sections: ['Exact original section']}, project: {contributors:
+    Array.from({length: 34}, (_, index) => ({
+      id: `person-${index}`, name: `Person Family${String(33 - index).padStart(2, '0')}`,
+      credit_levels: [{role: 'Software', level: 'equal'}],
+      section_contributions: [{section: 'Exact original section', effort: 'supporting'}],
+    })),
+  }};
+  const before = structuredClone(team);
+  const compact = createContributionTables(team, {layout: 'compact', authorOrder: 'alphabetical'});
+  assert.equal(compact.length, 2);
+  assert.equal(compact[0].contributors.length, 34);
+  assert.equal(compact[0].contributors[0].name, 'Person Family00');
+  assert.equal(compact[0].contributors.at(-1).name, 'Person Family33');
+  assert.deepEqual(team, before);
+  assert.equal(compact.flatMap((table) => table.cells).filter((cell) => cell.level).length, 68);
+  const compactPdf = await renderContributionPdf(compact);
+  assert.equal((await PDFDocument.load(compactPdf.bytes)).getPageCount(), 2);
+  for (const layout of compactPdf.layouts) {
+    assert.ok(!layout.shapes.some((shape) => shape.value?.includes('Blank:')));
+    assert.ok(layout.shapes.filter((shape) => shape.authorId).every((shape) => !shape.rotation));
+  }
+  assert.throws(() => createContributionTables(team, {authorOrder: 'guessed'}), /authorOrder/);
+  const surnames = [
+    {name: 'Zoe Zebra'}, {name: 'Roberto De Filippo'}, {name: 'Ido Aizenbud'},
+    {name: 'Zara McExample', last_name: 'Baker'},
+  ];
+  assert.deepEqual(orderContributors(surnames, 'alphabetical').map((person) => person.name), [
+    'Ido Aizenbud', 'Zara McExample', 'Roberto De Filippo', 'Zoe Zebra',
+  ]);
+  assert.equal(surnames[0].name, 'Zoe Zebra');
+  const profileFixture = structuredClone(fixture);
+  profileFixture.project.contributors[0].name = 'Zoe Zebra';
+  profileFixture.project.contributors[1].name = 'Ada Alpha';
+  await writeFile(fixturePath, JSON.stringify(profileFixture));
+  await writeFile(join(profile, 'authorship-extractor.json'), JSON.stringify({
+    print: {tables: ['credit', 'sections'], layout: 'compact', authorOrder: 'alphabetical'},
+  }));
+  const alphabeticalNode = plugin.directives[0].run({options: {authors: fixturePath}})[0];
+  plugin.transforms[0].plugin({}, {})({children: [alphabeticalNode]}, {
+    path: join(tempDir, 'article.md'), cwd: profile,
+  });
+  assert.deepEqual(JSON.parse(alphabeticalNode.model.authors).primary.map((person) => person.name), [
+    'Ada Alpha', 'Zoe Zebra',
+  ]);
+  assert.equal(JSON.parse(alphabeticalNode.model.staticFigures).items.length, 2);
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }

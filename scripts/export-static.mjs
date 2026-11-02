@@ -12,7 +12,9 @@ const {values} = parseArgs({options: {
   out: {type: 'string', default: './_build/authorship-static'},
   format: {type: 'string', default: 'both'},
   tables: {type: 'string', default: 'credit,sections'},
-  'authors-per-block': {type: 'string', default: '17'},
+  'authors-per-block': {type: 'string'},
+  layout: {type: 'string', default: 'columns'},
+  'author-order': {type: 'string', default: 'source'},
   font: {type: 'string'},
   'bold-font': {type: 'string'},
 }});
@@ -22,7 +24,9 @@ const source = await readFile(sourcePath);
 const data = parse(source.toString('utf8'));
 const options = {
   tables: values.tables.split(',').map((kind) => kind.trim()),
-  authorsPerBlock: Number(values['authors-per-block']),
+  authorsPerBlock: values['authors-per-block'] === undefined ? undefined : Number(values['authors-per-block']),
+  layout: values.layout,
+  authorOrder: values['author-order'],
 };
 const tables = createContributionTables(data, options);
 if (!tables.length) throw new Error('The selected source contains no contribution tables.');
